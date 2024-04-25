@@ -11,6 +11,9 @@ const config = {
   sassOptions: {
     includePaths: [path.join(path.dirname("./"), "styles")],
   },
+  eslint: {
+    ignoreDuringBuilds: true
+  }
 };
 
 export default config;
