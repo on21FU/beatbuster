@@ -20,15 +20,16 @@ export async function getUserToken() {
 }
 
 export async function startRound(formData: FormData) {
-    try{
+    try {
+        const userToken = await getUserToken();
         const playlistId = formData.get("playlistId");
         if (!playlistId || typeof playlistId !== "string") return;
-        const trackIds = await getTracksFromPlaylist(playlistId);
+        const trackIds = await getTracksFromPlaylist({ userToken, playlistId });
         const shuffledTrackIds = shuffleArray(trackIds);
-        console.log("Trackids", trackIds);
         if (!shuffledTrackIds[0]) throw new Error("Playlist is empty");
-        playNextTrack(shuffledTrackIds[0]);
-    } catch(err) {
+        addTrackToQueue({ userToken, trackId: shuffledTrackIds[0] });
+        skipToNext();
+    } catch (err) {
         console.log(err)
     }
 }
@@ -37,36 +38,31 @@ function shuffleArray<Type>(array: Type[]) {
     return array.sort((a, b) => 0.5 - Math.random());
 }
 
-async function getTracksFromPlaylist(playlistId: string) {
-    const userToken = await getUserToken();
+async function getTracksFromPlaylist({ userToken, playlistId }: { userToken: string, playlistId: string }) {
     const response = await fetch(
         `https://api.spotify.com/v1/playlists/${playlistId}`,
         { headers: { Authorization: `Bearer ${userToken}` } }
     );
-    const data = await response.json();
-    const map = data.tracks.items.map(
-        (item => item.track));
-    console.log(map)
-    const mapIds = map.map(
-        item => item.album.id
-    )
-    return map
+    const data = await response.json() as PlaylistInfo;
+    type PlaylistInfo = {
+        tracks: {
+            items: any[]
+        }
+    }
+
+
+    return data.tracks.items.map((item => item.track.id)) as string[];
 }
 
-export async function playNextTrack(trackId: string) {
-    addTrackToQueue(trackId);
-    skipToNext();
-}
-
-async function addTrackToQueue(trackId: string) {
-    const userToken = await getUserToken();
+async function addTrackToQueue({ userToken, trackId }: { userToken: string, trackId: string }) {
     const res = await fetch(
-        `https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%${trackId}`,
+        `https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%3A` + trackId,
         {
             headers: { Authorization: `Bearer ${userToken}` },
             method: "POST",
         }
     );
+    console.log(res)
 }
 
 async function skipToNext() {

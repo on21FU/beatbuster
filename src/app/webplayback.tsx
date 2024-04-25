@@ -12,29 +12,28 @@ function WebPlayback(props: { token: string }) {
     document.body.appendChild(script);
 
     window.onSpotifyWebPlaybackSDKReady = () => {
-      const player2 = new window.Spotify.Player({
+      const player = new window.Spotify.Player({
         name: "BeatBuster",
         getOAuthToken: (cb) => {
           cb(props.token);
         },
         volume: 0.5,
       });
-      console.log(player2);
 
-      player2.addListener("ready", ({ device_id }) => {
+      player.addListener("ready", ({ device_id }) => {
         console.log("Ready with Device ID", device_id);
       });
 
-      player2.addListener("not_ready", ({ device_id }) => {
+      player.addListener("not_ready", ({ device_id }) => {
         console.log("Device ID has gone offline", device_id);
       });
 
-      player2
+      player
         .connect()
         .then((success) => console.log("connect"))
         .catch((err) => console.log(err));
 
-      setPlayer(player2);
+      setPlayer(player);
     };
   }, []);
 
@@ -46,15 +45,6 @@ function WebPlayback(props: { token: string }) {
     <>
       <div className="container">
         <div className="main-wrapper">
-          <button
-            onClick={() =>
-              player.togglePlay().then(() => {
-                console.log("Toggled playback!");
-              }).catch(err => console.log(err))
-            }
-          >
-            Play
-          </button>
         </div>
       </div>
     </>
