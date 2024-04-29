@@ -85,7 +85,7 @@ export default function Search({ accessToken }: { accessToken: string }) {
     async function handleSearchInputChange(e: ChangeEvent<HTMLInputElement>) {
         const currentSearchTerm = e.target.value
         setSearchTerm(currentSearchTerm)
-        if (currentSearchTerm.length < 4) {
+        if (currentSearchTerm.length < 3) {
             return
         }
         spotify.searchPlaylists(e.target.value).then((data) => {
@@ -95,7 +95,7 @@ export default function Search({ accessToken }: { accessToken: string }) {
 
     return (
         <>
-            <form action={ }>
+            <form>
                 <p>Round Time</p>
                 <input className="btn-check" type="radio" name="roundTime" id="roundTime5" value="5" onChange={handleRoundTimeChange} />
                 <label className="btn btn-secondary" htmlFor="roundTime5">5s</label>
@@ -129,6 +129,9 @@ export default function Search({ accessToken }: { accessToken: string }) {
                         <p>{config.playlist.name}</p>
                     </div>
                 </div>
+                {
+                    JSON.stringify(config)
+                }
                 <button type="submit">Start Game</button>
             </form>
             <div>
@@ -139,14 +142,14 @@ export default function Search({ accessToken }: { accessToken: string }) {
 }
 
 function SearchResultDisplay({ playlistItems, searchTerm, setActivePlaylist }: { playlistItems: SpotifyApi.PlaylistObjectSimplified[] | undefined, searchTerm: string, setActivePlaylist: (playlist: Playlist) => void }) {
-    if (searchTerm.length < 4) {
+    if (searchTerm.length < 3) {
         return
     }
     if (!playlistItems || playlistItems.length === 0) {
         return <p>No playlists found</p>
     }
     return <div className="grid">
-        <div className="row">
+        <div className="row flex-nowrap overflow-auto">
             {
                 playlistItems.map((playlist) => {
                     return <button className="col-3 card" key={playlist.id} onClick={() => setActivePlaylist({ id: playlist.id, imgUrl: playlist.images[0]?.url, name: playlist.name })}>
