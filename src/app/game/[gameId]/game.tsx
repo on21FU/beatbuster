@@ -1,7 +1,5 @@
 "use client"
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import SearchSpotifyWrapper from "~/app/components/searchSpotifyWrapper";
-
 
 type UserInfo = {
     username: string,
@@ -9,7 +7,7 @@ type UserInfo = {
     userId: string
 }
 
-export function Game({ gameId, user }: { gameId: string, user: UserInfo }) {
+export function Game({ gameId, user, children }: { gameId: string, user: UserInfo, children: React.ReactNode }) {
 
     const [socket, setSocket] = useState<WebSocket | null>(null);
 
@@ -25,7 +23,7 @@ export function Game({ gameId, user }: { gameId: string, user: UserInfo }) {
     return (
         <main>
             Joined Game {gameId}
-            <SearchSpotifyWrapper />
+            {children}
         </main>
     )
 }
