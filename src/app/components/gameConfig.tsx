@@ -21,7 +21,7 @@ type Playlist = {
     name: string
 }
 
-export default function Search({ accessToken }: { accessToken: string }) {
+export default function GameConfig({ accessToken }: { accessToken: string }) {
     const [playlistItems, setPlaylistItems] = useState<SpotifyApi.PlaylistObjectSimplified[] | undefined>()
     const [searchTerm, setSearchTerm] = useState("")
     const [config, setConfig] = useState<Config>({
