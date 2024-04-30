@@ -1,7 +1,7 @@
 "use server"
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { Game } from "./game";
-import SearchSpotifyWrapper from "~/app/components/searchSpotifyWrapper";
+import GameConfigWrapper from "~/app/components/gameConfigWrapper";
 
 export default async function GamePage({ params }: { params: { gameId: string } }) {
     const userId = auth().userId
@@ -13,7 +13,7 @@ export default async function GamePage({ params }: { params: { gameId: string } 
         username: fullName || generateGuestName(),
         imageUrl: imageUrl || ""
     }} >
-        <SearchSpotifyWrapper />
+        <GameConfigWrapper />
     </Game>
 }
 

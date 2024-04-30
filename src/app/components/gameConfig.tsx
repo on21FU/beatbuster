@@ -2,6 +2,7 @@
 
 import { ChangeEvent, useState } from "react"
 import SpotifyWebApi from "spotify-web-api-node"
+import { useSocketStore } from "../game/[gameId]/game"
 
 type Config = {
     playlist: Playlist,
@@ -36,6 +37,11 @@ export default function GameConfig({ accessToken }: { accessToken: string }) {
             amount: 10,
         }
     })
+
+    const { socket } = useSocketStore()
+    console.log("socket", socket)
+
+    if (!socket) return <div>Connecting...</div>
 
     const spotify = new SpotifyWebApi({
         clientId: process.env.SPOTIFY_CLIENT_ID,
