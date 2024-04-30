@@ -98,10 +98,21 @@ export default function GameConfig({ accessToken }: { accessToken: string }) {
             setPlaylistItems(data.body.playlists?.items)
         })
     }
+    function startGame() {
+        if(!socket) throw new Error("No socket")
+        const message = { 
+            type: "start-game",
+            body: {
+                ...config,
+                accessToken
+            }
+        }
+        socket.send(JSON.stringify(message));
+    }
 
     return (
         <>
-            <form>
+            <form action={ startGame }>
                 <p>Round Time</p>
                 <input className="btn-check" type="radio" name="roundTime" id="roundTime5" value="5" onChange={handleRoundTimeChange} />
                 <label className="btn btn-primary" htmlFor="roundTime5">5s</label>

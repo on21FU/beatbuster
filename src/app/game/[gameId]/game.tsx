@@ -52,7 +52,6 @@ async function establishWebSocketConnection(
 
         newSocket.addEventListener("open", () => {
             console.log("Connected to server");
-            newSocket.send("Hello world");
             setSocket({ socket: newSocket })
 
         });
