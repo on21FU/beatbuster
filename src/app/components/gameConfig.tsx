@@ -95,47 +95,72 @@ export default function Search({ accessToken }: { accessToken: string }) {
 
     return (
         <>
-            <form>
-                <p>Round Time</p>
-                <input className="btn-check" type="radio" name="roundTime" id="roundTime5" value="5" onChange={handleRoundTimeChange} />
-                <label className="btn btn-primary" htmlFor="roundTime5">5s</label>
-                <input className="btn-check" type="radio" name="roundTime" id="roundTime10" value="10" onChange={handleRoundTimeChange} />
-                <label className="btn btn-primary" htmlFor="roundTime10">10s</label>
-                <input className="btn-check" type="radio" name="roundTime" id="roundTime15" value="15" onChange={handleRoundTimeChange} />
-                <label className="btn btn-primary" htmlFor="roundTime15">15s</label>
-                <p>Win Condition</p>
-                <input className="btn-check" type="radio" name="winCondition" id="rounds" value="rounds" onChange={handleWinConditionChange} />
-                <label className="btn btn-primary" htmlFor="rounds">Rounds</label>
-                <input className="btn-check" type="radio" name="winCondition" id="score" value="score" onChange={handleWinConditionChange} />
-                <label className="btn btn-primary" htmlFor="score">Score</label>
-                {
-                    config.winCondition.type === "rounds" && <div>
-                        <p>Amount Songs</p>
-                        <input type="number" min="5" max="25" onChange={handleAmountChange} value={config.winCondition.amount} />
-                    </div>
-                }
-                {
-                    config.winCondition.type === "score" && <div>
-                        <p>Amount Score</p>
-                        <input type="number" step="1000" min="5000" max="25000" onChange={handleAmountChange} value={config.winCondition.amount} />
-                    </div>
-                }
+            <div className="container">
 
-                <div>
-                    <p>Playlist Search</p>
-                    <input onChange={handleSearchInputChange} />
-                    <div className="card w-25">
-                        <img width="80px" src={config.playlist.imgUrl} />
-                        <p>{config.playlist.name}</p>
+                <div className="row">
+                    <div className="col-lg-4">
+                        <h2>Players</h2>
+                    </div>
+                    <div className="col-lg-8">
+                        <h2>Your Game</h2>
+
+                        <form>
+                            <div className="settings">
+                                <h4>Settings</h4>
+                                <div className="setting-section">
+                                    <p>Round Time</p>
+                                    <input className="btn-check" type="radio" name="roundTime" id="roundTime5" value="5" onChange={handleRoundTimeChange} />
+                                    <label className="btn btn-settings" htmlFor="roundTime5">5s</label>
+                                    <input className="btn-check" type="radio" name="roundTime" id="roundTime10" value="10" onChange={handleRoundTimeChange} />
+                                    <label className="btn btn-settings" htmlFor="roundTime10">10s</label>
+                                    <input className="btn-check" type="radio" name="roundTime" id="roundTime15" value="15" onChange={handleRoundTimeChange} />
+                                    <label className="btn btn-settings" htmlFor="roundTime15">15s</label>
+                                </div>
+                                <div className="setting-section">
+                                    <p>Win Condition</p>
+                                    <input className="btn-check" type="radio" name="winCondition" id="rounds" value="rounds" onChange={handleWinConditionChange} />
+                                    <label className="btn btn-settings" htmlFor="rounds">Rounds</label>
+                                    <input className="btn-check" type="radio" name="winCondition" id="score" value="score" onChange={handleWinConditionChange} />
+                                    <label className="btn btn-settings" htmlFor="score">Score</label>
+                                </div>
+
+                                {
+                                    config.winCondition.type === "rounds" && <div>
+                                        <p>Amount Songs</p>
+                                        <input type="number" min="5" max="25" onChange={handleAmountChange} value={config.winCondition.amount} />
+                                    </div>
+                                }
+                                {
+                                    config.winCondition.type === "score" && <div>
+                                        <p>Amount Score</p>
+                                        <input type="number" step="1000" min="5000" max="25000" onChange={handleAmountChange} value={config.winCondition.amount} />
+                                    </div>
+                                }
+                            </div>
+
+                            <div className="playlist-selection">
+                                <div className="playlist-selection-left">
+                                    <input className="searchbar" onChange={handleSearchInputChange} />
+                                    <div className="card w-25">
+                                        <img width="80px" src={config.playlist.imgUrl} />
+                                        <p>{config.playlist.name}</p>
+                                    </div>
+
+
+                                    {
+                                        JSON.stringify(config)
+                                    }
+                                </div>
+                                <div className="playlist-selection-right">
+                                    <button className="btn btn-settings" type="submit">Start Game</button>
+                                </div>
+                            </div>
+                        </form>
+                        <div>
+                            <SearchResultDisplay playlistItems={playlistItems} searchTerm={searchTerm} setActivePlaylist={setActivePlaylist} />
+                        </div>
                     </div>
                 </div>
-                {
-                    JSON.stringify(config)
-                }
-                <button type="submit">Start Game</button>
-            </form>
-            <div>
-                <SearchResultDisplay playlistItems={playlistItems} searchTerm={searchTerm} setActivePlaylist={setActivePlaylist} />
             </div>
         </>
     )

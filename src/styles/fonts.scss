@@ -1,0 +1,8 @@
+$fonts-dir: "/../assets/fonts/inter-v13-latin";
+@include font-face("Inter", $fonts-dir + "/inter-v13-latin-regular", 400, null, woff2);
+@include font-face("Inter", $fonts-dir + "/source-sans-3-v9-latin-800", 800, null, woff2);
+@include font-face("Inter", $fonts-dir + "/source-sans-3-v9-latin-900", 900, null, woff2);
+
+$fonts-dir: "/../assets/fonts/roboto-slab-v34-latin";
+@include font-face("Roboto Slab", $fonts-dir + "/roboto-slab-v34-latin-regular", 400, null, woff2);
+@include font-face("Roboto Slab", $fonts-dir + "/roboto-slab-v34-latin-800", 800, null, woff2);

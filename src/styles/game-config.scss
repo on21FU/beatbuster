@@ -1,0 +1,71 @@
+.btn {
+    &.btn-settings {
+        background-color: $grey;
+        color: $white;
+        padding: 0.5rem 3rem;
+        margin-right: 1rem;
+
+
+    }
+
+    &.btn-check {
+
+        &:hover,
+        &:checked {
+            background-color: $black;
+            color: $primary;
+        }
+    }
+
+    &.btn-check+.btn:hover {
+        background-color: $black;
+        color: $primary;
+    }
+}
+
+.settings {
+    border: 3px solid $black;
+    padding: 2rem;
+    margin-bottom: 2rem;
+
+    input, select, textarea {
+        border: 1px solid $black;
+        height: 2.75rem;
+        width: 50%;
+        padding: 0rem 1rem;
+    }
+
+    .setting-section {
+        margin-bottom: 2rem;
+    }
+
+
+}
+
+form {
+    .playlist-selection {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        
+
+        input, select, textarea {
+            border: 3px solid $primary;
+            height: 2.75rem;
+            width: 100%;
+            padding-left:1rem;
+        }
+
+
+        .playlist-selection-left{
+            width: 60%;
+        }
+        .playlist-selection-right{
+            width: 30%;
+
+            button{
+                width: 100%;
+            }
+        }
+    }
+}
