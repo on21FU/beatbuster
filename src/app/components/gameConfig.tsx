@@ -98,16 +98,16 @@ export default function Search({ accessToken }: { accessToken: string }) {
             <form>
                 <p>Round Time</p>
                 <input className="btn-check" type="radio" name="roundTime" id="roundTime5" value="5" onChange={handleRoundTimeChange} />
-                <label className="btn btn-secondary" htmlFor="roundTime5">5s</label>
+                <label className="btn btn-primary" htmlFor="roundTime5">5s</label>
                 <input className="btn-check" type="radio" name="roundTime" id="roundTime10" value="10" onChange={handleRoundTimeChange} />
-                <label className="btn btn-secondary" htmlFor="roundTime10">10s</label>
+                <label className="btn btn-primary" htmlFor="roundTime10">10s</label>
                 <input className="btn-check" type="radio" name="roundTime" id="roundTime15" value="15" onChange={handleRoundTimeChange} />
-                <label className="btn btn-secondary" htmlFor="roundTime15">15s</label>
+                <label className="btn btn-primary" htmlFor="roundTime15">15s</label>
                 <p>Win Condition</p>
                 <input className="btn-check" type="radio" name="winCondition" id="rounds" value="rounds" onChange={handleWinConditionChange} />
-                <label className="btn btn-secondary" htmlFor="rounds">Rounds</label>
+                <label className="btn btn-primary" htmlFor="rounds">Rounds</label>
                 <input className="btn-check" type="radio" name="winCondition" id="score" value="score" onChange={handleWinConditionChange} />
-                <label className="btn btn-secondary" htmlFor="score">Score</label>
+                <label className="btn btn-primary" htmlFor="score">Score</label>
                 {
                     config.winCondition.type === "rounds" && <div>
                         <p>Amount Songs</p>

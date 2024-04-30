@@ -1,6 +1,17 @@
 
-$primary-color: #64ff00;
- 
-:export {
-  primaryColor: $primary-color;
+$primary: #00ff00;
+$secondary: red;
+$btn-border-radius: 0;
+$btn-hover-bg: white;
+$custom-colors: (
+  "custom-color": #900
+);
+.btn-primary:hover{
+  background-color: aliceblue ;
 }
+
+.btn-primary:active{
+  background-color: black ;
+}
+
+ 
