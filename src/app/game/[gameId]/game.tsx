@@ -48,7 +48,7 @@ async function establishWebSocketConnection(
         user
     }
     try {
-        const newSocket = new WebSocket("ws://localhost:8080?options=" + JSON.stringify(options));
+        const newSocket = new WebSocket(process.env.WEBSOCKET_URL + "?options=" + JSON.stringify(options));
 
         newSocket.addEventListener("open", () => {
             console.log("Connected to server");
