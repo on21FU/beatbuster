@@ -1,8 +1,9 @@
 "use client"
 
-import { ChangeEvent, useState } from "react"
+import { ChangeEvent, useEffect, useState } from "react"
 import SpotifyWebApi from "spotify-web-api-node"
 import { useSocketStore } from "../game/[gameId]/game"
+import { Player, validateMessage } from "~/types"
 
 type Config = {
     playlist: Playlist,
@@ -25,34 +26,58 @@ type Playlist = {
 export default function GameConfig({ accessToken }: { accessToken: string }) {
     const [playlistItems, setPlaylistItems] = useState<SpotifyApi.PlaylistObjectSimplified[] | undefined>()
     const [searchTerm, setSearchTerm] = useState("")
-    const [config, setConfig] = useState<Config>({
-        playlist: {
-            id: "37i9dQZF1DXcBWIGoYBM5M",
-            imgUrl: "https://i.scdn.co/image/ab67706f000000020ba81215546ef8fd79aa92a7",
-            name: "Today's Top Hits"
-        },
-        roundTime: 10,
-        winCondition: {
-            type: "rounds",
-            amount: 10,
-        }
-    })
+    const [config, setConfig] = useState<Config>(getDefaultPlaylist())
+    const [spotify, setSpotify] = useState<SpotifyWebApi>()
+    const [players, setPlayers] = useState<Player[]>([])
 
     const { socket } = useSocketStore()
-    console.log("socket", socket)
+
+    useEffect(() => {
+        const spotify = new SpotifyWebApi({
+            clientId: process.env.SPOTIFY_CLIENT_ID,
+            clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+            accessToken: accessToken
+        })
+        setSpotify(spotify)
+        if (!socket) return
+        socket.addEventListener("message", handleMessage)
+    }, [])
 
     if (!socket) return <div>Connecting...</div>
+    if (!spotify) return <div>Establishing Spotify Connection...</div>
 
-    const spotify = new SpotifyWebApi({
-        clientId: process.env.SPOTIFY_CLIENT_ID,
-        clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-        accessToken: accessToken
-    })
 
     function setActivePlaylist(playlist: Playlist) {
         setConfig({
             ...config, playlist: { ...playlist }
         })
+    }
+
+    function handleMessage(event: MessageEvent) {
+        try {
+            const message = JSON.parse(event.data)
+            console.log("message", message)
+            if (!validateMessage(message)) {
+                console.error("Invalid message", message)
+                return
+            }
+
+            switch (message.type) {
+                case "start-round":
+                    setPlayers(message.body.players)
+                    console.log("start", players)
+                    break
+                case "update-players":
+
+                    console.log("update", players)
+                    setPlayers(message.body)
+                    break
+            }
+
+
+        } catch (error) {
+            console.error("Error parsing message", error)
+        }
     }
 
     function handleRoundTimeChange(e: ChangeEvent<HTMLInputElement>) {
@@ -94,6 +119,7 @@ export default function GameConfig({ accessToken }: { accessToken: string }) {
         if (currentSearchTerm.length < 3) {
             return
         }
+        if (!spotify) throw new Error("Spotify not initialized")
         spotify.searchPlaylists(e.target.value).then((data) => {
             setPlaylistItems(data.body.playlists?.items)
         })
@@ -117,6 +143,11 @@ export default function GameConfig({ accessToken }: { accessToken: string }) {
                 <div className="row">
                     <div className="col-lg-4">
                         <h2>Players</h2>
+                        <ul>
+                            {
+                                players.map((player, index) => <PlayerDisplay key={index} player={player} />)
+                            }
+                        </ul>
                     </div>
                     <div className="col-lg-8">
                         <h2>Your Game</h2>
@@ -223,4 +254,28 @@ function SearchResultDisplay({ playlistItems, searchTerm, setActivePlaylist }: {
     </div>
 
 
+}
+
+function PlayerDisplay({ player }: { player: Player }) {
+    return <li>
+        <img src={player.imageUrl} />
+        <p>{player.username}</p>
+        <p>{player.score}</p>
+    </li>
+
+}
+
+function getDefaultPlaylist(): Config {
+    return {
+        playlist: {
+            id: "37i9dQZF1DXcBWIGoYBM5M",
+            imgUrl: "https://i.scdn.co/image/ab67706f000000020ba81215546ef8fd79aa92a7",
+            name: "Today's Top Hits"
+        },
+        roundTime: 10,
+        winCondition: {
+            type: "rounds",
+            amount: 10,
+        }
+    }
 }

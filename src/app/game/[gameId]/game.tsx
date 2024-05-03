@@ -18,15 +18,16 @@ export const useSocketStore = create<SocketStore>((set) => ({
     setSocket: (newSocket) => set((state) => (newSocket)),
 }))
 
-export function Game({ gameId, user, children }: { gameId: string, user: UserInfo, children: React.ReactNode }) {
+export function Game(
+    { gameId, user, children, webSocketUrl }:
+        { gameId: string, user: UserInfo, children: React.ReactNode, webSocketUrl: string }
+) {
 
     const { socket, setSocket } = useSocketStore()
 
     useEffect(() => {
-        establishWebSocketConnection({ setSocket, gameId, user })
+        establishWebSocketConnection({ setSocket, gameId, user, webSocketUrl })
     }, [])
-
-
 
     if (!socket) return <main>Connecting...</main>
 
@@ -39,8 +40,8 @@ export function Game({ gameId, user, children }: { gameId: string, user: UserInf
 }
 
 async function establishWebSocketConnection(
-    { setSocket, gameId, user }:
-        { setSocket: ({ socket }: { socket: WebSocket }) => void, gameId: string, user: UserInfo }
+    { setSocket, gameId, user, webSocketUrl }:
+        { setSocket: ({ socket }: { socket: WebSocket }) => void, gameId: string, user: UserInfo, webSocketUrl: string }
 ) {
 
     const options = {
@@ -48,15 +49,12 @@ async function establishWebSocketConnection(
         user
     }
     try {
-        const newSocket = new WebSocket(process.env.WEBSOCKET_URL + "?options=" + JSON.stringify(options));
+        const newSocket = new WebSocket(webSocketUrl + "?options=" + JSON.stringify(options));
 
         newSocket.addEventListener("open", () => {
             console.log("Connected to server");
             setSocket({ socket: newSocket })
 
-        });
-        newSocket.addEventListener("message", event => {
-            console.log("Message from server", event.data);
         });
 
     } catch (error) {
