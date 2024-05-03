@@ -8,10 +8,10 @@ export default async function GamePage({ params }: { params: { gameId: string } 
     if (!userId) return <div>Not logged in</div>
     const { fullName, imageUrl, id } = await clerkClient.users.getUser(userId)
 
-    return <Game gameId={params.gameId} user={{
+    return <Game webSocketUrl={process.env.WEBSOCKET_URL ?? ""} gameId={params.gameId} user={{
         userId: id,
         username: fullName || generateGuestName(),
-        imageUrl: imageUrl || ""
+        imageUrl: imageUrl || "",
     }} >
         <GameConfigWrapper />
     </Game>
