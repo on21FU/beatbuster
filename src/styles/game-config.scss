@@ -1,9 +1,17 @@
+.button-wrapper{
+    width: 100%;
+    display: flex;
+    justify-content: right;
+}
 .btn {
+
     &.btn-settings {
         background-color: $grey;
         color: $white;
         padding: 0.5rem 3rem;
         margin-right: 1rem;
+
+
 
 
     }
@@ -16,11 +24,6 @@
             color: $primary;
         }
     }
-
-    &.btn-check+.btn:hover {
-        background-color: $black;
-        color: $primary;
-    }
 }
 
 .settings {
@@ -28,8 +31,10 @@
     padding: 2rem;
     margin-bottom: 2rem;
 
-    input, select, textarea {
-        border: 1px solid $black;
+    input,
+    select,
+    textarea {
+        border: 3px solid $black;
         height: 2.75rem;
         width: 50%;
         padding: 0rem 1rem;
@@ -47,37 +52,113 @@ form {
         width: 100%;
         display: flex;
         justify-content: space-between;
-        
 
-        input, select, textarea {
-            border: 3px solid $primary;
-            height: 2.75rem;
-            width: 100%;
-            padding-left:1rem;
+        .playlist-section-left {
+            width: 50%;
         }
 
+        .playlist-section-right {
+            width: 50%;
+            margin-left: 1rem;
 
-        .playlist-selection-left{
-            width: 60%;
-        }
-        .playlist-selection-right{
-            width: 30%;
+            .selected-card {
+                .card {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    background-color: $black;
+                    border: none;
+                    border: 3px solid $primary;
+                    border-radius: 0px;
+                    padding: 0px;
 
-            button{
-                width: 100%;
+                    .selected-card-image {
+                        width: 20%;
+                        margin-right: 1.5rem;
+                    }
+
+                    .selected-card-content {
+                        width: auto;
+                        color: $white;
+
+                        p {
+                            margin-bottom: 0;
+                        }
+
+                    }
+                }
             }
         }
+
+
+        input,
+        select,
+        textarea {
+            border: 3px solid $black;
+            height: 2.75rem;
+            width: 100%;
+            padding-left: 1rem;
+        }
+
+
+        //  .playlist-selection-left{
+        //     width: 60%;
+        //  }
+        //  .playlist-selection-right{
+        //     width: 30%;
+
+        //    button{
+        //          width: 100%;
+        //     }
+        //  }
     }
 }
-.win-section{
+
+.win-section {
     margin-bottom: 2rem;
     width: 100%;
     display: flex;
+
     // flex-direction: row;    
-    @include media-breakpoint-down(768px){
+    @include media-breakpoint-down(768px) {
         // flex-direction: column;
     }
-    .win-section-left,.win-section-right{
+
+    .win-section-left,
+    .win-section-right {
         width: 50%;
+    }
+}
+
+.search-result {
+    .search-result-list {
+        height: 200px;
+        width: 100%;
+
+        .card {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            background-color: $grey;
+            border: none;
+            border-bottom: 3px solid $white;
+            border-radius: 0px;
+            padding: 0px;
+
+            .card-image {
+                width: 20%;
+                margin-right: 1.5rem;
+            }
+
+            .card-content {
+                width: auto;
+                color: $black;
+
+                p {
+                    margin-bottom: 0;
+                }
+
+            }
+        }
     }
 }

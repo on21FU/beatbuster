@@ -135,37 +135,49 @@ export default function GameConfig({ accessToken }: { accessToken: string }) {
                                 </div>
                                 <div className="win-section">
                                     <div className="win-section-left">
-                                    <p>Win Condition</p>
-                                    <input className="btn-check" type="radio" name="winCondition" id="rounds" value="rounds" onChange={handleWinConditionChange} />
-                                    <label className="btn btn-settings" htmlFor="rounds">Rounds</label>
-                                    <input className="btn-check" type="radio" name="winCondition" id="score" value="score" onChange={handleWinConditionChange} />
-                                    <label className="btn btn-settings" htmlFor="score">Score</label>
+                                        <p>Win Condition</p>
+                                        <input className="btn-check" type="radio" name="winCondition" id="rounds" value="rounds" onChange={handleWinConditionChange} />
+                                        <label className="btn btn-settings" htmlFor="rounds">Rounds</label>
+                                        <input className="btn-check" type="radio" name="winCondition" id="score" value="score" onChange={handleWinConditionChange} />
+                                        <label className="btn btn-settings" htmlFor="score">Score</label>
                                     </div>
                                     <div className="win-section-right">
-                                    {
-                                    config.winCondition.type === "rounds" && <div>
-                                        <p>Amount Songs</p>
-                                        <input type="number" min="5" max="25" onChange={handleAmountChange} value={config.winCondition.amount} />
+                                        {
+                                            config.winCondition.type === "rounds" && <div>
+                                                <p>Amount Songs</p>
+                                                <input type="number" min="5" max="25" onChange={handleAmountChange} value={config.winCondition.amount} />
+                                            </div>
+                                        }
+                                        {
+                                            config.winCondition.type === "score" && <div>
+                                                <p>Amount Score</p>
+                                                <input type="number" step="1000" min="5000" max="25000" onChange={handleAmountChange} value={config.winCondition.amount} />
+                                            </div>
+                                        }
                                     </div>
-                                }
-                                {
-                                    config.winCondition.type === "score" && <div>
-                                        <p>Amount Score</p>
-                                        <input type="number" step="1000" min="5000" max="25000" onChange={handleAmountChange} value={config.winCondition.amount} />
+                                </div>
+                                <div className="playlist-selection">
+                                    <div className="playlist-section-left">
+                                        <p>Select your playlist</p>
+                                        <input className="searchbar" onChange={handleSearchInputChange} />
+                                        <SearchResultDisplay playlistItems={playlistItems} searchTerm={searchTerm} setActivePlaylist={setActivePlaylist} />
                                     </div>
-                                }
-                                </div>
-                                </div>
-                                <div className="playlist-selection-left">
-                                <p>Select your playlist</p>
-                                    <input className="searchbar" onChange={handleSearchInputChange} />
-                                    <div className="card w-25">
-                                        <img width="80px" src={config.playlist.imgUrl} />
-                                        <p>{config.playlist.name}</p>
+                                    <div className="playlist-section-right">
+                                        <p>Selected playlist</p>
+                                        <div className="selected-card">
+                                            <div className="card w-100">
+                                                <div className="selected-card-image">
+                                                    <img width="80px" src={config.playlist.imgUrl} />
+                                                </div>
+                                                <div className="selected-card-content">
+                                                    <p>{config.playlist.name}</p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div>
-                            <SearchResultDisplay playlistItems={playlistItems} searchTerm={searchTerm} setActivePlaylist={setActivePlaylist} />
-                        </div>
+
+                                    </div>
 
 
                                     {/* {
@@ -174,28 +186,11 @@ export default function GameConfig({ accessToken }: { accessToken: string }) {
                                 </div>
 
                             </div>
-
-                            <div className="playlist-selection">
-                                <div className="playlist-selection-left">
-                                    <input className="searchbar" onChange={handleSearchInputChange} />
-                                    <div className="card w-25">
-                                        <img width="80px" src={config.playlist.imgUrl} />
-                                        <p>{config.playlist.name}</p>
-                                    </div>
-
-
-                                    {
-                                        JSON.stringify(config)
-                                    }
-                                </div>
-                                <div className="playlist-selection-right">
-                                    <button className="btn btn-settings" type="submit">Start Game</button>
-                                </div>
+                            <div className="button-wrapper">
+                            <button className="btn btn-settings" type="submit">Start Game</button>
                             </div>
                         </form>
-                        <div>
-                            <SearchResultDisplay playlistItems={playlistItems} searchTerm={searchTerm} setActivePlaylist={setActivePlaylist} />
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -210,13 +205,17 @@ function SearchResultDisplay({ playlistItems, searchTerm, setActivePlaylist }: {
     if (!playlistItems || playlistItems.length === 0) {
         return <p>No playlists found</p>
     }
-    return <div className="grid hw-50">
-        <div className="column flex-nowrap overflow-auto">
+    return <div className="search-result grid hw-50">
+        <div className="search-result-list column flex-nowrap overflow-auto">
             {
                 playlistItems.map((playlist) => {
-                    return <button className="w-50 card" key={playlist.id} onClick={() => setActivePlaylist({ id: playlist.id, imgUrl: playlist.images[0]?.url, name: playlist.name })}>
-                        <img width="80px" src={playlist.images[0]?.url} />
-                        <p>{playlist.name}</p>
+                    return <button className="w-100 card" key={playlist.id} onClick={() => setActivePlaylist({ id: playlist.id, imgUrl: playlist.images[0]?.url, name: playlist.name })}>
+                        <div className="card-image">
+                            <img width="80px" src={playlist.images[0]?.url} />
+                        </div>
+                        <div className="card-content">
+                            <p>{playlist.name}</p>
+                        </div>
                     </button>
                 })
             }

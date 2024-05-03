@@ -9,10 +9,14 @@
 
 
 html,
+main{
+  margin-bottom: 5rem;
+}
 body {
   padding: 0;
   margin: 0;
   font-family: "Roboto Slab", "Helvetica", Arial, sans-serif;
+  font-weight: 400;
 
 
 }
@@ -24,6 +28,11 @@ h1, h2, h3, h4, .h1, .h2, .h3, .h4{
 a {
   color: inherit;
   text-decoration: none;
+}
+
+p{
+  font-family: "Roboto Slab", "Helvetica", Arial, sans-serif;
+  font-weight: 400;
 }
 
 * {
