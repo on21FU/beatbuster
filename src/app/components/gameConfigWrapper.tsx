@@ -1,14 +1,14 @@
 "use server"
 import { getUserToken } from "../spotify";
 import React from "react";
-import Search from "./gameConfig";
+import GameConfig from "./gameConfig";
 
-export default async function SearchSpotifyWrapper() {
+export default async function GameConfigWrapper() {
     const accessToken = await getUserToken();
 
     return (
         <>
-            <Search accessToken={accessToken} />
+            <GameConfig accessToken={accessToken} />
         </>
     )
 }

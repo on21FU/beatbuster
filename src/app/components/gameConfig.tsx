@@ -2,6 +2,7 @@
 
 import { ChangeEvent, useState } from "react"
 import SpotifyWebApi from "spotify-web-api-node"
+import { useSocketStore } from "../game/[gameId]/game"
 
 type Config = {
     playlist: Playlist,
@@ -21,7 +22,7 @@ type Playlist = {
     name: string
 }
 
-export default function Search({ accessToken }: { accessToken: string }) {
+export default function GameConfig({ accessToken }: { accessToken: string }) {
     const [playlistItems, setPlaylistItems] = useState<SpotifyApi.PlaylistObjectSimplified[] | undefined>()
     const [searchTerm, setSearchTerm] = useState("")
     const [config, setConfig] = useState<Config>({
@@ -36,6 +37,11 @@ export default function Search({ accessToken }: { accessToken: string }) {
             amount: 10,
         }
     })
+
+    const { socket } = useSocketStore()
+    console.log("socket", socket)
+
+    if (!socket) return <div>Connecting...</div>
 
     const spotify = new SpotifyWebApi({
         clientId: process.env.SPOTIFY_CLIENT_ID,
@@ -92,6 +98,17 @@ export default function Search({ accessToken }: { accessToken: string }) {
             setPlaylistItems(data.body.playlists?.items)
         })
     }
+    function startGame() {
+        if (!socket) throw new Error("No socket")
+        const message = {
+            type: "start-game",
+            body: {
+                ...config,
+                accessToken
+            }
+        }
+        socket.send(JSON.stringify(message));
+    }
 
     return (
         <>
@@ -104,7 +121,7 @@ export default function Search({ accessToken }: { accessToken: string }) {
                     <div className="col-lg-8">
                         <h2>Your Game</h2>
 
-                        <form>
+                        <form action={startGame}>
                             <div className="settings">
                                 <h4>Settings</h4>
                                 <div className="setting-section">

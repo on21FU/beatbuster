@@ -1,5 +1,7 @@
 "use client"
+import { create } from "zustand";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import test from "node:test";
 
 type UserInfo = {
     username: string,
@@ -7,16 +9,24 @@ type UserInfo = {
     userId: string
 }
 
+type SocketStore = {
+    socket: WebSocket | null,
+    setSocket: ({ socket }: { socket: WebSocket }) => void,
+}
+export const useSocketStore = create<SocketStore>((set) => ({
+    socket: null,
+    setSocket: (newSocket) => set((state) => (newSocket)),
+}))
+
 export function Game({ gameId, user, children }: { gameId: string, user: UserInfo, children: React.ReactNode }) {
 
-    const [socket, setSocket] = useState<WebSocket | null>(null);
+    const { socket, setSocket } = useSocketStore()
 
     useEffect(() => {
-
-        console.log("User in useEffect", user.username)
-
         establishWebSocketConnection({ setSocket, gameId, user })
     }, [])
+
+
 
     if (!socket) return <main>Connecting...</main>
 
@@ -30,7 +40,7 @@ export function Game({ gameId, user, children }: { gameId: string, user: UserInf
 
 async function establishWebSocketConnection(
     { setSocket, gameId, user }:
-        { setSocket: Dispatch<SetStateAction<WebSocket | null>>, gameId: string, user: UserInfo }
+        { setSocket: ({ socket }: { socket: WebSocket }) => void, gameId: string, user: UserInfo }
 ) {
 
     const options = {
@@ -42,8 +52,7 @@ async function establishWebSocketConnection(
 
         newSocket.addEventListener("open", () => {
             console.log("Connected to server");
-            newSocket.send("Hello world");
-            setSocket(newSocket)
+            setSocket({ socket: newSocket })
 
         });
         newSocket.addEventListener("message", event => {
