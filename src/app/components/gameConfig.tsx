@@ -133,15 +133,16 @@ export default function GameConfig({ accessToken }: { accessToken: string }) {
                                     <input className="btn-check" type="radio" name="roundTime" id="roundTime15" value="15" onChange={handleRoundTimeChange} />
                                     <label className="btn btn-settings" htmlFor="roundTime15">15s</label>
                                 </div>
-                                <div className="setting-section">
+                                <div className="win-section">
+                                    <div className="win-section-left">
                                     <p>Win Condition</p>
                                     <input className="btn-check" type="radio" name="winCondition" id="rounds" value="rounds" onChange={handleWinConditionChange} />
                                     <label className="btn btn-settings" htmlFor="rounds">Rounds</label>
                                     <input className="btn-check" type="radio" name="winCondition" id="score" value="score" onChange={handleWinConditionChange} />
                                     <label className="btn btn-settings" htmlFor="score">Score</label>
-                                </div>
-
-                                {
+                                    </div>
+                                    <div className="win-section-right">
+                                    {
                                     config.winCondition.type === "rounds" && <div>
                                         <p>Amount Songs</p>
                                         <input type="number" min="5" max="25" onChange={handleAmountChange} value={config.winCondition.amount} />
@@ -153,6 +154,25 @@ export default function GameConfig({ accessToken }: { accessToken: string }) {
                                         <input type="number" step="1000" min="5000" max="25000" onChange={handleAmountChange} value={config.winCondition.amount} />
                                     </div>
                                 }
+                                </div>
+                                </div>
+                                <div className="playlist-selection-left">
+                                <p>Select your playlist</p>
+                                    <input className="searchbar" onChange={handleSearchInputChange} />
+                                    <div className="card w-25">
+                                        <img width="80px" src={config.playlist.imgUrl} />
+                                        <p>{config.playlist.name}</p>
+                                    </div>
+                                    <div>
+                            <SearchResultDisplay playlistItems={playlistItems} searchTerm={searchTerm} setActivePlaylist={setActivePlaylist} />
+                        </div>
+
+
+                                    {/* {
+                                        JSON.stringify(config)
+                                    } */}
+                                </div>
+
                             </div>
 
                             <div className="playlist-selection">
@@ -190,11 +210,11 @@ function SearchResultDisplay({ playlistItems, searchTerm, setActivePlaylist }: {
     if (!playlistItems || playlistItems.length === 0) {
         return <p>No playlists found</p>
     }
-    return <div className="grid">
-        <div className="row flex-nowrap overflow-auto">
+    return <div className="grid hw-50">
+        <div className="column flex-nowrap overflow-auto">
             {
                 playlistItems.map((playlist) => {
-                    return <button className="col-3 card" key={playlist.id} onClick={() => setActivePlaylist({ id: playlist.id, imgUrl: playlist.images[0]?.url, name: playlist.name })}>
+                    return <button className="w-50 card" key={playlist.id} onClick={() => setActivePlaylist({ id: playlist.id, imgUrl: playlist.images[0]?.url, name: playlist.name })}>
                         <img width="80px" src={playlist.images[0]?.url} />
                         <p>{playlist.name}</p>
                     </button>

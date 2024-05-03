@@ -69,3 +69,15 @@ form {
         }
     }
 }
+.win-section{
+    margin-bottom: 2rem;
+    width: 100%;
+    display: flex;
+    // flex-direction: row;    
+    @include media-breakpoint-down(768px){
+        // flex-direction: column;
+    }
+    .win-section-left,.win-section-right{
+        width: 50%;
+    }
+}
