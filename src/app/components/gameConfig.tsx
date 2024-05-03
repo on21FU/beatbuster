@@ -3,6 +3,7 @@
 import { ChangeEvent, useEffect, useState } from "react"
 import SpotifyWebApi from "spotify-web-api-node"
 import { useSocketStore } from "../game/[gameId]/game"
+import { Player, validateMessage } from "~/types"
 
 type Config = {
     playlist: Playlist,
@@ -27,6 +28,7 @@ export default function GameConfig({ accessToken }: { accessToken: string }) {
     const [searchTerm, setSearchTerm] = useState("")
     const [config, setConfig] = useState<Config>(getDefaultPlaylist())
     const [spotify, setSpotify] = useState<SpotifyWebApi>()
+    const [players, setPlayers] = useState<Player[]>([])
 
     const { socket } = useSocketStore()
 
@@ -52,8 +54,30 @@ export default function GameConfig({ accessToken }: { accessToken: string }) {
     }
 
     function handleMessage(event: MessageEvent) {
-        const message = JSON.parse(event.data)
-        console.log("message", message)
+        try {
+            const message = JSON.parse(event.data)
+            console.log("message", message)
+            if (!validateMessage(message)) {
+                console.error("Invalid message", message)
+                return
+            }
+
+            switch (message.type) {
+                case "start-round":
+                    setPlayers(message.body.players)
+                    console.log("start", players)
+                    break
+                case "update-players":
+
+                    console.log("update", players)
+                    setPlayers(message.body)
+                    break
+            }
+
+
+        } catch (error) {
+            console.error("Error parsing message", error)
+        }
     }
 
     function handleRoundTimeChange(e: ChangeEvent<HTMLInputElement>) {
@@ -119,6 +143,11 @@ export default function GameConfig({ accessToken }: { accessToken: string }) {
                 <div className="row">
                     <div className="col-lg-4">
                         <h2>Players</h2>
+                        <ul>
+                            {
+                                players.map((player, index) => <PlayerDisplay key={index} player={player} />)
+                            }
+                        </ul>
                     </div>
                     <div className="col-lg-8">
                         <h2>Your Game</h2>
@@ -205,6 +234,15 @@ function SearchResultDisplay({ playlistItems, searchTerm, setActivePlaylist }: {
         </div>
     </div>
 
+
+}
+
+function PlayerDisplay({ player }: { player: Player }) {
+    return <li>
+        <img src={player.imageUrl} />
+        <p>{player.username}</p>
+        <p>{player.score}</p>
+    </li>
 
 }
 
