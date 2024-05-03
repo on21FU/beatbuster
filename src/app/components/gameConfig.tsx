@@ -23,12 +23,12 @@ type Playlist = {
     name: string
 }
 
-export default function GameConfig({ accessToken }: { accessToken: string }) {
+export default function GameConfig({ accessToken, defaultPlayer }: { accessToken: string, defaultPlayer: Player }) {
     const [playlistItems, setPlaylistItems] = useState<SpotifyApi.PlaylistObjectSimplified[] | undefined>()
     const [searchTerm, setSearchTerm] = useState("")
     const [config, setConfig] = useState<Config>(getDefaultPlaylist())
     const [spotify, setSpotify] = useState<SpotifyWebApi>()
-    const [players, setPlayers] = useState<Player[]>([])
+    const [players, setPlayers] = useState<Player[]>([defaultPlayer])
 
     const { socket } = useSocketStore()
 
@@ -65,21 +65,23 @@ export default function GameConfig({ accessToken }: { accessToken: string }) {
             switch (message.type) {
                 case "start-round":
                     setPlayers(message.body.players)
-                    console.log("start", players)
+                    console.log("start", message.body.players)
                     break
                 case "update-players":
-
-                    console.log("update", players)
+                    console.log("Hier juhu")
                     setPlayers(message.body)
+                    console.log("update", message.body)
                     break
+                default:
+                    console.error("Unknown message type", message)
             }
 
 
         } catch (error) {
             console.error("Error parsing message", error)
         }
-    }
 
+    }
     function handleRoundTimeChange(e: ChangeEvent<HTMLInputElement>) {
         const newRoundTime = Number(e.target.value);
         setConfig({ ...config, roundTime: newRoundTime })
@@ -218,7 +220,7 @@ export default function GameConfig({ accessToken }: { accessToken: string }) {
 
                             </div>
                             <div className="button-wrapper">
-                            <button className="btn btn-settings" type="submit">Start Game</button>
+                                <button className="btn btn-settings" type="submit">Start Game</button>
                             </div>
                         </form>
 
@@ -260,9 +262,7 @@ function PlayerDisplay({ player }: { player: Player }) {
     return <li>
         <img src={player.imageUrl} />
         <p>{player.username}</p>
-        <p>{player.score}</p>
     </li>
-
 }
 
 function getDefaultPlaylist(): Config {
@@ -270,7 +270,7 @@ function getDefaultPlaylist(): Config {
         playlist: {
             id: "37i9dQZF1DXcBWIGoYBM5M",
             imgUrl: "https://i.scdn.co/image/ab67706f000000020ba81215546ef8fd79aa92a7",
-            name: "Today's Top Hits"
+            name: "Today's Top Hits",
         },
         roundTime: 10,
         winCondition: {
