@@ -1,9 +1,21 @@
+@import "./variables.module.scss";
+@import "./game-config.scss";
+@import "./game-rules.scss";
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+
+
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: "Roboto Slab", "Helvetica", Arial, sans-serif;
+
+
+}
+
+h1, h2, h3, h4, .h1, .h2, .h3, .h4{
+  margin-bottom: 1.5rem;
 }
 
 a {
@@ -15,6 +27,24 @@ a {
   box-sizing: border-box;
 }
 
-sass-test{
+sass-test {
   color: red;
+}
+
+.logo-container {
+
+  margin-top: 5rem;
+  margin-bottom: 4rem;
+  .logo {
+    text-align: center;
+    img {
+      width: 25rem;
+    }
+  }
+}
+
+.btn{
+  border-width: 3px;
+  color: $black;
+
 }

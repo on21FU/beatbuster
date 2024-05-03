@@ -1,6 +1,16 @@
 
-$primary-color: #64ff00;
- 
-:export {
-  primaryColor: $primary-color;
-}
+$primary: #00ff00;
+$secondary: red;
+$grey: #D9D9D9; 
+$white: #ffffff;
+$black: #000000;
+
+$btn-border-radius: 0;
+//$btn-hover-bg: white;
+$custom-colors: (
+  "custom-color": #900
+);
+
+$font-family-sans-serif: "Inter", "Helvetica Neue", Arial, sans-serif;
+$font-family-sans-serif: "Roboto Slab", "Helvetica", Arial, sans-serif;
+$headings-font-weight: 800;

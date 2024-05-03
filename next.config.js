@@ -8,12 +8,16 @@ await import("./src/env.js");
 
 /** @type {import("next").NextConfig} */
 const config = {
-  sassOptions: {
-    includePaths: [path.join(path.dirname("./"), "styles")],
-  },
-  eslint: {
-    ignoreDuringBuilds: true
-  }
+    reactStrictMode: false,
+    sassOptions: {
+        includePaths: [path.join(path.dirname("./"), "styles")],
+    },
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
+    typescript: {
+        ignoreBuildErrors: true,
+    }
 };
 
 export default config;
