@@ -2,8 +2,9 @@
 
 import { ChangeEvent, useEffect, useState } from "react"
 import SpotifyWebApi from "spotify-web-api-node"
-import { useSocketStore } from "../game/[gameId]/game"
+import { useSocketStore, useSpotifyStore } from "../game/[gameId]/game"
 import { Player, validateMessage } from "~/types"
+import WebPlayback from "../webplayback"
 
 type Config = {
     playlist: Playlist,
@@ -23,22 +24,25 @@ type Playlist = {
     name: string
 }
 
+type Answer = {
+    trackId: string,
+    trackName: string,
+    trackArtists: string[],
+    isCorrect: boolean
+}
+
 export default function GameConfig({ accessToken, defaultPlayer }: { accessToken: string, defaultPlayer: Player }) {
     const [playlistItems, setPlaylistItems] = useState<SpotifyApi.PlaylistObjectSimplified[] | undefined>()
     const [searchTerm, setSearchTerm] = useState("")
     const [config, setConfig] = useState<Config>(getDefaultPlaylist())
-    const [spotify, setSpotify] = useState<SpotifyWebApi>()
     const [players, setPlayers] = useState<Player[]>([defaultPlayer])
+    const [round, setRound] = useState(0)
+    const [answers, setAnswers] = useState<Answer[]>([])
 
     const { socket } = useSocketStore()
+    const { spotify, activeDeviceId, setActiveDeviceId } = useSpotifyStore()
 
     useEffect(() => {
-        const spotify = new SpotifyWebApi({
-            clientId: process.env.SPOTIFY_CLIENT_ID,
-            clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-            accessToken: accessToken
-        })
-        setSpotify(spotify)
         if (!socket) return
         socket.addEventListener("message", handleMessage)
     }, [])
@@ -53,7 +57,7 @@ export default function GameConfig({ accessToken, defaultPlayer }: { accessToken
         })
     }
 
-    function handleMessage(event: MessageEvent) {
+    async function handleMessage(event: MessageEvent) {
         try {
             const message = JSON.parse(event.data)
             console.log("message", message)
@@ -65,11 +69,20 @@ export default function GameConfig({ accessToken, defaultPlayer }: { accessToken
             switch (message.type) {
                 case "start-round":
                     setPlayers(message.body.players)
+                    setRound(message.body.round)
+                    console.log(spotify)
+                    if (!spotify) return
+                    const newAnswers = await getTrackInfos({ spotify, tracks: message.body.tracks })
+                    setAnswers(newAnswers)
+                    if (!activeDeviceId) {
+                        console.log("no device id")
+                        return
+                    }
+                    playTrack({ trackId: message.body.tracks.correctTrackId, spotify, activeDeviceId })
                     console.log("start", message.body.players)
                     break
                 case "update-players":
-                    console.log("Hier juhu")
-                    setPlayers(message.body)
+                    setPlayers(message.body.players)
                     console.log("update", message.body)
                     break
                 default:
@@ -137,98 +150,111 @@ export default function GameConfig({ accessToken, defaultPlayer }: { accessToken
         }
         socket.send(JSON.stringify(message));
     }
+    if (round === 0) {
+        return (
+            <>
+                <div className="container">
 
-    return (
-        <>
-            <div className="container">
+                    <div className="row">
+                        <div className="col-lg-4">
+                            <h2>Players</h2>
+                            <ul>
+                                {
+                                    players.map((player, index) => <PlayerDisplay key={index} player={player} />)
+                                }
+                            </ul>
+                        </div>
+                        <div className="col-lg-8">
+                            <h2>Your Game</h2>
 
-                <div className="row">
-                    <div className="col-lg-4">
-                        <h2>Players</h2>
-                        <ul>
-                            {
-                                players.map((player, index) => <PlayerDisplay key={index} player={player} />)
-                            }
-                        </ul>
-                    </div>
-                    <div className="col-lg-8">
-                        <h2>Your Game</h2>
-
-                        <form action={startGame}>
-                            <div className="settings">
-                                <h4>Settings</h4>
-                                <div className="setting-section">
-                                    <p>Round Time</p>
-                                    <input className="btn-check" type="radio" name="roundTime" id="roundTime5" value="5" onChange={handleRoundTimeChange} />
-                                    <label className="btn btn-settings" htmlFor="roundTime5">5s</label>
-                                    <input className="btn-check" type="radio" name="roundTime" id="roundTime10" value="10" onChange={handleRoundTimeChange} />
-                                    <label className="btn btn-settings" htmlFor="roundTime10">10s</label>
-                                    <input className="btn-check" type="radio" name="roundTime" id="roundTime15" value="15" onChange={handleRoundTimeChange} />
-                                    <label className="btn btn-settings" htmlFor="roundTime15">15s</label>
-                                </div>
-                                <div className="win-section">
-                                    <div className="win-section-left">
-                                        <p>Win Condition</p>
-                                        <input className="btn-check" type="radio" name="winCondition" id="rounds" value="rounds" onChange={handleWinConditionChange} />
-                                        <label className="btn btn-settings" htmlFor="rounds">Rounds</label>
-                                        <input className="btn-check" type="radio" name="winCondition" id="score" value="score" onChange={handleWinConditionChange} />
-                                        <label className="btn btn-settings" htmlFor="score">Score</label>
+                            <form action={startGame}>
+                                <div className="settings">
+                                    <h4>Settings</h4>
+                                    <div className="setting-section">
+                                        <p>Round Time</p>
+                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime5" value="5" onChange={handleRoundTimeChange} />
+                                        <label className="btn btn-settings" htmlFor="roundTime5">5s</label>
+                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime10" value="10" onChange={handleRoundTimeChange} />
+                                        <label className="btn btn-settings" htmlFor="roundTime10">10s</label>
+                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime15" value="15" onChange={handleRoundTimeChange} />
+                                        <label className="btn btn-settings" htmlFor="roundTime15">15s</label>
                                     </div>
-                                    <div className="win-section-right">
-                                        {
-                                            config.winCondition.type === "rounds" && <div>
-                                                <p>Amount Songs</p>
-                                                <input type="number" min="5" max="25" onChange={handleAmountChange} value={config.winCondition.amount} />
-                                            </div>
-                                        }
-                                        {
-                                            config.winCondition.type === "score" && <div>
-                                                <p>Amount Score</p>
-                                                <input type="number" step="1000" min="5000" max="25000" onChange={handleAmountChange} value={config.winCondition.amount} />
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                                <div className="playlist-selection">
-                                    <div className="playlist-section-left">
-                                        <p>Select your playlist</p>
-                                        <input className="searchbar" onChange={handleSearchInputChange} />
-                                        <SearchResultDisplay playlistItems={playlistItems} searchTerm={searchTerm} setActivePlaylist={setActivePlaylist} />
-                                    </div>
-                                    <div className="playlist-section-right">
-                                        <p>Selected playlist</p>
-                                        <div className="selected-card">
-                                            <div className="card w-100">
-                                                <div className="selected-card-image">
-                                                    <img width="80px" src={config.playlist.imgUrl} />
+                                    <div className="win-section">
+                                        <div className="win-section-left">
+                                            <p>Win Condition</p>
+                                            <input className="btn-check" type="radio" name="winCondition" id="rounds" value="rounds" onChange={handleWinConditionChange} />
+                                            <label className="btn btn-settings" htmlFor="rounds">Rounds</label>
+                                            <input className="btn-check" type="radio" name="winCondition" id="score" value="score" onChange={handleWinConditionChange} />
+                                            <label className="btn btn-settings" htmlFor="score">Score</label>
+                                        </div>
+                                        <div className="win-section-right">
+                                            {
+                                                config.winCondition.type === "rounds" && <div>
+                                                    <p>Amount Songs</p>
+                                                    <input type="number" min="5" max="25" onChange={handleAmountChange} value={config.winCondition.amount} />
                                                 </div>
-                                                <div className="selected-card-content">
-                                                    <p>{config.playlist.name}</p>
+                                            }
+                                            {
+                                                config.winCondition.type === "score" && <div>
+                                                    <p>Amount Score</p>
+                                                    <input type="number" step="1000" min="5000" max="25000" onChange={handleAmountChange} value={config.winCondition.amount} />
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div className="playlist-selection">
+                                        <div className="playlist-section-left">
+                                            <p>Select your playlist</p>
+                                            <input className="searchbar" onChange={handleSearchInputChange} />
+                                            <SearchResultDisplay playlistItems={playlistItems} searchTerm={searchTerm} setActivePlaylist={setActivePlaylist} />
+                                        </div>
+                                        <div className="playlist-section-right">
+                                            <p>Selected playlist</p>
+                                            <div className="selected-card">
+                                                <div className="card w-100">
+                                                    <div className="selected-card-image">
+                                                        <img width="80px" src={config.playlist.imgUrl} />
+                                                    </div>
+                                                    <div className="selected-card-content">
+                                                        <p>{config.playlist.name}</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        <div>
+
+                                        </div>
+
+
+                                        {/* {
+                                            JSON.stringify(config)
+                                        } */}
                                     </div>
-                                    <div>
 
-                                    </div>
-
-
-                                    {/* {
-                                        JSON.stringify(config)
-                                    } */}
                                 </div>
+                                <div className="button-wrapper">
+                                    <button className="btn btn-settings" type="submit">Start Game</button>
+                                </div>
+                            </form>
 
-                            </div>
-                            <div className="button-wrapper">
-                                <button className="btn btn-settings" type="submit">Start Game</button>
-                            </div>
-                        </form>
-
+                        </div>
                     </div>
                 </div>
-            </div>
-        </>
-    )
+            </>
+        )
+    }
+
+    if (round > 0) {
+        return (
+            <>
+                <p>Runde {round}</p>
+                <WebPlayback token={accessToken} setActiveDeviceId={setActiveDeviceId} />
+                {answers.map((answer) => {
+                    return <button key={answer.trackId}>{answer.trackName} {answer.trackArtists.join(", ")}</button>
+                })}
+            </>
+        )
+    }
 }
 
 function SearchResultDisplay({ playlistItems, searchTerm, setActivePlaylist }: { playlistItems: SpotifyApi.PlaylistObjectSimplified[] | undefined, searchTerm: string, setActivePlaylist: (playlist: Playlist) => void }) {
@@ -278,4 +304,26 @@ function getDefaultPlaylist(): Config {
             amount: 10,
         }
     }
+}
+
+async function getTrackInfos({ spotify, tracks }: { spotify: SpotifyWebApi, tracks: { correctTrackId: string, wrongTrackIds: string[] } }): Promise<Answer[]> {
+    const { body: trackData } = await spotify.getTracks([tracks.correctTrackId, ...tracks.wrongTrackIds])
+    const trackInfos = trackData.tracks.map((track, index) => {
+        return {
+            trackId: track.id,
+            trackName: track.name,
+            trackArtists: track.artists.map(artist => artist.name),
+            isCorrect: index === 0
+        }
+    })
+    return shuffleArray(trackInfos)
+}
+
+export function shuffleArray<T>(array: T[]): T[] {
+    return array.sort(() => Math.random() - 0.5);
+}
+
+async function playTrack({ trackId, spotify, activeDeviceId }: { trackId: string, spotify: SpotifyWebApi, activeDeviceId: string }) {
+    console.log(await spotify.getMyDevices())
+    await spotify.play({ uris: ["spotify:track:" + trackId], device_id: activeDeviceId })
 }

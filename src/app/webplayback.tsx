@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 
-function WebPlayback(props: { token: string }) {
+export function WebPlayback(props: { token: string, setActiveDeviceId: ({ activeDeviceId }: { activeDeviceId: string }) => void }) {
   const [player, setPlayer] = useState<Spotify.Player | undefined>(undefined);
 
   useEffect(() => {
@@ -22,6 +22,7 @@ function WebPlayback(props: { token: string }) {
 
       player.addListener("ready", ({ device_id }) => {
         console.log("Ready with Device ID", device_id);
+        props.setActiveDeviceId({ activeDeviceId: device_id })
       });
 
       player.addListener("not_ready", ({ device_id }) => {
