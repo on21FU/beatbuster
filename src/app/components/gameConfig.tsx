@@ -144,12 +144,17 @@ export default function GameConfig({ accessToken, defaultPlayer }: { accessToken
 
                 <div className="row">
                     <div className="col-lg-4">
-                        <h2>Players</h2>
-                        <ul>
+                        <div className="game-config-left">
+                        <h2>Players </h2>
+                        <button className="btn add-player-button">+</button>
+                        </div>
+                        <div className="">
+                        <ul className="player-list row">
                             {
                                 players.map((player, index) => <PlayerDisplay key={index} player={player} />)
                             }
                         </ul>
+                        </div>
                     </div>
                     <div className="col-lg-8">
                         <h2>Your Game</h2>
@@ -259,9 +264,13 @@ function SearchResultDisplay({ playlistItems, searchTerm, setActivePlaylist }: {
 }
 
 function PlayerDisplay({ player }: { player: Player }) {
-    return <li>
+    return <li className="col-lg-3">
+        <div className="player-list-image">
         <img src={player.imageUrl} />
+        </div>
+        <div className="player-list-name">
         <p>{player.username}</p>
+        </div>
     </li>
 }
 
