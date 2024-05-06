@@ -1,7 +1,7 @@
 "use client"
 import { create } from "zustand";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import test from "node:test";
+import { useEffect } from "react";
+import { setTimeout } from "timers/promises";
 
 type UserInfo = {
     username: string,
@@ -43,7 +43,6 @@ async function establishWebSocketConnection(
     { setSocket, gameId, user, webSocketUrl }:
         { setSocket: ({ socket }: { socket: WebSocket }) => void, gameId: string, user: UserInfo, webSocketUrl: string }
 ) {
-
     const options = {
         gameId,
         user
@@ -55,7 +54,10 @@ async function establishWebSocketConnection(
             console.log("Connected to server");
             setSocket({ socket: newSocket })
 
+            newSocket.send(JSON.stringify({ type: "join-game" }))
         });
+
+        newSocket.addEventListener("close", () => console.log("Closing..."))
 
     } catch (error) {
         console.log(error)
