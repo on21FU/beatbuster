@@ -146,7 +146,6 @@ export default function GameConfig({ accessToken, defaultPlayer }: { accessToken
                     <div className="col-lg-4">
                         <div className="game-config-left">
                             <h2>Players </h2>
-                            <button className="btn add-player-button">+</button>
                         </div>
                         <div className="">
                             <ul className="player-list row">
@@ -301,10 +300,10 @@ function getDefaultPlaylist(): Config {
 function EmptyPlayer() {
     return <li className="col-lg-3">
         <div className="player-list-image">
-            <img src="/assets/placeholder-image.jpeg" />
+            <img src="/assets/placeholder-image.jpg" />
         </div>
         <div className="player-list-name">
-            <p></p>
+            <p>Empty slot</p>
         </div>
     </li>
 
@@ -313,8 +312,8 @@ function EmptyPlayer() {
 function AddPlayer() {
     return <li className="col-lg-3">
         
-        <div className="player-list-image">
-           <button>+</button>
+        <div className="player-list-button">
+           <button className="add-player-button">+</button>
         </div>
         <div className="player-list-name">
             <p>Invite Player</p>

@@ -13,10 +13,16 @@
 
     .enter-lobby-code {
         border-width: 0px;
-        border-bottom: 3px solid black;
+        border: 3px solid black;
+        margin-top: 1.5rem;
+        height: 2.5rem;
     }
 
     .creat-section-input{
         margin-bottom: 2rem;
     }
+}
+
+.game-rules-left{
+    padding-right: 3rem;
 }

@@ -1,8 +1,9 @@
-.button-wrapper{
+.button-wrapper {
     width: 100%;
     display: flex;
     justify-content: right;
 }
+
 .btn {
 
     &.btn-settings {
@@ -23,9 +24,9 @@
 
     }
 }
-label.btn.btn-settings{
-    &:hover
-    {
+
+label.btn.btn-settings {
+    &:hover {
         background-color: $black ;
         color: $primary ;
     }
@@ -168,39 +169,56 @@ form {
     }
 }
 
-.player-list{
+.player-list {
     display: flex;
     width: 100%;
     justify-content: space-between;
     padding-left: 0;
-    li{
+
+    li {
         list-style: none;
-        .player-list-image{
+
+
+        .player-list-image {
             margin-bottom: 0.5rem;
             border: 3px solid $black;
-            
-            img{
+
+            img {
                 object-fit: cover;
                 width: 100%;
                 height: auto;
             }
 
         }
-        .player-list-name{
+
+        .player-list-name {
             font-size: 0.7rem;
         }
     }
 }
 
-.game-config-left{
+.game-config-left {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 1rem;
-    .add-player-button{
-        border: 3px solid $black;
-        width: 2rem;
-        height: 2rem;
-        padding: 1px;
-        margin-top: 6px;
+
+
+
+}
+.player-list-button {
+    margin-bottom: 0.5rem;
+    border: 3px solid $primary;
+    aspect-ratio: 1/0.92;
+
+    button {
+        border: none;
+        width: 100%;
+        height: 100%;
+
+        background-color: $white;
+
+        &:hover{
+            background-color: $black;
+            color: $primary;
+        }
     }
 }

@@ -6,12 +6,14 @@ export default async function GamePage({ params }: { params: { gameId: string } 
             <div className="container">
                 <div className="game-rules row">
                     <div className="col-lg-8">
-                        <h2>Rules</h2>
-                        <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
-                            Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod.</p>
+                        <div className="game-rules-left">
+                            <h2>Rules</h2>
+                            <p>The game's process is simple: players listen to snippets of various songs and must guess the title and artist from four options. The player who selects the correct song title and artist the fastest earns the most points for that round. The game ends either after a set number of rounds or when a player reaches a certain score. So, gather your friends and test your music knowledge.</p>
+                        </div>
                     </div>
                     <div className="col-lg-4">
                         <div className="creat-section">
+                        <h2>Let's start</h2>
                             {/* <div className="bg-primary">GameId: {params.gameId}</div> */}
                             <form action={joinGame}>
 
@@ -21,7 +23,7 @@ export default async function GamePage({ params }: { params: { gameId: string } 
                                     <label htmlFor="gameId">Enter Lobby Code</label>
                                 </div>
                                 <button className="btn btn-outline-primary" type="submit">Your Friends</button>
-                                
+
                             </form>
                         </div>
                     </div>
