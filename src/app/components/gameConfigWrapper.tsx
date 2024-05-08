@@ -12,6 +12,7 @@ export default async function GameConfigWrapper() {
     const profile = await clerkClient.users.getUser(userId || "")
 
     if (!profile) return <div>Not logged in</div>
+    if (!userId) return <div>Not logged in</div>
 
     const user = {
         userId: profile.id,
@@ -22,7 +23,7 @@ export default async function GameConfigWrapper() {
 
     return (
         <>
-            <GameConfig accessToken={accessToken} defaultPlayer={user} />
+            <GameConfig accessToken={accessToken} defaultPlayer={user} userId={userId} />
             <WebPlayback token={accessToken} />
         </>
     )

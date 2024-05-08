@@ -6,6 +6,7 @@ import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
 import { Player, validateMessage } from "~/types"
 import WebPlayback from "../webplayback"
 import { Game } from "./game"
+import { set } from "lodash"
 
 type Config = {
     playlist: Playlist,
@@ -32,13 +33,14 @@ export type Answer = {
     isCorrect: boolean
 }
 
-export default function GameConfig({ accessToken, defaultPlayer }: { accessToken: string, defaultPlayer: Player }) {
+export default function GameConfig({ accessToken, defaultPlayer, userId }: { accessToken: string, defaultPlayer: Player, userId: string }) {
     const [playlistItems, setPlaylistItems] = useState<SpotifyApi.PlaylistObjectSimplified[] | undefined>()
     const [searchTerm, setSearchTerm] = useState("")
     const [config, setConfig] = useState<Config>(getDefaultPlaylist())
     const [players, setPlayers] = useState<Player[]>([defaultPlayer])
     const [round, setRound] = useState(0)
     const [answers, setAnswers] = useState<Answer[]>([])
+    const [roundStart, setRoundStart] = useState<Date | null>(null)
 
     const { socket } = useSocketStore()
     const { spotify, activeDeviceId } = useSpotifyStore()
@@ -56,13 +58,11 @@ export default function GameConfig({ accessToken, defaultPlayer }: { accessToken
         setConfig({
             ...config, playlist: { ...playlist }
         })
-        console.log("Runde: ", round)
     }
 
     async function handleMessage(event: MessageEvent) {
         try {
             const message = JSON.parse(event.data)
-            console.log("message", message)
             if (!validateMessage(message)) {
                 console.error("Invalid message", message)
                 return
@@ -72,7 +72,6 @@ export default function GameConfig({ accessToken, defaultPlayer }: { accessToken
                 case "start-round":
                     setPlayers(message.body.players)
                     setRound(message.body.round)
-                    console.log(spotify)
                     if (!spotify) return
                     const newAnswers = await getTrackInfos({ spotify, tracks: message.body.tracks })
                     setAnswers(newAnswers)
@@ -81,12 +80,11 @@ export default function GameConfig({ accessToken, defaultPlayer }: { accessToken
                         return
                     }
                     await spotify.transferMyPlayback([activeDeviceId])
-                    playTrack({ trackId: message.body.tracks.correctTrackId, spotify, activeDeviceId })
-                    console.log("start", message.body.players)
+                    await playTrack({ trackId: message.body.tracks.correctTrackId, spotify, activeDeviceId })
+                    setRoundStart(new Date())
                     break
                 case "update-players":
                     setPlayers(message.body.players)
-                    console.log("update", message.body)
                     break
                 default:
                     console.error("Unknown message type", message)
@@ -225,14 +223,6 @@ export default function GameConfig({ accessToken, defaultPlayer }: { accessToken
                                                 </div>
                                             </div>
                                         </div>
-                                        <div>
-
-                                        </div>
-
-
-                                        {/* {
-                                            JSON.stringify(config)
-                                        } */}
                                     </div>
 
                                 </div>
@@ -248,8 +238,10 @@ export default function GameConfig({ accessToken, defaultPlayer }: { accessToken
         )
     }
     if (round > 0) {
-        <Game accessToken={accessToken} answers={answers} round={round} />
+        return <Game answers={answers} round={round} roundStart={roundStart} userId={userId} />
     }
+
+    return <div>Game is running <p>{round}</p></div>
 }
 
 function SearchResultDisplay({ playlistItems, searchTerm, setActivePlaylist }: { playlistItems: SpotifyApi.PlaylistObjectSimplified[] | undefined, searchTerm: string, setActivePlaylist: (playlist: Playlist) => void }) {
@@ -319,6 +311,5 @@ export function shuffleArray<T>(array: T[]): T[] {
 }
 
 async function playTrack({ trackId, spotify, activeDeviceId }: { trackId: string, spotify: SpotifyWebApi, activeDeviceId: string }) {
-    console.log(await spotify.getMyDevices())
     await spotify.play({ uris: ["spotify:track:" + trackId], device_id: activeDeviceId })
 }
