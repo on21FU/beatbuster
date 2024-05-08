@@ -11,18 +11,23 @@
         padding: 0.5rem 3rem;
         margin-right: 1rem;
 
+        // &:hover,
+        // &:checked {
+        //     background-color: $black !important;
+        //     color: $primary !important;
+        // }
+
+
 
 
 
     }
-
-    &.btn-check {
-
-        &:hover,
-        &:checked {
-            background-color: $black;
-            color: $primary;
-        }
+}
+label.btn.btn-settings{
+    &:hover
+    {
+        background-color: $black ;
+        color: $primary ;
     }
 }
 
@@ -160,5 +165,42 @@ form {
 
             }
         }
+    }
+}
+
+.player-list{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    padding-left: 0;
+    li{
+        list-style: none;
+        .player-list-image{
+            margin-bottom: 0.5rem;
+            border: 3px solid $black;
+            
+            img{
+                object-fit: cover;
+                width: 100%;
+                height: auto;
+            }
+
+        }
+        .player-list-name{
+            font-size: 0.7rem;
+        }
+    }
+}
+
+.game-config-left{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    .add-player-button{
+        border: 3px solid $black;
+        width: 2rem;
+        height: 2rem;
+        padding: 1px;
+        margin-top: 6px;
     }
 }
