@@ -209,12 +209,14 @@ form {
 .player-list-button {
     margin-bottom: 0.5rem;
     border: 3px solid $primary;
-    aspect-ratio: 1/0.92;
+    aspect-ratio: 1/1;
 
     button {
         border: none;
         width: 100%;
         height: 100%;
+        font-size: 1.6rem;
+        
 
         background-color: $white;
 
