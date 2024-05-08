@@ -145,15 +145,24 @@ export default function GameConfig({ accessToken, defaultPlayer }: { accessToken
                 <div className="row">
                     <div className="col-lg-4">
                         <div className="game-config-left">
-                        <h2>Players </h2>
-                        <button className="btn add-player-button">+</button>
+                            <h2>Players </h2>
+                            <button className="btn add-player-button">+</button>
                         </div>
                         <div className="">
-                        <ul className="player-list row">
-                            {
-                                players.map((player, index) => <PlayerDisplay key={index} player={player} />)
-                            }
-                        </ul>
+                            <ul className="player-list row">
+                                {
+                                    players.map((player, index) => <PlayerDisplay key={index} player={player} />)
+                                }
+                                                                {
+                                    players.length < 11 && new Array(11 - players.length).fill(0).map(() => <EmptyPlayer />)
+                                }
+                                {
+                                    players.length < 12 && <AddPlayer />
+
+                                }
+
+
+                            </ul>
                         </div>
                     </div>
                     <div className="col-lg-8">
@@ -266,10 +275,10 @@ function SearchResultDisplay({ playlistItems, searchTerm, setActivePlaylist }: {
 function PlayerDisplay({ player }: { player: Player }) {
     return <li className="col-lg-3">
         <div className="player-list-image">
-        <img src={player.imageUrl} />
+            <img src={player.imageUrl} />
         </div>
         <div className="player-list-name">
-        <p>{player.username}</p>
+            <p>{player.username}</p>
         </div>
     </li>
 }
@@ -287,4 +296,29 @@ function getDefaultPlaylist(): Config {
             amount: 10,
         }
     }
+}
+
+function EmptyPlayer() {
+    return <li className="col-lg-3">
+        <div className="player-list-image">
+            <img src="/assets/placeholder-image.jpeg" />
+        </div>
+        <div className="player-list-name">
+            <p></p>
+        </div>
+    </li>
+
+}
+
+function AddPlayer() {
+    return <li className="col-lg-3">
+        
+        <div className="player-list-image">
+           <button>+</button>
+        </div>
+        <div className="player-list-name">
+            <p>Invite Player</p>
+        </div>
+
+    </li>
 }
