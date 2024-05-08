@@ -26,9 +26,11 @@
 }
 
 label.btn.btn-settings {
+    width: auto;
     &:hover {
         background-color: $black ;
         color: $primary ;
+
     }
 }
 
