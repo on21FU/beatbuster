@@ -2,6 +2,7 @@
 @import "./footer.scss";
 @import "./game-config.scss";
 @import "./game-rules.scss";
+@import "./homescreen.scss";
 @import "../../node_modules/bootstrap/scss/bootstrap";
 
 
@@ -17,7 +18,7 @@ body {
   margin: 0;
   font-family: "Roboto Slab", "Helvetica", Arial, sans-serif;
   font-weight: 400;
-  overflow-x: hidden;
+  // overflow-x: hidden;
 
 
 }
