@@ -1,4 +1,4 @@
-import { UserButton } from "@clerk/nextjs";
+import { UserButton, SignIn, useUser } from "@clerk/nextjs";
 import { getUserToken, startRound, startRoundWithSpotifyApi } from "./spotify";
 import WebPlayback from "./webplayback";
 
@@ -25,6 +25,7 @@ export default async function Home() {
                     <div className="col-lg-6">
                         <div className="homescreen-right">
                         <h2>Login</h2>
+                        <SignIn />
                         </div>
                     </div>
                 </div>
