@@ -2,9 +2,10 @@
 
 import { ChangeEvent, useEffect, useState } from "react"
 import SpotifyWebApi from "spotify-web-api-node"
-import { useSocketStore, useSpotifyStore } from "../game/[gameId]/game"
+import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
 import { Player, validateMessage } from "~/types"
 import WebPlayback from "../webplayback"
+import { Game } from "./game"
 
 type Config = {
     playlist: Playlist,
@@ -24,7 +25,7 @@ type Playlist = {
     name: string
 }
 
-type Answer = {
+export type Answer = {
     trackId: string,
     trackName: string,
     trackArtists: string[],
@@ -40,12 +41,12 @@ export default function GameConfig({ accessToken, defaultPlayer }: { accessToken
     const [answers, setAnswers] = useState<Answer[]>([])
 
     const { socket } = useSocketStore()
-    const { spotify, activeDeviceId, setActiveDeviceId } = useSpotifyStore()
+    const { spotify, activeDeviceId } = useSpotifyStore()
 
     useEffect(() => {
         if (!socket) return
         socket.addEventListener("message", handleMessage)
-    }, [])
+    }, [activeDeviceId])
 
     if (!socket) return <div>Connecting...</div>
     if (!spotify) return <div>Establishing Spotify Connection...</div>
@@ -55,6 +56,7 @@ export default function GameConfig({ accessToken, defaultPlayer }: { accessToken
         setConfig({
             ...config, playlist: { ...playlist }
         })
+        console.log("Runde: ", round)
     }
 
     async function handleMessage(event: MessageEvent) {
@@ -78,6 +80,7 @@ export default function GameConfig({ accessToken, defaultPlayer }: { accessToken
                         console.log("no device id")
                         return
                     }
+                    await spotify.transferMyPlayback([activeDeviceId])
                     playTrack({ trackId: message.body.tracks.correctTrackId, spotify, activeDeviceId })
                     console.log("start", message.body.players)
                     break
@@ -153,6 +156,7 @@ export default function GameConfig({ accessToken, defaultPlayer }: { accessToken
     if (round === 0) {
         return (
             <>
+                {activeDeviceId}
                 <div className="container">
 
                     <div className="row">
@@ -243,17 +247,8 @@ export default function GameConfig({ accessToken, defaultPlayer }: { accessToken
             </>
         )
     }
-
     if (round > 0) {
-        return (
-            <>
-                <p>Runde {round}</p>
-                <WebPlayback token={accessToken} setActiveDeviceId={setActiveDeviceId} />
-                {answers.map((answer) => {
-                    return <button key={answer.trackId}>{answer.trackName} {answer.trackArtists.join(", ")}</button>
-                })}
-            </>
-        )
+        <Game accessToken={accessToken} answers={answers} round={round} />
     }
 }
 
@@ -268,7 +263,7 @@ function SearchResultDisplay({ playlistItems, searchTerm, setActivePlaylist }: {
         <div className="search-result-list column flex-nowrap overflow-auto">
             {
                 playlistItems.map((playlist) => {
-                    return <button className="w-100 card" key={playlist.id} onClick={() => setActivePlaylist({ id: playlist.id, imgUrl: playlist.images[0]?.url, name: playlist.name })}>
+                    return <button type="button" className="w-100 card" key={playlist.id} onClick={() => setActivePlaylist({ id: playlist.id, imgUrl: playlist.images[0]?.url, name: playlist.name })}>
                         <div className="card-image">
                             <img width="80px" src={playlist.images[0]?.url} />
                         </div>

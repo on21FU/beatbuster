@@ -3,6 +3,7 @@ import { getUserToken } from "../spotify";
 import React from "react";
 import GameConfig from "./gameConfig";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import WebPlayback from "../webplayback";
 
 export default async function GameConfigWrapper() {
     const accessToken = await getUserToken();
@@ -22,6 +23,7 @@ export default async function GameConfigWrapper() {
     return (
         <>
             <GameConfig accessToken={accessToken} defaultPlayer={user} />
+            <WebPlayback token={accessToken} />
         </>
     )
 }

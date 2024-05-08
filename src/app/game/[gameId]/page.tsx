@@ -1,6 +1,6 @@
 "use server"
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { Game } from "./game";
+import { Game } from "./gameSetup";
 import GameConfigWrapper from "~/app/components/gameConfigWrapper";
 import { getUserToken } from "~/app/spotify";
 
