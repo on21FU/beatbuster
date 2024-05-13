@@ -20,7 +20,7 @@ export async function getUserToken() {
     return tokens[0].token;
 }
 
-export async function startRound(formData: FormData) {
+/*export async function startRound(formData: FormData) {
 
     try {
         const userToken = await getUserToken();
@@ -34,7 +34,7 @@ export async function startRound(formData: FormData) {
     } catch (err) {
         console.log(err)
     }
-}
+}*/
 
 export async function startRoundWithSpotifyApi(formData: FormData) {
     const playlistId = formData.get("playlistId");

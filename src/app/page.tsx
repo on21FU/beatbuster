@@ -1,7 +1,6 @@
-import { UserButton, SignIn, useUser } from "@clerk/nextjs";
-import { getUserToken, startRound, startRoundWithSpotifyApi } from "./spotify";
+import { UserButton } from "@clerk/nextjs";
+import { getUserToken, startRoundWithSpotifyApi } from "./spotify";
 import WebPlayback from "./webplayback";
-
 
 export default async function Home() {
   const userToken = await getUserToken();
