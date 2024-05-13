@@ -152,23 +152,33 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
         socket.send(JSON.stringify(message));
     }
     if (round === 0) {
-        return (
-            <>
-                {activeDeviceId}
-                <div className="container">
-
-                    <div className="row">
-                        <div className="col-lg-4">
-                            <h2>Players</h2>
-                            <ul>
+    return (
+        <>
+            <div className="container">
+                <div className="row">
+                    <div className="col-lg-4">
+                        <div className="game-config-left">
+                            <h2>Players </h2>
+                        </div>
+                        <div className="">
+                            <ul className="player-list row">
                                 {
                                     players.map((player, index) => <PlayerDisplay key={index} player={player} />)
                                 }
+                                                                {
+                                    players.length < 11 && new Array(11 - players.length).fill(0).map(() => <EmptyPlayer />)
+                                }
+                                {
+                                    players.length < 12 && <AddPlayer />
+
+                                }
+
+
                             </ul>
                         </div>
-                        <div className="col-lg-8">
-                            <h2>Your Game</h2>
-
+                    </div>
+                    <div className="col-lg-8">
+                        <h2>Your Game</h2>
                             <form action={startGame}>
                                 <div className="settings">
                                     <h4>Settings</h4>
@@ -272,9 +282,13 @@ function SearchResultDisplay({ playlistItems, searchTerm, setActivePlaylist }: {
 }
 
 function PlayerDisplay({ player }: { player: Player }) {
-    return <li>
-        <img src={player.imageUrl} />
-        <p>{player.username}</p>
+    return <li className="col-lg-3">
+        <div className="player-list-image">
+            <img src={player.imageUrl} />
+        </div>
+        <div className="player-list-name">
+            <p>{player.username}</p>
+        </div>
     </li>
 }
 
@@ -292,6 +306,7 @@ function getDefaultPlaylist(): Config {
         }
     }
 }
+
 
 async function getTrackInfos({ spotify, tracks }: { spotify: SpotifyWebApi, tracks: { correctTrackId: string, wrongTrackIds: string[] } }): Promise<Answer[]> {
     const { body: trackData } = await spotify.getTracks([tracks.correctTrackId, ...tracks.wrongTrackIds])
@@ -312,4 +327,26 @@ export function shuffleArray<T>(array: T[]): T[] {
 
 async function playTrack({ trackId, spotify, activeDeviceId }: { trackId: string, spotify: SpotifyWebApi, activeDeviceId: string }) {
     await spotify.play({ uris: ["spotify:track:" + trackId], device_id: activeDeviceId })
+}
+
+function EmptyPlayer() {
+    return <li className="col-lg-3">
+        <div className="player-list-image">
+            <img src="/assets/placeholder-image.jpg" />
+        </div>
+        <div className="player-list-name">
+            <p>Empty slot</p>
+        </div>
+    </li>
+}
+
+function AddPlayer() {
+    return <li className="col-lg-3">
+        <div className="player-list-button">
+           <button className="add-player-button">+</button>
+        </div>
+        <div className="player-list-name">
+            <p>Invite Player</p>
+        </div>
+    </li>
 }
