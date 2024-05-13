@@ -3,7 +3,7 @@
 import { ChangeEvent, useEffect, useState } from "react"
 import SpotifyWebApi from "spotify-web-api-node"
 import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
-import { Player, validateMessage } from "~/types"
+import { Player, PlayerAnswer, validateMessage } from "~/types"
 import WebPlayback from "../webplayback"
 import { Game } from "./game"
 import { set } from "lodash"
@@ -41,12 +41,15 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
     const [round, setRound] = useState(0)
     const [answers, setAnswers] = useState<Answer[]>([])
     const [roundStart, setRoundStart] = useState<Date | null>(null)
+    const [playerAnswers, setPlayerAnswers] = useState<PlayerAnswer[]>([])
 
     const { socket } = useSocketStore()
     const { spotify, activeDeviceId } = useSpotifyStore()
 
     useEffect(() => {
         if (!socket) return
+
+        console.log("Handling Message handler", activeDeviceId)
         socket.addEventListener("message", handleMessage)
     }, [activeDeviceId])
 
@@ -63,6 +66,7 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
     async function handleMessage(event: MessageEvent) {
         try {
             const message = JSON.parse(event.data)
+            console.log(message.type)
             if (!validateMessage(message)) {
                 console.error("Invalid message", message)
                 return
@@ -85,6 +89,19 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
                     break
                 case "update-players":
                     setPlayers(message.body.players)
+                    break
+                case "round-results":
+                    if(!spotify || !activeDeviceId) return
+                    console.log("Results", message.body)
+                    const newPlayerAnswers = message.body.answers.map(answer => {
+                        return {
+                            playerImgUrl: players.find(player => player.userId === answer.userId)?.imageUrl,
+                            trackId: answer.trackId,
+                            userId: answer.userId
+                        }
+                    })
+                    setPlayerAnswers(newPlayerAnswers)
+                    await spotify.pause({device_id: activeDeviceId})
                     break
                 default:
                     console.error("Unknown message type", message)
@@ -152,33 +169,30 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
         socket.send(JSON.stringify(message));
     }
     if (round === 0) {
-    return (
-        <>
-            <div className="container">
-                <div className="row">
-                    <div className="col-lg-4">
-                        <div className="game-config-left">
-                            <h2>Players </h2>
+        return (
+            <>
+                <div className="container">
+                    <div className="row">
+                        <div className="col-lg-4">
+                            <div className="game-config-left">
+                                <h2>Players </h2>
+                            </div>
+                            <div className="">
+                                <ul className="player-list row">
+                                    {
+                                        players.map((player, index) => <PlayerDisplay key={index} player={player} />)
+                                    }
+                                    {
+                                        players.length < 11 && new Array(11 - players.length).fill(0).map((_, index) => <EmptyPlayer key={index} />)
+                                    }
+                                    {
+                                        players.length < 12 && <AddPlayer />
+                                    }
+                                </ul>
+                            </div>
                         </div>
-                        <div className="">
-                            <ul className="player-list row">
-                                {
-                                    players.map((player, index) => <PlayerDisplay key={index} player={player} />)
-                                }
-                                                                {
-                                    players.length < 11 && new Array(11 - players.length).fill(0).map(() => <EmptyPlayer />)
-                                }
-                                {
-                                    players.length < 12 && <AddPlayer />
-
-                                }
-
-
-                            </ul>
-                        </div>
-                    </div>
-                    <div className="col-lg-8">
-                        <h2>Your Game</h2>
+                        <div className="col-lg-8">
+                            <h2>Your Game</h2>
                             <form action={startGame}>
                                 <div className="settings">
                                     <h4>Settings</h4>
@@ -248,7 +262,7 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
         )
     }
     if (round > 0) {
-        return <Game answers={answers} round={round} roundStart={roundStart} userId={userId} />
+        return <Game answers={answers} round={round} roundStart={roundStart} user={defaultPlayer} playerAnswers={playerAnswers} players={players}/>
     }
 
     return <div>Game is running <p>{round}</p></div>
@@ -326,6 +340,7 @@ export function shuffleArray<T>(array: T[]): T[] {
 }
 
 async function playTrack({ trackId, spotify, activeDeviceId }: { trackId: string, spotify: SpotifyWebApi, activeDeviceId: string }) {
+    console.log("Access Token", spotify.getAccessToken())
     await spotify.play({ uris: ["spotify:track:" + trackId], device_id: activeDeviceId })
 }
 
@@ -343,7 +358,7 @@ function EmptyPlayer() {
 function AddPlayer() {
     return <li className="col-lg-3">
         <div className="player-list-button">
-           <button className="add-player-button">+</button>
+            <button className="add-player-button">+</button>
         </div>
         <div className="player-list-name">
             <p>Invite Player</p>
