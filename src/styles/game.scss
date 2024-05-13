@@ -1,0 +1,43 @@
+.game {
+
+    position: relative;
+
+    .game-animation {
+        width: 100%;
+        text-align: center;
+        margin-top: -7rem;
+        margin-bottom: -4rem;
+
+        img {
+            width: 60%;
+        }
+    }
+
+    .answers-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+
+        .row {
+            justify-content: space-around;
+        }
+
+        .answer-button {
+
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            border: 3px solid $black;
+            background-color: white;
+            padding: 1rem 0.5rem;
+
+            &:hover,
+            &:active {
+                border: 3px solid $primary;
+
+            }
+
+        }
+    }
+
+}

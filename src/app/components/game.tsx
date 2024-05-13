@@ -31,10 +31,19 @@ export function Game({ round, answers, roundStart, userId }:
 
     return (
         <>
-            <p>Runde {round}</p>
-            {answers.map((answer) => {
-                return <button onClick={() => handleAnswer(answer)} key={answer.trackId}>{answer.trackName} - {answer.trackArtists.join(", ")}</button>
-            })}
+            <div className="game container">
+                <div className="game-animation">
+                    <img src="/assets/game-animation.gif" />
+                </div>
+                <h3 className="text-center">Runde {round}</h3>
+                <div className="answers-wrapper">
+                    <div className="row">
+                        {answers.map((answer) => {
+                            return <button className="answer-button col-lg-5" onClick={() => handleAnswer(answer)} key={answer.trackId}>{answer.trackName} - {answer.trackArtists.join(", ")}</button>
+                        })}
+                    </div>
+                </div>
+            </div>
         </>
     )
 }
