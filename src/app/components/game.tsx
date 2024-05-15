@@ -3,10 +3,13 @@ import WebPlayback from "../webplayback"
 import { Answer } from "./gameConfig"
 import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
 
-export function Game({ round, answers, roundStart, userId }:
-    { round: number, answers: Answer[], roundStart: Date | null, userId: string }) {
+export function Game({ round, answers, roundStart, userId, roundTime }:
+    { round: number, answers: Answer[], roundStart: Date | null, userId: string, roundTime:number }) {
 
     const { socket } = useSocketStore()
+    
+    const animationPath = "/assets/" + roundTime + "s_raten.gif"
+
 
     function handleAnswer(answer: Answer) {
         if (!roundStart) {
@@ -29,11 +32,13 @@ export function Game({ round, answers, roundStart, userId }:
         }))
     }
 
+
+
     return (
         <>
             <div className="game container">
                 <div className="game-animation">
-                    <img src="/assets/game-animation.gif" />
+                    <img src={animationPath} />
                 </div>
                 <h3 className="text-center">Runde {round}</h3>
                 <div className="answers-wrapper">
