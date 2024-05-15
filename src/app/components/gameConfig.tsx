@@ -42,6 +42,9 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
     const [answers, setAnswers] = useState<Answer[]>([])
     const [roundStart, setRoundStart] = useState<Date | null>(null)
     const [playerAnswers, setPlayerAnswers] = useState<PlayerAnswer[]>([])
+    const [showResultScreen, setShowResultScreen] = useState(false)
+    const [playerGuessTrackId, setPlayerGuessTrackId] = useState<string | null>(null)
+
 
     const { socket } = useSocketStore()
     const { spotify, activeDeviceId } = useSpotifyStore()
@@ -74,6 +77,9 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
 
             switch (message.type) {
                 case "start-round":
+                    console.log("Neue Rundeeeee")
+                    setPlayerGuessTrackId(null)
+                    setShowResultScreen(false)
                     setPlayers(message.body.players)
                     setRound(message.body.round)
                     if (!spotify) return
@@ -91,23 +97,21 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
                     setPlayers(message.body.players)
                     break
                 case "round-results":
-                    if(!spotify || !activeDeviceId) return
+                    if (!spotify || !activeDeviceId) return
                     console.log("Results", message.body)
                     const newPlayerAnswers = message.body.answers.map(answer => {
                         return {
+                            ...answer,
                             playerImgUrl: players.find(player => player.userId === answer.userId)?.imageUrl,
-                            trackId: answer.trackId,
-                            userId: answer.userId
                         }
                     })
                     setPlayerAnswers(newPlayerAnswers)
-                    await spotify.pause({device_id: activeDeviceId})
+                    await spotify.pause({ device_id: activeDeviceId })
+                    setShowResultScreen(true)
                     break
                 default:
                     console.error("Unknown message type", message)
             }
-
-
         } catch (error) {
             console.error("Error parsing message", error)
         }
@@ -262,7 +266,17 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
         )
     }
     if (round > 0) {
-        return <Game answers={answers} round={round} roundStart={roundStart} user={defaultPlayer} playerAnswers={playerAnswers} players={players}/>
+        return <Game
+            answers={answers}
+            round={round}
+            roundStart={roundStart}
+            user={defaultPlayer}
+            playerAnswers={playerAnswers}
+            players={players}
+            showResultsScreen={showResultScreen}
+            setPlayerGuessTrackId={setPlayerGuessTrackId}
+            playerGuessTrackId={playerGuessTrackId}
+        />
     }
 
     return <div>Game is running <p>{round}</p></div>
@@ -340,7 +354,6 @@ export function shuffleArray<T>(array: T[]): T[] {
 }
 
 async function playTrack({ trackId, spotify, activeDeviceId }: { trackId: string, spotify: SpotifyWebApi, activeDeviceId: string }) {
-    console.log("Access Token", spotify.getAccessToken())
     await spotify.play({ uris: ["spotify:track:" + trackId], device_id: activeDeviceId })
 }
 

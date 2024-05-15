@@ -24,7 +24,8 @@ const startRoundSchema = z.object({
 const answerSchema = z.object({
     userId: z.string(),
     trackId: z.string(),
-    timeToAnswer: z.number()
+    timeToAnswer: z.number(),
+    gainedScore: z.number(),
 })
 
 const roundResultsSchema = z.object({
@@ -32,7 +33,7 @@ const roundResultsSchema = z.object({
     body: z.object({
         correctTrackId: z.string(),
         players: z.array(playerSchema),
-        answers: z.array(answerSchema)
+        answers: z.array(answerSchema),
     })
 })
 
@@ -45,7 +46,7 @@ const updatePlayersSchema = z.object({
 })
 
 const messageSchema = z.union([
-    startRoundSchema, 
+    startRoundSchema,
     updatePlayersSchema,
     roundResultsSchema
 ])
@@ -54,8 +55,4 @@ export function validateMessage(message: unknown): message is z.infer<typeof mes
     return messageSchema.safeParse(message).success
 }
 
-export type PlayerAnswer = {
-    playerImgUrl?: string,
-    userId: string,
-    trackId: string,
-}
+export type PlayerAnswer = z.infer<typeof answerSchema>

@@ -1,15 +1,12 @@
-import { useEffect, useState } from "react"
-import WebPlayback from "../webplayback"
+import { useState } from "react"
 import { Answer } from "./gameConfig"
 import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
 import { Player, PlayerAnswer } from "~/types"
 
-export function Game({ round, answers, roundStart, user, playerAnswers, players }:
-    { round: number, answers: Answer[], roundStart: Date | null, user: Player, playerAnswers: PlayerAnswer[] | null, players: Player[] }) {
+export function Game({ round, answers, roundStart, user, playerAnswers, players, showResultsScreen, setPlayerGuessTrackId, playerGuessTrackId }:
+    { round: number, answers: Answer[], roundStart: Date | null, user: Player, playerAnswers: PlayerAnswer[] | null, players: Player[], showResultsScreen: boolean, setPlayerGuessTrackId: (trackId: string | null) => void, playerGuessTrackId: string | null }) {
 
     const { socket } = useSocketStore()
-    const [playerGuessTrackId, setPlayerGuessTrackId] = useState<string | null>(null)
-
     function handleAnswer(answer: Answer) {
         if (!roundStart) {
             console.log("Round start is not set")
@@ -32,10 +29,18 @@ export function Game({ round, answers, roundStart, user, playerAnswers, players 
         }))
     }
 
-    function getPlayerAnswerProfilePicture({ answer, playerAnswers, players }: { answer: Answer, playerAnswers: PlayerAnswer[] | null, players: Player[] }) {
-        if (!playerAnswers) return
-        const playerAnswersTrackIds = playerAnswers.map(playerAnswer => playerAnswer.trackId)
-        const answersWithAnswer = playerAnswersTrackIds.includes(answer.trackId)
+    if (showResultsScreen) {
+        return <div>
+            Results:
+            <ul>
+                {playerAnswers?.map((playerAnswer, index) => {
+                    const player = players.find(player => player.userId === playerAnswer.userId)
+                    return <li key={index}>
+                        {player?.username} - {playerAnswer.gainedScore} - {playerAnswer.timeToAnswer}s
+                    </li>
+                })}
+            </ul>
+        </div>
     }
 
     return (
@@ -46,11 +51,30 @@ export function Game({ round, answers, roundStart, user, playerAnswers, players 
                     onClick={() => handleAnswer(answer)}
                     key={answer.trackId}
                     disabled={!!playerGuessTrackId}>
-                    {answer.trackId === playerGuessTrackId && <img src={user.imageUrl} />}
-                    {playerAnswers && playerAnswers.map(playerAnswer => playerAnswer.trackId).includes(answer.trackId) && "✔️"}
+                    <PlayerAnswerDisplay answer={answer} />
                     {answer.trackName} - {answer.trackArtists.join(", ")}
                 </button>
             })}
         </>
     )
+
+    function PlayerAnswerDisplay({ answer }: { answer: Answer }) {
+        if (playerAnswers?.length) {
+            return <OtherPlayerAnswerDisplay answer={answer} playerAnswers={playerAnswers} />
+        }
+
+        if (answer.trackId === playerGuessTrackId) {
+            return <img src={user.imageUrl} />
+        }
+    }
+
+    function OtherPlayerAnswerDisplay({ answer, playerAnswers }: { answer: Answer, playerAnswers: PlayerAnswer[] }) {
+        return playerAnswers.map(playerAnswer => {
+            if (playerAnswer.trackId === answer.trackId) {
+                return <img
+                    key={playerAnswer.userId}
+                    src={players.find(player => player.userId === playerAnswer.userId)?.imageUrl} />
+            }
+        })
+    }
 }
