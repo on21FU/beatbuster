@@ -1,8 +1,14 @@
 "use client"
 
-import { ChangeEvent, useState } from "react"
+import { ChangeEvent, useEffect, useState } from "react"
 import SpotifyWebApi from "spotify-web-api-node"
-import { useSocketStore } from "../game/[gameId]/game"
+import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
+import { Player, PlayerAnswer, validateMessage } from "~/types"
+import WebPlayback from "../webplayback"
+import { Game } from "./game"
+import { set } from "lodash"
+import { UserButton } from "@clerk/nextjs"
+import { startRoundWithSpotifyApi } from "../spotify"
 
 type Config = {
     playlist: Playlist,
@@ -22,32 +28,39 @@ type Playlist = {
     name: string
 }
 
-export default function GameConfig({ accessToken }: { accessToken: string }) {
+export type Answer = {
+    trackId: string,
+    trackName: string,
+    trackArtists: string[],
+    isCorrect: boolean
+}
+
+export default function GameConfig({ accessToken, defaultPlayer, userId }: { accessToken: string, defaultPlayer: Player, userId: string }) {
     const [playlistItems, setPlaylistItems] = useState<SpotifyApi.PlaylistObjectSimplified[] | undefined>()
     const [searchTerm, setSearchTerm] = useState("")
-    const [config, setConfig] = useState<Config>({
-        playlist: {
-            id: "37i9dQZF1DXcBWIGoYBM5M",
-            imgUrl: "https://i.scdn.co/image/ab67706f000000020ba81215546ef8fd79aa92a7",
-            name: "Today's Top Hits"
-        },
-        roundTime: 10,
-        winCondition: {
-            type: "rounds",
-            amount: 10,
-        }
-    })
+    const [config, setConfig] = useState<Config>(getDefaultPlaylist())
+    const [players, setPlayers] = useState<Player[]>([defaultPlayer])
+    const [round, setRound] = useState(0)
+    const [answers, setAnswers] = useState<Answer[]>([])
+    const [roundStart, setRoundStart] = useState<Date | null>(null)
+    const [playerAnswers, setPlayerAnswers] = useState<PlayerAnswer[]>([])
+    const [showResultScreen, setShowResultScreen] = useState(false)
+    const [playerGuessTrackId, setPlayerGuessTrackId] = useState<string | null>(null)
+
 
     const { socket } = useSocketStore()
-    console.log("socket", socket)
+    const { spotify, activeDeviceId } = useSpotifyStore()
+
+    useEffect(() => {
+        if (!socket) return
+
+        console.log("Handling Message handler", activeDeviceId)
+        socket.addEventListener("message", handleMessage)
+    }, [activeDeviceId])
 
     if (!socket) return <div>Connecting...</div>
+    if (!spotify) return <div>Establishing Spotify Connection...</div>
 
-    const spotify = new SpotifyWebApi({
-        clientId: process.env.SPOTIFY_CLIENT_ID,
-        clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-        accessToken: accessToken
-    })
 
     function setActivePlaylist(playlist: Playlist) {
         setConfig({
@@ -55,6 +68,57 @@ export default function GameConfig({ accessToken }: { accessToken: string }) {
         })
     }
 
+    async function handleMessage(event: MessageEvent) {
+        try {
+            const message = JSON.parse(event.data)
+            console.log(message.type)
+            if (!validateMessage(message)) {
+                console.error("Invalid message", message)
+                return
+            }
+
+            switch (message.type) {
+                case "start-round":
+                    console.log("Neue Rundeeeee")
+                    setPlayerGuessTrackId(null)
+                    setShowResultScreen(false)
+                    setPlayers(message.body.players)
+                    setRound(message.body.round)
+                    if (!spotify) return
+                    const newAnswers = await getTrackInfos({ spotify, tracks: message.body.tracks })
+                    setAnswers(newAnswers)
+                    if (!activeDeviceId) {
+                        console.log("no device id")
+                        return
+                    }
+                    await spotify.transferMyPlayback([activeDeviceId])
+                    await playTrack({ trackId: message.body.tracks.correctTrackId, spotify, activeDeviceId })
+                    setRoundStart(new Date())
+                    break
+                case "update-players":
+                    setPlayers(message.body.players)
+                    break
+                case "round-results":
+                    if (!spotify || !activeDeviceId) return
+                    console.log("Results", message.body)
+                    const newPlayerAnswers = message.body.answers.map(answer => {
+                        return {
+                            ...answer,
+                            playerImgUrl: players.find(player => player.userId === answer.userId)?.imageUrl,
+                        }
+                    })
+                    setPlayerAnswers(newPlayerAnswers)
+                    await spotify.pause({ device_id: activeDeviceId })
+                    setShowResultScreen(true)
+                    break
+                default:
+                    console.error("Unknown message type", message)
+            }
+        } catch (error) {
+            console.error("Error parsing message", error)
+        }
+
+    }
     function handleRoundTimeChange(e: ChangeEvent<HTMLInputElement>) {
         const newRoundTime = Number(e.target.value);
         setConfig({ ...config, roundTime: newRoundTime })
@@ -94,6 +158,7 @@ export default function GameConfig({ accessToken }: { accessToken: string }) {
         if (currentSearchTerm.length < 3) {
             return
         }
+        if (!spotify) throw new Error("Spotify not initialized")
         spotify.searchPlaylists(e.target.value).then((data) => {
             setPlaylistItems(data.body.playlists?.items)
         })
@@ -109,78 +174,115 @@ export default function GameConfig({ accessToken }: { accessToken: string }) {
         }
         socket.send(JSON.stringify(message));
     }
-
-    return (
-        <>
-            <div className="container">
-
-                <div className="row">
-                    <div className="col-lg-4">
-                        <h2>Players</h2>
-                    </div>
-                    <div className="col-lg-8">
-                        <h2>Your Game</h2>
-
-                        <form action={startGame}>
-                            <div className="settings">
-                                <h4>Settings</h4>
-                                <div className="setting-section">
-                                    <p>Round Time</p>
-                                    <input className="btn-check" type="radio" name="roundTime" id="roundTime5" value="5" onChange={handleRoundTimeChange} />
-                                    <label className="btn btn-settings" htmlFor="roundTime5">5s</label>
-                                    <input className="btn-check" type="radio" name="roundTime" id="roundTime10" value="10" onChange={handleRoundTimeChange} />
-                                    <label className="btn btn-settings" htmlFor="roundTime10">10s</label>
-                                    <input className="btn-check" type="radio" name="roundTime" id="roundTime15" value="15" onChange={handleRoundTimeChange} />
-                                    <label className="btn btn-settings" htmlFor="roundTime15">15s</label>
-                                </div>
-                                <div className="setting-section">
-                                    <p>Win Condition</p>
-                                    <input className="btn-check" type="radio" name="winCondition" id="rounds" value="rounds" onChange={handleWinConditionChange} />
-                                    <label className="btn btn-settings" htmlFor="rounds">Rounds</label>
-                                    <input className="btn-check" type="radio" name="winCondition" id="score" value="score" onChange={handleWinConditionChange} />
-                                    <label className="btn btn-settings" htmlFor="score">Score</label>
-                                </div>
-
-                                {
-                                    config.winCondition.type === "rounds" && <div>
-                                        <p>Amount Songs</p>
-                                        <input type="number" min="5" max="25" onChange={handleAmountChange} value={config.winCondition.amount} />
-                                    </div>
-                                }
-                                {
-                                    config.winCondition.type === "score" && <div>
-                                        <p>Amount Score</p>
-                                        <input type="number" step="1000" min="5000" max="25000" onChange={handleAmountChange} value={config.winCondition.amount} />
-                                    </div>
-                                }
+    if (round === 0) {
+        return (
+            <>
+                <div className="container">
+                    <div className="row">
+                        <div className="col-lg-4">
+                            <div className="game-config-left">
+                                <h2>Players </h2>
                             </div>
-
-                            <div className="playlist-selection">
-                                <div className="playlist-selection-left">
-                                    <input className="searchbar" onChange={handleSearchInputChange} />
-                                    <div className="card w-25">
-                                        <img width="80px" src={config.playlist.imgUrl} />
-                                        <p>{config.playlist.name}</p>
+                            <div className="">
+                                <ul className="player-list row">
+                                    {
+                                        players.map((player, index) => <PlayerDisplay key={index} player={player} />)
+                                    }
+                                    {
+                                        players.length < 11 && new Array(11 - players.length).fill(0).map((_, index) => <EmptyPlayer key={index} />)
+                                    }
+                                    {
+                                        players.length < 12 && <AddPlayer />
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        <div className="col-lg-8">
+                            <h2>Your Game</h2>
+                            <form action={startGame}>
+                                <div className="settings">
+                                    <h4>Settings</h4>
+                                    <div className="setting-section">
+                                        <p>Round Time</p>
+                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime5" value="5" onChange={handleRoundTimeChange} />
+                                        <label className="btn btn-settings" htmlFor="roundTime5">5s</label>
+                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime10" value="10" onChange={handleRoundTimeChange} />
+                                        <label className="btn btn-settings" htmlFor="roundTime10">10s</label>
+                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime15" value="15" onChange={handleRoundTimeChange} />
+                                        <label className="btn btn-settings" htmlFor="roundTime15">15s</label>
+                                    </div>
+                                    <div className="win-section">
+                                        <div className="win-section-left">
+                                            <p>Win Condition</p>
+                                            <input className="btn-check" type="radio" name="winCondition" id="rounds" value="rounds" onChange={handleWinConditionChange} />
+                                            <label className="btn btn-settings" htmlFor="rounds">Rounds</label>
+                                            <input className="btn-check" type="radio" name="winCondition" id="score" value="score" onChange={handleWinConditionChange} />
+                                            <label className="btn btn-settings" htmlFor="score">Score</label>
+                                        </div>
+                                        <div className="win-section-right">
+                                            {
+                                                config.winCondition.type === "rounds" && <div>
+                                                    <p>Amount Songs</p>
+                                                    <input type="number" min="5" max="25" onChange={handleAmountChange} value={config.winCondition.amount} />
+                                                </div>
+                                            }
+                                            {
+                                                config.winCondition.type === "score" && <div>
+                                                    <p>Amount Score</p>
+                                                    <input type="number" step="1000" min="5000" max="25000" onChange={handleAmountChange} value={config.winCondition.amount} />
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div className="playlist-selection">
+                                        <div className="playlist-section-left">
+                                            <p>Select your playlist</p>
+                                            <input className="searchbar" onChange={handleSearchInputChange} />
+                                            <SearchResultDisplay playlistItems={playlistItems} searchTerm={searchTerm} setActivePlaylist={setActivePlaylist} />
+                                        </div>
+                                        <div className="playlist-section-right">
+                                            <p>Selected playlist</p>
+                                            <div className="selected-card">
+                                                <div className="card w-100">
+                                                    <div className="selected-card-image">
+                                                        <img width="80px" src={config.playlist.imgUrl} />
+                                                    </div>
+                                                    <div className="selected-card-content">
+                                                        <p>{config.playlist.name}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
-
-                                    {
-                                        JSON.stringify(config)
-                                    }
                                 </div>
-                                <div className="playlist-selection-right">
+                                <div className="button-wrapper">
                                     <button className="btn btn-settings" type="submit">Start Game</button>
                                 </div>
-                            </div>
-                        </form>
-                        <div>
-                            <SearchResultDisplay playlistItems={playlistItems} searchTerm={searchTerm} setActivePlaylist={setActivePlaylist} />
+                            </form>
+
                         </div>
                     </div>
                 </div>
-            </div>
-        </>
-    )
+            </>
+        )
+    }
+    if (round > 0) {
+        return <Game
+            answers={answers}
+            round={round}
+            roundStart={roundStart}
+            roundTime={config.roundTime}
+            user={defaultPlayer}
+            playerAnswers={playerAnswers}
+            players={players}
+            showResultsScreen={showResultScreen}
+            setPlayerGuessTrackId={setPlayerGuessTrackId}
+            playerGuessTrackId={playerGuessTrackId}
+        />
+    }
+
+    return <div>Game is running <p>{round}</p></div>
 }
 
 function SearchResultDisplay({ playlistItems, searchTerm, setActivePlaylist }: { playlistItems: SpotifyApi.PlaylistObjectSimplified[] | undefined, searchTerm: string, setActivePlaylist: (playlist: Playlist) => void }) {
@@ -190,13 +292,17 @@ function SearchResultDisplay({ playlistItems, searchTerm, setActivePlaylist }: {
     if (!playlistItems || playlistItems.length === 0) {
         return <p>No playlists found</p>
     }
-    return <div className="grid">
-        <div className="row flex-nowrap overflow-auto">
+    return <div className="search-result grid hw-50">
+        <div className="search-result-list column flex-nowrap overflow-auto">
             {
                 playlistItems.map((playlist) => {
-                    return <button className="col-3 card" key={playlist.id} onClick={() => setActivePlaylist({ id: playlist.id, imgUrl: playlist.images[0]?.url, name: playlist.name })}>
-                        <img width="80px" src={playlist.images[0]?.url} />
-                        <p>{playlist.name}</p>
+                    return <button type="button" className="w-100 card" key={playlist.id} onClick={() => setActivePlaylist({ id: playlist.id, imgUrl: playlist.images[0]?.url, name: playlist.name })}>
+                        <div className="card-image">
+                            <img width="80px" src={playlist.images[0]?.url} />
+                        </div>
+                        <div className="card-content">
+                            <p>{playlist.name}</p>
+                        </div>
                     </button>
                 })
             }
@@ -204,4 +310,108 @@ function SearchResultDisplay({ playlistItems, searchTerm, setActivePlaylist }: {
     </div>
 
 
+}
+
+function PlayerDisplay({ player }: { player: Player }) {
+    return <li className="col-lg-3">
+        <div className="player-list-image">
+            <img src={player.imageUrl} />
+        </div>
+        <div className="player-list-name">
+            <p>{player.username}</p>
+        </div>
+    </li>
+}
+
+function getDefaultPlaylist(): Config {
+    return {
+        playlist: {
+            id: "37i9dQZF1DXcBWIGoYBM5M",
+            imgUrl: "https://i.scdn.co/image/ab67706f000000020ba81215546ef8fd79aa92a7",
+            name: "Today's Top Hits",
+        },
+        roundTime: 10,
+        winCondition: {
+            type: "rounds",
+            amount: 10,
+        }
+    }
+}
+
+
+async function getTrackInfos({ spotify, tracks }: { spotify: SpotifyWebApi, tracks: { correctTrackId: string, wrongTrackIds: string[] } }): Promise<Answer[]> {
+    const { body: trackData } = await spotify.getTracks([tracks.correctTrackId, ...tracks.wrongTrackIds])
+    const trackInfos = trackData.tracks.map((track, index) => {
+        return {
+            trackId: track.id,
+            trackName: track.name,
+            trackArtists: track.artists.map(artist => artist.name),
+            isCorrect: index === 0
+        }
+    })
+    return shuffleArray(trackInfos)
+}
+
+export function shuffleArray<T>(array: T[]): T[] {
+    return array.sort(() => Math.random() - 0.5);
+}
+
+async function playTrack({ trackId, spotify, activeDeviceId }: { trackId: string, spotify: SpotifyWebApi, activeDeviceId: string }) {
+    await spotify.play({ uris: ["spotify:track:" + trackId], device_id: activeDeviceId })
+}
+
+function EmptyPlayer() {
+    return <li className="col-lg-3">
+        <div className="player-list-image">
+            <img src="/assets/placeholder-image.jpg" />
+        </div>
+        <div className="player-list-name">
+            <p>Empty slot</p>
+        </div>
+    </li>
+}
+
+function AddPlayer() {
+    return <li className="col-lg-3">
+        <div className="player-list-button">
+            <button className="add-player-button">+</button>
+        </div>
+        <div className="player-list-name">
+            <p>Invite Player</p>
+        </div>
+    </li>
+}
+
+function x() {
+    return (
+        <main>
+            <UserButton afterSignOutUrl="/" />
+            <form action={startRoundWithSpotifyApi}>
+                <input type="text" id="playlistId" name="playlistId" />
+                <button type="submit">Start Round</button>
+            </form>
+            <div className="container">
+                <div className="homescreen row">
+                    <div className="col-lg-6">
+                        <div className="homescreen-left">
+                            <h2>Beat Buster</h2>
+                            <p>Welcome to BeatBuster - the ultimate song quiz game to challenge your music knowledge! Gather your friends and dive into a world of music trivia excitement. With BeatBuster, you'll listen to snippets of songs and race against the clock to guess the title and artist. Compete for the top spot on the leaderboard and show off your music expertise!
+                                <br />  To start your experience, log in with your Spotify account and play with your own playlists. Immerse yourself in the music you love and put your skills to the test. Get ready to groove, guess, and conquer the BeatBuster challenge. Sign up now and let the music quiz fun begin! </p>
+                        </div>
+                    </div>
+                    <div className="col-lg-6">
+                        <div className="homescreen-right">
+                            <h2>Login</h2>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="col-lg-6">
+                <div className="homescreen-right">
+                    <h2>Login</h2>
+                </div>
+            </div>
+        </main >
+    )
 }

@@ -5,6 +5,7 @@ import bootstrap from "bootstrap"
 import { Inter } from "next/font/google";
 import { ClerkProvider } from '@clerk/nextjs'
 import { TRPCReactProvider } from "~/trpc/react";
+import Footer from "./components/footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -34,6 +35,7 @@ export default function RootLayout({
             </div>
           </div>
           <TRPCReactProvider>{children}</TRPCReactProvider>
+          <Footer></Footer>
         </body>
       </html>
     </ClerkProvider>

@@ -1,9 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useSpotifyStore } from "./game/[gameId]/gameSetup";
 
-function WebPlayback(props: { token: string }) {
+export function WebPlayback({ token }: { token: string }) {
   const [player, setPlayer] = useState<Spotify.Player | undefined>(undefined);
-
+  const { setActiveDeviceId, activeDeviceId } = useSpotifyStore();
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://sdk.scdn.co/spotify-player.js";
@@ -15,15 +16,14 @@ function WebPlayback(props: { token: string }) {
       const player = new window.Spotify.Player({
         name: "BeatBuster",
         getOAuthToken: (cb) => {
-          cb(props.token);
+          cb(token);
         },
         volume: 0.5,
       });
 
       player.addListener("ready", ({ device_id }) => {
-        console.log("Ready with Device ID", device_id);
+        setActiveDeviceId({ activeDeviceId: device_id })
       });
-
       player.addListener("not_ready", ({ device_id }) => {
         console.log("Device ID has gone offline", device_id);
       });
