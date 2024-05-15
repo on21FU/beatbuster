@@ -7,6 +7,8 @@ import { Player, PlayerAnswer, validateMessage } from "~/types"
 import WebPlayback from "../webplayback"
 import { Game } from "./game"
 import { set } from "lodash"
+import { UserButton } from "@clerk/nextjs"
+import { startRoundWithSpotifyApi } from "../spotify"
 
 type Config = {
     playlist: Playlist,
@@ -202,19 +204,19 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
                                     <h4>Settings</h4>
                                     <div className="setting-section">
                                         <p>Round Time</p>
-                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime5" value="5" autocomplete="off" onChange={handleRoundTimeChange} checked={config.roundTime === 5} />
+                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime5" value="5" onChange={handleRoundTimeChange} />
                                         <label className="btn btn-settings" htmlFor="roundTime5">5s</label>
-                                        <input className="btn-check active" type="radio" name="roundTime" id="roundTime10" value="10" autocomplete="off" onChange={handleRoundTimeChange} checked={config.roundTime === 10}/>
+                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime10" value="10" onChange={handleRoundTimeChange} />
                                         <label className="btn btn-settings" htmlFor="roundTime10">10s</label>
-                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime15" value="15" autocomplete="off" onChange={handleRoundTimeChange} checked={config.roundTime === 15}/>
+                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime15" value="15" onChange={handleRoundTimeChange} />
                                         <label className="btn btn-settings" htmlFor="roundTime15">15s</label>
                                     </div>
                                     <div className="win-section">
                                         <div className="win-section-left">
                                             <p>Win Condition</p>
-                                            <input className="btn-check" type="radio" name="winCondition" id="rounds" value="rounds" onChange={handleWinConditionChange} checked={config.winCondition.type === "rounds"}/>
+                                            <input className="btn-check" type="radio" name="winCondition" id="rounds" value="rounds" onChange={handleWinConditionChange} />
                                             <label className="btn btn-settings" htmlFor="rounds">Rounds</label>
-                                            <input className="btn-check" type="radio" name="winCondition" id="score" value="score" onChange={handleWinConditionChange} checked={config.winCondition.type === "score"}/>
+                                            <input className="btn-check" type="radio" name="winCondition" id="score" value="score" onChange={handleWinConditionChange} />
                                             <label className="btn btn-settings" htmlFor="score">Score</label>
                                         </div>
                                         <div className="win-section-right">
@@ -270,8 +272,8 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
             answers={answers}
             round={round}
             roundStart={roundStart}
-            user={defaultPlayer}
             roundTime={config.roundTime}
+            user={defaultPlayer}
             playerAnswers={playerAnswers}
             players={players}
             showResultsScreen={showResultScreen}
@@ -378,4 +380,38 @@ function AddPlayer() {
             <p>Invite Player</p>
         </div>
     </li>
+}
+
+function x() {
+    return (
+        <main>
+            <UserButton afterSignOutUrl="/" />
+            <form action={startRoundWithSpotifyApi}>
+                <input type="text" id="playlistId" name="playlistId" />
+                <button type="submit">Start Round</button>
+            </form>
+            <div className="container">
+                <div className="homescreen row">
+                    <div className="col-lg-6">
+                        <div className="homescreen-left">
+                            <h2>Beat Buster</h2>
+                            <p>Welcome to BeatBuster - the ultimate song quiz game to challenge your music knowledge! Gather your friends and dive into a world of music trivia excitement. With BeatBuster, you'll listen to snippets of songs and race against the clock to guess the title and artist. Compete for the top spot on the leaderboard and show off your music expertise!
+                                <br />  To start your experience, log in with your Spotify account and play with your own playlists. Immerse yourself in the music you love and put your skills to the test. Get ready to groove, guess, and conquer the BeatBuster challenge. Sign up now and let the music quiz fun begin! </p>
+                        </div>
+                    </div>
+                    <div className="col-lg-6">
+                        <div className="homescreen-right">
+                            <h2>Login</h2>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="col-lg-6">
+                <div className="homescreen-right">
+                    <h2>Login</h2>
+                </div>
+            </div>
+        </main >
+    )
 }

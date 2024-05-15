@@ -3,11 +3,11 @@ import { Answer } from "./gameConfig"
 import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
 import { Player, PlayerAnswer } from "~/types"
 
-export function Game({ round, answers, roundStart, user, roundTime playerAnswers, players, showResultsScreen, setPlayerGuessTrackId, playerGuessTrackId }:
+export function Game({ round, answers, roundStart, user, roundTime, playerAnswers, players, showResultsScreen, setPlayerGuessTrackId, playerGuessTrackId }:
     { round: number, answers: Answer[], roundStart: Date | null, user: Player, roundTime: number, playerAnswers: PlayerAnswer[] | null, players: Player[], showResultsScreen: boolean, setPlayerGuessTrackId: (trackId: string | null) => void, playerGuessTrackId: string | null }) {
 
     const animationPath = "/assets/" + roundTime + "s_raten.gif"
-    
+
     const { socket } = useSocketStore()
 
     function handleAnswer(answer: Answer) {
@@ -55,15 +55,15 @@ export function Game({ round, answers, roundStart, user, roundTime playerAnswers
                 <h3 className="text-center">Runde {round}</h3>
                 <div className="answers-wrapper">
                     <div className="row">
-                    {answers.map((answer) => {
-                        return <button
-                            onClick={() => handleAnswer(answer)}
-                            key={answer.trackId}
-                            disabled={!!playerGuessTrackId}>
-                            <PlayerAnswerDisplay answer={answer} />
-                            {answer.trackName} - {answer.trackArtists.join(", ")}
-                        </button>
-                    })}
+                        {answers.map((answer) => {
+                            return <button
+                                onClick={() => handleAnswer(answer)}
+                                key={answer.trackId}
+                                disabled={!!playerGuessTrackId}>
+                                <PlayerAnswerDisplay answer={answer} />
+                                {answer.trackName} - {answer.trackArtists.join(", ")}
+                            </button>
+                        })}
                     </div>
                 </div>
             </div>
