@@ -202,19 +202,19 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
                                     <h4>Settings</h4>
                                     <div className="setting-section">
                                         <p>Round Time</p>
-                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime5" value="5" onChange={handleRoundTimeChange} />
+                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime5" value="5" autocomplete="off" onChange={handleRoundTimeChange} checked={config.roundTime === 5} />
                                         <label className="btn btn-settings" htmlFor="roundTime5">5s</label>
-                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime10" value="10" onChange={handleRoundTimeChange} />
+                                        <input className="btn-check active" type="radio" name="roundTime" id="roundTime10" value="10" autocomplete="off" onChange={handleRoundTimeChange} checked={config.roundTime === 10}/>
                                         <label className="btn btn-settings" htmlFor="roundTime10">10s</label>
-                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime15" value="15" onChange={handleRoundTimeChange} />
+                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime15" value="15" autocomplete="off" onChange={handleRoundTimeChange} checked={config.roundTime === 15}/>
                                         <label className="btn btn-settings" htmlFor="roundTime15">15s</label>
                                     </div>
                                     <div className="win-section">
                                         <div className="win-section-left">
                                             <p>Win Condition</p>
-                                            <input className="btn-check" type="radio" name="winCondition" id="rounds" value="rounds" onChange={handleWinConditionChange} />
+                                            <input className="btn-check" type="radio" name="winCondition" id="rounds" value="rounds" onChange={handleWinConditionChange} checked={config.winCondition.type === "rounds"}/>
                                             <label className="btn btn-settings" htmlFor="rounds">Rounds</label>
-                                            <input className="btn-check" type="radio" name="winCondition" id="score" value="score" onChange={handleWinConditionChange} />
+                                            <input className="btn-check" type="radio" name="winCondition" id="score" value="score" onChange={handleWinConditionChange} checked={config.winCondition.type === "score"}/>
                                             <label className="btn btn-settings" htmlFor="score">Score</label>
                                         </div>
                                         <div className="win-section-right">
@@ -271,6 +271,7 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
             round={round}
             roundStart={roundStart}
             user={defaultPlayer}
+            roundTime={config.roundTime}
             playerAnswers={playerAnswers}
             players={players}
             showResultsScreen={showResultScreen}
