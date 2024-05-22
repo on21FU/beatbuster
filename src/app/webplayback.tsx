@@ -14,35 +14,36 @@ export function WebPlayback({ token }: { token: string }) {
     const script = document.createElement("script");
     script.src = "https://sdk.scdn.co/spotify-player.js";
     script.async = true;
-
-    document.body.appendChild(script);
-
-    window.onSpotifyWebPlaybackSDKReady =  () => {
-      if(!session) {
-        console.log("No session")
-        return
-      }      
-      const player = new window.Spotify.Player({
-        name: "BeatBuster",
-        getOAuthToken: cb => { cb(token) },
-        volume: 0.2,
-        enableMediaSession: true
-      });
-
-      player.addListener("ready", ({ device_id }) => {
-        setActiveDeviceId({ activeDeviceId: device_id })
-      });
-      player.addListener("not_ready", ({ device_id }) => {
-        console.log("Device ID has gone offline", device_id);
-      });
-
-      player
-        .connect()
-        .then((success) => console.log("connect"))
-        .catch((err) => console.log(err));
-
-      setPlayer(player);
-    };
+    script.onload = () => {
+      document.body.appendChild(script);
+  
+      window.onSpotifyWebPlaybackSDKReady =  () => {
+        if(!session) {
+          console.log("No session")
+          return
+        }      
+        const player = new window.Spotify.Player({
+          name: "BeatBuster",
+          getOAuthToken: cb => { cb(token) },
+          volume: 0.2,
+          enableMediaSession: true
+        });
+  
+        player.addListener("ready", ({ device_id }) => {
+          setActiveDeviceId({ activeDeviceId: device_id })
+        });
+        player.addListener("not_ready", ({ device_id }) => {
+          console.log("Device ID has gone offline", device_id);
+        });
+  
+        player
+          .connect()
+          .then((success) => console.log("connect"))
+          .catch((err) => console.log(err));
+  
+        setPlayer(player);
+      };      
+    }
   }, []);
 
   if (!player) {
