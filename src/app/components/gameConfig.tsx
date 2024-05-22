@@ -4,11 +4,7 @@ import { ChangeEvent, useEffect, useState } from "react"
 import SpotifyWebApi from "spotify-web-api-node"
 import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
 import { Player, PlayerAnswer, validateMessage } from "~/types"
-import WebPlayback from "../webplayback"
 import { Game } from "./game"
-import { set } from "lodash"
-import { UserButton } from "@clerk/nextjs"
-import { startRoundWithSpotifyApi } from "../spotify"
 
 type Config = {
     playlist: Playlist,
@@ -181,6 +177,7 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
                 accessToken
             }
         }
+        console.log(accessToken)
         socket.send(JSON.stringify(message));
     }
     if (round === 0) {

@@ -1,10 +1,10 @@
-import { UserButton } from "@clerk/nextjs";
-import { getUserToken, startRoundWithSpotifyApi } from "./spotify";
+import { SignInButton, UserButton } from "@clerk/nextjs";
+import { startRoundWithSpotifyApi } from "./spotify";
 
 export default async function Home() {
-  const userToken = await getUserToken();
   return (
       <main>
+        <SignInButton/>
           <UserButton afterSignOutUrl="/" />
           <form action={startRoundWithSpotifyApi}>
               <input type="text" id="playlistId" name="playlistId" />
