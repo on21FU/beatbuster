@@ -33,13 +33,15 @@ export function Game({ round, answers, roundStart, user, roundTime, playerAnswer
     }
 
     if (showResultsScreen) {
-        return <div>
-            Results:
-            <ul>
+        return <div className="round-result container">
+            <h2>Results:</h2>
+            <ul className="round-result-list">
                 {playerAnswers?.map((playerAnswer, index) => {
                     const player = players.find(player => player.userId === playerAnswer.userId)
-                    return <li key={index}>
-                        {player?.username} - {playerAnswer.gainedScore} - {playerAnswer.timeToAnswer}s
+                    return <li className="round-result-list-item" key={index}>
+                        <div className="round-result-item-content">{player?.username}</div> 
+                        <div className="round-result-item-content">{playerAnswer.gainedScore}</div>
+                        <div className="round-result-item-content">{playerAnswer.timeToAnswer}s</div>
                     </li>
                 })}
             </ul>
@@ -56,7 +58,7 @@ export function Game({ round, answers, roundStart, user, roundTime, playerAnswer
                 <div className="answers-wrapper">
                     <div className="row">
                         {answers.map((answer) => {
-                            return <button
+                            return <button className="answer-button col-lg-5"
                                 onClick={() => handleAnswer(answer)}
                                 key={answer.trackId}
                                 disabled={!!playerGuessTrackId}>
