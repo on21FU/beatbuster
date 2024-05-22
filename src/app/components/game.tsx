@@ -43,9 +43,6 @@ export function Game({ round, answers, roundStart, user, roundTime, playerAnswer
                         <div className="round-result-item-content">{player?.username}</div> 
                         <div className="round-result-item-content">{playerAnswer.gainedScore}</div>
                         <div className="round-result-item-content">{playerAnswer.timeToAnswer}s</div>
-
-                    return <li key={index}>
-                        {player?.username} - {playerAnswer.gainedScore} - {playerAnswer.timeToAnswer * 1000}s
                     </li>
                 })}
             </ul>
