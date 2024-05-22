@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useSpotifyStore } from "./game/[gameId]/gameSetup";
 
 export function WebPlayback({ token }: { token: string }) {
+  console.log(token)
   const [player, setPlayer] = useState<Spotify.Player | undefined>(undefined);
   const { setActiveDeviceId, activeDeviceId } = useSpotifyStore();
   useEffect(() => {
@@ -40,7 +41,7 @@ export function WebPlayback({ token }: { token: string }) {
   if (!player) {
     return "loading...";
   }
-
+  
   return (
     <>
       <div className="container">
