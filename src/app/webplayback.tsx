@@ -14,7 +14,6 @@ export function WebPlayback({ token }: { token: string }) {
     const script = document.createElement("script");
     script.src = "https://sdk.scdn.co/spotify-player.js";
     script.async = true;
-    script.onload = () => {
       document.body.appendChild(script);
   
       window.onSpotifyWebPlaybackSDKReady =  () => {
@@ -47,7 +46,6 @@ export function WebPlayback({ token }: { token: string }) {
         console.log("Player: ", player)
         setPlayer(player);
       };      
-    }
   }, []);
 
   if (!player) {
