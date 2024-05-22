@@ -82,6 +82,7 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
                 case "start-round":
                     console.log("Neue Rundeeeee")
                     setPlayerGuessTrackId(null)
+                    setPlayerAnswers([])
                     setShowResultScreen(false)
                     setPlayers(message.body.players)
                     setRound(message.body.round)

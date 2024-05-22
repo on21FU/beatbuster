@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Answer } from "./gameConfig"
 import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
 import { Player, PlayerAnswer } from "~/types"
+import Scoreboard from "./scoreboard"
 
 export function Game({ round, answers, roundStart, user, roundTime, playerAnswers, players, showResultsScreen, setPlayerGuessTrackId, playerGuessTrackId, showGameResultScreen }:
     { round: number, answers: Answer[], roundStart: Date | null, user: Player, roundTime: number, playerAnswers: PlayerAnswer[] | null, players: Player[], showResultsScreen: boolean, showGameResultScreen: boolean, setPlayerGuessTrackId: (trackId: string | null) => void, playerGuessTrackId: string | null }) {
@@ -42,7 +43,8 @@ export function Game({ round, answers, roundStart, user, roundTime, playerAnswer
                     return <li className="round-result-list-item" key={index}>
                         <div className="round-result-item-content">{player?.username}</div> 
                         <div className="round-result-item-content">{playerAnswer.gainedScore}</div>
-                        <div className="round-result-item-content">{playerAnswer.timeToAnswer}s</div>
+                        <div className="round-result-item-content">{playerAnswer.timeToAnswer}s</div>                    
+                        {player?.username} - {playerAnswer.gainedScore} - {playerAnswer.timeToAnswer.toFixed(2)}s
                     </li>
                 })}
             </ul>
@@ -69,6 +71,7 @@ export function Game({ round, answers, roundStart, user, roundTime, playerAnswer
                     <img src={animationPath} />
                 </div>
                 <h3 className="text-center">Runde {round}</h3>
+                <Scoreboard players={players}/>
                 <div className="answers-wrapper">
                     <div className="row">
                         {answers.map((answer) => {
