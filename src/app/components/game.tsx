@@ -4,12 +4,13 @@ import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
 import { Player, PlayerAnswer } from "~/types"
 import Scoreboard from "./scoreboard"
 
-export function Game({ round, answers, roundStart, user, roundTime, playerAnswers, players, showResultsScreen, setPlayerGuessTrackId, playerGuessTrackId, showGameResultScreen }:
-    { round: number, answers: Answer[], roundStart: Date | null, user: Player, roundTime: number, playerAnswers: PlayerAnswer[] | null, players: Player[], showResultsScreen: boolean, showGameResultScreen: boolean, setPlayerGuessTrackId: (trackId: string | null) => void, playerGuessTrackId: string | null }) {
+export function Game({ round, answers, roundStart, user, roundTime, playerAnswers, players, showResultsScreen, setPlayerGuessTrackId, playerGuessTrackId, showGameResultScreen, resultScreenTimer }:
+    { round: number, answers: Answer[], roundStart: Date | null, user: Player, roundTime: number, playerAnswers: PlayerAnswer[] | null, players: Player[], showResultsScreen: boolean, showGameResultScreen: boolean, resultScreenTimer: Date | null, setPlayerGuessTrackId: (trackId: string | null) => void, playerGuessTrackId: string | null }) {
 
     const animationPath = "/assets/" + roundTime + "s_raten.gif"
 
     const { socket } = useSocketStore()
+
 
     function handleAnswer(answer: Answer) {
         if (!roundStart) {
@@ -35,16 +36,30 @@ export function Game({ round, answers, roundStart, user, roundTime, playerAnswer
 
     if (showResultsScreen) {
         return <div className="round-result container">
+            <div className="progress">
+
+                <div className="progress-bar bg-primary"></div>
+            </div>
             <h2>Results:</h2>
+        
             <ul className="round-result-list">
+                <div className="round-result-description">
+                    <p className="round-result-description-content">Player</p>
+                    <p className="round-result-description-content">Points</p>
+                    <p className="round-result-description-content">Time</p>
+
+                </div>
                 {playerAnswers?.map((playerAnswer, index) => {
                     const player = players.find(player => player.userId === playerAnswer.userId)
 
                     return <li className="round-result-list-item" key={index}>
-                        <div className="round-result-item-content">{player?.username}</div> 
+                        <div className="round-result-item-content">{player?.username}</div>
                         <div className="round-result-item-content">{playerAnswer.gainedScore}</div>
-                        <div className="round-result-item-content">{playerAnswer.timeToAnswer}s</div>                    
-                        {player?.username} - {playerAnswer.gainedScore} - {playerAnswer.timeToAnswer.toFixed(2)}s
+
+                        <div className="round-result-item-content">{playerAnswer.timeToAnswer}s</div>
+
+                        
+
                     </li>
                 })}
             </ul>
@@ -109,3 +124,4 @@ export function Game({ round, answers, roundStart, user, roundTime, playerAnswer
         })
     }
 }
+

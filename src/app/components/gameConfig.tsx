@@ -45,6 +45,7 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
     const [roundStart, setRoundStart] = useState<Date | null>(null)
     const [playerAnswers, setPlayerAnswers] = useState<PlayerAnswer[]>([])
     const [showResultScreen, setShowResultScreen] = useState(false)
+    const [resultScreenTimer, setResultScreenTimer] = useState<Date | null>(null)
     const [playerGuessTrackId, setPlayerGuessTrackId] = useState<string | null>(null)
     const [showGameResultScreen, setShowGameResultScreen] = useState(false)
 
@@ -112,6 +113,7 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
                     setPlayerAnswers(newPlayerAnswers)
                     await spotify.pause({ device_id: activeDeviceId })
                     setShowResultScreen(true)
+                    setResultScreenTimer(new Date())
                     break
                 case "game-results":
                     setShowResultScreen(false)
@@ -287,6 +289,7 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
             setPlayerGuessTrackId={setPlayerGuessTrackId}
             playerGuessTrackId={playerGuessTrackId}
             showGameResultScreen={showGameResultScreen}
+            resultScreenTimer={resultScreenTimer}
         />
     }
 
