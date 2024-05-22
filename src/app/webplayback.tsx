@@ -7,6 +7,8 @@ export function WebPlayback({ token }: { token: string }) {
   const [player, setPlayer] = useState<Spotify.Player | undefined>(undefined);
   const { setActiveDeviceId, activeDeviceId } = useSpotifyStore();
   const { session } = useSession()
+
+  console.log("Session: " + session)
     
   useEffect(() => {
     const script = document.createElement("script");
