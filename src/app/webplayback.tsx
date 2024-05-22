@@ -17,15 +17,16 @@ export function WebPlayback({ token }: { token: string }) {
 
     document.body.appendChild(script);
 
-    window.onSpotifyWebPlaybackSDKReady = () => {
+    window.onSpotifyWebPlaybackSDKReady =  () => {
       if(!session) {
         console.log("No session")
         return
       }      
       const player = new window.Spotify.Player({
         name: "BeatBuster",
-        getOAuthToken: () => session.getToken,
-        volume: 0.5,
+        getOAuthToken: cb => { cb(token) },
+        volume: 0.2,
+        enableMediaSession: true
       });
 
       player.addListener("ready", ({ device_id }) => {
