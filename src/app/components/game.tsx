@@ -39,7 +39,7 @@ export function Game({ round, answers, roundStart, user, roundTime, playerAnswer
                 {playerAnswers?.map((playerAnswer, index) => {
                     const player = players.find(player => player.userId === playerAnswer.userId)
                     return <li key={index}>
-                        {player?.username} - {playerAnswer.gainedScore} - {playerAnswer.timeToAnswer * 1000}s
+                        {player?.username} - {playerAnswer.gainedScore} - {playerAnswer.timeToAnswer.toFixed(2)}s
                     </li>
                 })}
             </ul>
