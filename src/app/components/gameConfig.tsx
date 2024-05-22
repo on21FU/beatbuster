@@ -116,6 +116,7 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
                 case "game-results":
                     setShowResultScreen(false)
                     setShowGameResultScreen(true);
+                    setPlayers(message.body.players);
                     break
                 default:
                     console.error("Unknown message type", message)
