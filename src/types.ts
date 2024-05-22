@@ -45,10 +45,18 @@ const updatePlayersSchema = z.object({
     })
 })
 
+const gameResultSchema = z.object({
+    type: z.literal("game-results"),
+    body: z.object({
+        players: z.array(playerSchema)
+    })
+})
+
 const messageSchema = z.union([
     startRoundSchema,
     updatePlayersSchema,
-    roundResultsSchema
+    roundResultsSchema,
+    gameResultSchema
 ])
 
 export function validateMessage(message: unknown): message is z.infer<typeof messageSchema> {
