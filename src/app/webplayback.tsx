@@ -44,7 +44,7 @@ export function WebPlayback({ token }: { token: string }) {
           .connect()
           .then((success) => console.log("connect"))
           .catch((err) => console.log(err));
-  
+        console.log("Player: ", player)
         setPlayer(player);
       };      
     }
