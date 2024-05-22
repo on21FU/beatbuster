@@ -35,7 +35,11 @@ export function WebPlayback({ token }: { token: string }) {
         player.addListener("not_ready", ({ device_id }) => {
           console.log("Device ID has gone offline", device_id);
         });
-  
+        
+        player.addListener("authentication_error", (error) => {console.log(error)})
+        player.addListener("account_error", (error) => {console.log(error)})
+        player.addListener("initialization_error", (error) => {console.log(error)})
+        player.addListener("playback_error", (error) => {console.log(error)})
         player
           .connect()
           .then((success) => console.log("connect"))
