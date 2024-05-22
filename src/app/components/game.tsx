@@ -67,11 +67,19 @@ export function Game({ round, answers, roundStart, user, roundTime, playerAnswer
     }
 
     if (showGameResultScreen) {
-        return <div>Game End:
-            <ul>
+        return <div className="container round-result ">
+            <h2>Game End:</h2>
+            <ul className="end-result-list">
                 {players.sort((player1, player2) => player1.score - player2.score).map((player, index) => {
-                    return <li key={index}>
-                        {player.username} - {player.score}
+                    return <li className="end-result-list-item" key={index}>
+                        <div className="image-wrapper"><img src={player.imageUrl} alt="" /></div>
+                        <div className="end-result-content">
+                        <p className="end-result-index">{index +1}</p>
+                        <p className="end-result-name">{player.username} </p> 
+                        <p className="end-result-score">{player.score}</p>
+                        <p className="end-result-description">Points</p>
+                        </div>
+
 
                     </li>
                 })}
