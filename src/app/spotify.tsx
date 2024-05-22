@@ -1,40 +1,27 @@
 "use server";
 
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { writeFile } from "fs/promises";
 import SpotifyWebApi from "spotify-web-api-node";
 
 export async function getUserToken() {
-    const { userId } = auth();
-    if (!userId) {
-        throw new Error("Invalid UserID");
-    }
-    const tokens = await clerkClient.users.getUserOauthAccessToken(
-        userId,
-        "oauth_spotify"
-    );
-
-    if (!Array.isArray(tokens) || !tokens[0]) {
-        throw new Error("No Token");
-    }
-    return tokens[0].token;
-}
-
-/*export async function startRound(formData: FormData) {
-
     try {
-        const userToken = await getUserToken();
-        const playlistId = formData.get("playlistId");
-        if (!playlistId || typeof playlistId !== "string") return;
-        const trackIds = await getTracksFromPlaylist({ userToken, playlistId });
-        const shuffledTrackIds = shuffleArray(trackIds);
-        if (!shuffledTrackIds[0]) throw new Error("Playlist is empty");
-        addTrackToQueue({ userToken, trackId: shuffledTrackIds[0] });
-        skipToNext();
-    } catch (err) {
-        console.log(err)
+        const { userId } = auth();
+        if (!userId) {
+            throw new Error("Invalid UserID");
+        }
+        const tokens = await clerkClient.users.getUserOauthAccessToken(
+            userId,
+            "oauth_spotify"
+        );
+    
+        if (!Array.isArray(tokens) || !tokens[0]) {
+            throw new Error("No Token");
+        }
+        return tokens[0].token;        
+    } catch (error) {
+        console.error(error)
     }
-}*/
+}
 
 export async function startRoundWithSpotifyApi(formData: FormData) {
     const playlistId = formData.get("playlistId");

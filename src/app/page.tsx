@@ -1,10 +1,10 @@
-import { UserButton } from "@clerk/nextjs";
-import { getUserToken, startRoundWithSpotifyApi } from "./spotify";
+import { SignInButton, UserButton } from "@clerk/nextjs";
+import { startRoundWithSpotifyApi } from "./spotify";
 
 export default async function Home() {
-  const userToken = await getUserToken();
   return (
       <main>
+        <SignInButton/>
           <UserButton afterSignOutUrl="/" />
           <form action={startRoundWithSpotifyApi}>
               <input type="text" id="playlistId" name="playlistId" />
@@ -27,11 +27,7 @@ export default async function Home() {
                   </div>
               </div>
           </div>
-          <div className="col-lg-6">
-              <div className="homescreen-right">
-                  <h2>Login</h2>
-              </div>
-          </div>
+    
       </main >
   );
 }

@@ -41,7 +41,7 @@ async function joinGame(formData: FormData) {
         gameId: gameId,
     });
 
-    const response = await fetch("http://localhost:8080/join?" + params)
+    const response = await fetch(process.env.WEBSOCKET_URL_HTTP + "/join?" + params)
     const id = await response.text();
     console.log("gameId", id)
     redirect(`/game/${id}`);
