@@ -1,11 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useSpotifyStore } from "./game/[gameId]/gameSetup";
+import { useSession, useUser } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 
 export function WebPlayback({ token }: { token: string }) {
   console.log(token)
   const [player, setPlayer] = useState<Spotify.Player | undefined>(undefined);
   const { setActiveDeviceId, activeDeviceId } = useSpotifyStore();
+  const { session } = useSession()
+    
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://sdk.scdn.co/spotify-player.js";
@@ -14,11 +18,13 @@ export function WebPlayback({ token }: { token: string }) {
     document.body.appendChild(script);
 
     window.onSpotifyWebPlaybackSDKReady = () => {
+      if(!session) {
+        console.log("No session")
+        return
+      }      
       const player = new window.Spotify.Player({
         name: "BeatBuster",
-        getOAuthToken: (cb) => {
-          cb(token);
-        },
+        getOAuthToken: () => session.getToken,
         volume: 0.5,
       });
 
