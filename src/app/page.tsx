@@ -2,7 +2,6 @@ import { UserButton } from "@clerk/nextjs";
 import { getUserToken, startRoundWithSpotifyApi } from "./spotify";
 
 export default async function Home() {
-  const userToken = await getUserToken();
   return (
       <main>
           <UserButton afterSignOutUrl="/" />
