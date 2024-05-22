@@ -262,7 +262,7 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
 
                                 </div>
                                 <div className="button-wrapper">
-                                    <button className="btn btn-settings" type="submit">Start Game</button>
+                                    <button disabled={!activeDeviceId} className="btn btn-settings" type="submit">Start Game</button>
                                 </div>
                             </form>
 
