@@ -209,19 +209,19 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
                                     <h4>Settings</h4>
                                     <div className="setting-section">
                                         <p>Round Time</p>
-                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime5" value="5" onChange={handleRoundTimeChange} />
+                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime5" value="5" onChange={handleRoundTimeChange} checked={config.roundTime === 5}/>
                                         <label className="btn btn-settings" htmlFor="roundTime5">5s</label>
-                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime10" value="10" onChange={handleRoundTimeChange} />
+                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime10" value="10" onChange={handleRoundTimeChange} checked={config.roundTime === 10}/>
                                         <label className="btn btn-settings" htmlFor="roundTime10">10s</label>
-                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime15" value="15" onChange={handleRoundTimeChange} />
+                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime15" value="15" onChange={handleRoundTimeChange} checked={config.roundTime === 15}/>
                                         <label className="btn btn-settings" htmlFor="roundTime15">15s</label>
                                     </div>
                                     <div className="win-section">
                                         <div className="win-section-left">
                                             <p>Win Condition</p>
-                                            <input className="btn-check" type="radio" name="winCondition" id="rounds" value="rounds" onChange={handleWinConditionChange} />
+                                            <input className="btn-check" type="radio" name="winCondition" id="rounds" value="rounds" onChange={handleWinConditionChange} checked={config.winCondition.type === "rounds"}/>
                                             <label className="btn btn-settings" htmlFor="rounds">Rounds</label>
-                                            <input className="btn-check" type="radio" name="winCondition" id="score" value="score" onChange={handleWinConditionChange} />
+                                            <input className="btn-check" type="radio" name="winCondition" id="score" value="score" onChange={handleWinConditionChange} checked={config.winCondition.type === "score"}/>
                                             <label className="btn btn-settings" htmlFor="score">Score</label>
                                         </div>
                                         <div className="win-section-right">
@@ -388,36 +388,3 @@ function AddPlayer() {
     </li>
 }
 
-function x() {
-    return (
-        <main>
-            <UserButton afterSignOutUrl="/" />
-            <form action={startRoundWithSpotifyApi}>
-                <input type="text" id="playlistId" name="playlistId" />
-                <button type="submit">Start Round</button>
-            </form>
-            <div className="container">
-                <div className="homescreen row">
-                    <div className="col-lg-6">
-                        <div className="homescreen-left">
-                            <h2>Beat Buster</h2>
-                            <p>Welcome to BeatBuster - the ultimate song quiz game to challenge your music knowledge! Gather your friends and dive into a world of music trivia excitement. With BeatBuster, you'll listen to snippets of songs and race against the clock to guess the title and artist. Compete for the top spot on the leaderboard and show off your music expertise!
-                                <br />  To start your experience, log in with your Spotify account and play with your own playlists. Immerse yourself in the music you love and put your skills to the test. Get ready to groove, guess, and conquer the BeatBuster challenge. Sign up now and let the music quiz fun begin! </p>
-                        </div>
-                    </div>
-                    <div className="col-lg-6">
-                        <div className="homescreen-right">
-                            <h2>Login</h2>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="col-lg-6">
-                <div className="homescreen-right">
-                    <h2>Login</h2>
-                </div>
-            </div>
-        </main >
-    )
-}

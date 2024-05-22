@@ -27,11 +27,7 @@ export default async function Home() {
                   </div>
               </div>
           </div>
-          <div className="col-lg-6">
-              <div className="homescreen-right">
-                  <h2>Login</h2>
-              </div>
-          </div>
+    
       </main >
   );
 }
