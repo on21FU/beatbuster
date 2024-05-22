@@ -62,10 +62,39 @@
 }
 
 .round-result{
+
+    .progress{
+        margin-bottom: 2rem;
+        border-radius: 0px;
+
+        .progress-bar{
+            animation-duration: 5s;
+            animation-name: progressbar-animation;
+        }
+
+        @keyframes progressbar-animation{
+            from {width: 0%;}
+            to {width: 100%;}
+        }
+    }
+
     .round-result-list{
         width: 100%;
         list-style: none;
         padding-left: 0px;
+
+        .round-result-description{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding: 0.5rem 1rem;
+
+            p{
+                font-weight: 700;
+                text-transform: uppercase;
+            }
+        }
+
         .round-result-list-item{
         display: flex;
         flex-direction: row;    
@@ -77,6 +106,7 @@
         &:first-child{
             border: 3px solid $primary;
         }
+
         }
     }
 }
