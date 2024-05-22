@@ -2,10 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { useSpotifyStore } from "./game/[gameId]/gameSetup";
 import { useSession, useUser } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
 
 export function WebPlayback({ token }: { token: string }) {
-  console.log(token)
   const [player, setPlayer] = useState<Spotify.Player | undefined>(undefined);
   const { setActiveDeviceId, activeDeviceId } = useSpotifyStore();
   const { session } = useSession()

@@ -1,5 +1,5 @@
 import { SignInButton, UserButton } from "@clerk/nextjs";
-import { getUserToken, startRoundWithSpotifyApi } from "./spotify";
+import { startRoundWithSpotifyApi } from "./spotify";
 
 export default async function Home() {
   return (
