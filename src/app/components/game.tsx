@@ -3,8 +3,8 @@ import { Answer } from "./gameConfig"
 import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
 import { Player, PlayerAnswer } from "~/types"
 
-export function Game({ round, answers, roundStart, user, roundTime, playerAnswers, players, showResultsScreen, setPlayerGuessTrackId, playerGuessTrackId }:
-    { round: number, answers: Answer[], roundStart: Date | null, user: Player, roundTime: number, playerAnswers: PlayerAnswer[] | null, players: Player[], showResultsScreen: boolean, setPlayerGuessTrackId: (trackId: string | null) => void, playerGuessTrackId: string | null }) {
+export function Game({ round, answers, roundStart, user, roundTime, playerAnswers, players, showResultsScreen, setPlayerGuessTrackId, playerGuessTrackId, showGameResultScreen }:
+    { round: number, answers: Answer[], roundStart: Date | null, user: Player, roundTime: number, playerAnswers: PlayerAnswer[] | null, players: Player[], showResultsScreen: boolean, showGameResultScreen: boolean, setPlayerGuessTrackId: (trackId: string | null) => void, playerGuessTrackId: string | null }) {
 
     const animationPath = "/assets/" + roundTime + "s_raten.gif"
 
@@ -39,7 +39,19 @@ export function Game({ round, answers, roundStart, user, roundTime, playerAnswer
                 {playerAnswers?.map((playerAnswer, index) => {
                     const player = players.find(player => player.userId === playerAnswer.userId)
                     return <li key={index}>
-                        {player?.username} - {playerAnswer.gainedScore} - {playerAnswer.timeToAnswer}s
+                        {player?.username} - {playerAnswer.gainedScore} - {playerAnswer.timeToAnswer * 1000}s
+                    </li>
+                })}
+            </ul>
+        </div>
+    }
+
+    if (showGameResultScreen) {
+        return <div>Game End:
+            <ul>
+                {players.sort((player1, player2) => player1.score - player2.score).map((player, index) => {
+                    return <li key={index}>
+                        {player.username} - {player.score}
                     </li>
                 })}
             </ul>

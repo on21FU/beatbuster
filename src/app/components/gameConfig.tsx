@@ -46,6 +46,7 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
     const [playerAnswers, setPlayerAnswers] = useState<PlayerAnswer[]>([])
     const [showResultScreen, setShowResultScreen] = useState(false)
     const [playerGuessTrackId, setPlayerGuessTrackId] = useState<string | null>(null)
+    const [showGameResultScreen, setShowGameResultScreen] = useState(false)
 
 
     const { socket } = useSocketStore()
@@ -110,6 +111,10 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
                     setPlayerAnswers(newPlayerAnswers)
                     await spotify.pause({ device_id: activeDeviceId })
                     setShowResultScreen(true)
+                    break
+                case "game-results":
+                    setShowResultScreen(false)
+                    setShowGameResultScreen(true);
                     break
                 default:
                     console.error("Unknown message type", message)
@@ -279,6 +284,7 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
             showResultsScreen={showResultScreen}
             setPlayerGuessTrackId={setPlayerGuessTrackId}
             playerGuessTrackId={playerGuessTrackId}
+            showGameResultScreen={showGameResultScreen}
         />
     }
 
