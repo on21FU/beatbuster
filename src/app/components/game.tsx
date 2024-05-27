@@ -17,6 +17,7 @@ export function Game({
     playerGuessTrackId,
     showGameResultScreen,
     resultScreenTimer,
+    userId,
 }: {
     round: number;
     answers: Answer[];
@@ -30,6 +31,7 @@ export function Game({
     resultScreenTimer: Date | null;
     setPlayerGuessTrackId: (trackId: string | null) => void;
     playerGuessTrackId: string | null;
+    userId: string;
 }) {
     const animationPath = "/assets/" + roundTime + "s_raten.gif";
 
@@ -113,13 +115,14 @@ export function Game({
                     <img src={animationPath} />
                 </div>
                 <h3 className="text-center">Runde {round}</h3>
-                <Scoreboard players={players} />
+                <Scoreboard players={players} userId={userId} />
                 <div className="answers-wrapper">
                     <div className="row">
                         {answers.map((answer) => {
+                            const isClicked = answer.trackId === playerGuessTrackId ? "clicked" : ""
                             return (
                                 <button
-                                    className="answer-button col-lg-5"
+                                    className={`answer-button col-lg-5 ${isClicked}`}
                                     onClick={() => handleAnswer(answer)}
                                     key={answer.trackId}
                                     disabled={!!playerGuessTrackId}

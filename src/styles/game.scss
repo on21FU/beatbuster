@@ -29,9 +29,11 @@
                 padding: 1rem 0.5rem;
 
                 &:hover,
-                &:active {
+                &.clicked {
                     border: 3px solid $primary;
                 }
+
+
 
                 img {
                     position: absolute;
