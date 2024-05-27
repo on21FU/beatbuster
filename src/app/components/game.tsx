@@ -4,6 +4,7 @@ import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup";
 import { Player, PlayerAnswer } from "~/types";
 import Scoreboard from "./scoreboard";
 import VolumeBar from "./volumeBar";
+import { AudioVisualization } from "./audioVisualization";
 
 export function Game({
     round,
@@ -113,6 +114,7 @@ export function Game({
         <>
             <div className="game container">
                 <div className="game-animation">
+                    <AudioVisualization duration={roundTime} />
                     <img src={animationPath} />
                 </div>
                 <h3 className="text-center">Runde {round}</h3>

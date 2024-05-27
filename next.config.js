@@ -10,14 +10,14 @@ await import("./src/env.js");
 const config = {
     reactStrictMode: false,
     sassOptions: {
-        includePaths: [path.join(path.dirname("./"), "styles")],
+        includePaths: [path.join(path.dirname("./src"), "styles")],
     },
     eslint: {
         ignoreDuringBuilds: true,
     },
     typescript: {
         ignoreBuildErrors: true,
-    }
+    },
 };
 
 export default config;
