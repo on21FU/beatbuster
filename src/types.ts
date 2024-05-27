@@ -7,7 +7,35 @@ const playerSchema = z.object({
     score: z.number(),
 })
 
+const playlistSchema = z.object({
+    id: z.string(),
+    imgUrl: z.string().optional(),
+    name: z.string(),
+})
+
+const roundWinConditionSchema = z.object({
+    type: z.literal("rounds"),
+    amount: z.number(),
+})
+
+const scoreWinConditionSchema = z.object({
+    type: z.literal("score"),
+    amount: z.number(),
+})
+
+const configSchema = z.object({
+    playlist: playlistSchema,
+    roundTime: z.number(),
+    winCondition: z.union([
+        roundWinConditionSchema,
+        scoreWinConditionSchema
+    ])
+})
+
+export type Playlist = z.infer<typeof playlistSchema>
+export type Config = z.infer<typeof configSchema>
 export type Player = z.infer<typeof playerSchema>
+
 
 const startRoundSchema = z.object({
     type: z.literal("start-round"),
@@ -37,6 +65,11 @@ const roundResultsSchema = z.object({
     })
 })
 
+const updateConfigSchema = z.object({
+    type: z.literal("update-config"),
+    body: configSchema
+})
+
 
 const updatePlayersSchema = z.object({
     type: z.literal("update-players"),
@@ -56,7 +89,8 @@ const messageSchema = z.union([
     startRoundSchema,
     updatePlayersSchema,
     roundResultsSchema,
-    gameResultSchema
+    gameResultSchema,
+    updateConfigSchema
 ])
 
 export function validateMessage(message: unknown): message is z.infer<typeof messageSchema> {
