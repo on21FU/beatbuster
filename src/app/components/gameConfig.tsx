@@ -235,11 +235,11 @@ export default function GameConfig({
             <>
                 <div className="container">
                     <div className="row">
-                        <div className="col-sm-4">
+                        <div className="col-lg-4">
                             <div className="game-config-left">
-                                <h2>Players</h2>
+                                <h2>Players </h2>
                             </div>
-                            <div className="">
+                            <div className="playerlist-wrapper">
                                 <ul className="player-list row">
                                     {players.map((player, index) => (
                                         <PlayerDisplay
@@ -536,16 +536,14 @@ function SearchResultDisplay({
 }
 
 function PlayerDisplay({ player }: { player: Player }) {
-    return (
-        <li className="col-lg-3">
-            <div className="player-list-image">
-                <img src={player.imageUrl} />
-            </div>
-            <div className="player-list-name">
-                <p>{player.username}</p>
-            </div>
-        </li>
-    );
+    return <li className="col-md-3 col-sm-3 col-xs-3">
+        <div className="player-list-image">
+            <img src={player.imageUrl} />
+        </div>
+        <div className="player-list-name">
+            <p>{player.username}</p>
+        </div>
+    </li>
 }
 
 function getDefaultPlaylist(): Config {
@@ -605,34 +603,31 @@ async function playTrack({
 }
 
 function EmptyPlayer() {
-    return (
-        <li className="col-lg-3">
-            <div className="player-list-image">
-                <img src="/assets/placeholder-image.jpg" />
-            </div>
-            <div className="player-list-name">
-                <p>Empty slot</p>
-            </div>
-        </li>
-    );
+    return <li className="col-md-3 col-sm-3 col-xs-3">
+        <div className="player-list-image">
+            <img src="/assets/placeholder-image.jpg" />
+        </div>
+        <div className="player-list-name">
+            <p>Empty slot</p>
+        </div>
+    </li>
 }
 
 function AddPlayer({ gameId }: { gameId: string }) {
-    return (
-        <li className="col-lg-3">
-            <div className="player-list-button">
-                <button
-                    onClick={() => copyLobbyCodeToClipboard(gameId)}
-                    className="add-player-button"
-                >
-                    +
-                </button>
-            </div>
-            <div className="player-list-name">
-                <p>Invite Player</p>
-            </div>
-        </li>
-    );
+    return <li className="col-md-3 col-sm-3 col-xs-3">
+        <div className="player-list-button">
+            <button
+                onClick={() => copyLobbyCodeToClipboard(gameId)}
+                className="add-player-button"
+            >
+                +
+            </button>        
+        </div>
+        <div className="player-list-name">
+            <p>Invite Player</p>
+        </div>
+    </li>
+
 }
 
 function isPlayerHost({

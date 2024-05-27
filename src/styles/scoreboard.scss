@@ -5,6 +5,15 @@
     position: absolute;
     left: -15rem;
     top: 0;
+
+    @include media-breakpoint-down(lg){
+        left: -5rem;
+    }
+
+    @include  media-breakpoint-down(md){
+        display: none;
+    }
+
     .scoreboard-wrapper{
         .scoreboard-content{
             display: flex;
@@ -28,6 +37,7 @@
             img{
                 width: 1.5rem;
                 height: 1.5rem;
+                aspect-ratio: 1/1;
             }
         }
     }

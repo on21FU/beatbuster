@@ -25,4 +25,9 @@
 
 .game-rules-left{
     padding-right: 3rem;
+
+    @include media-breakpoint-down(md){
+        margin-bottom: 2.5rem;
+        padding-right: 0px;
+    }
 }
