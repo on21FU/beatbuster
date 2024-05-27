@@ -67,7 +67,7 @@ export function Game({
                 <div className="progress">
                     <div className="progress-bar bg-primary"></div>
                 </div>
-                <h2>Results:</h2>
+                <h2>Results</h2>
 
                 <ul className="round-result-list">
                     <div className="round-result-description">
@@ -182,7 +182,7 @@ export function Game({
 function GameResultScreen({ players }: { players: Player[] }) {
     return (
         <div className="container round-result ">
-            <h2>Game End:</h2>
+            <h2>Game result</h2>
             <ul className="end-result-list">
                 {players
                     .sort((player1, player2) => player1.score - player2.score)
