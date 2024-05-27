@@ -4,6 +4,7 @@ import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup";
 import { Player, PlayerAnswer } from "~/types";
 import Scoreboard from "./scoreboard";
 import VolumeBar from "./volumeBar";
+import { AudioVisualization } from "./audioVisualization";
 
 export function Game({
     round,
@@ -34,7 +35,6 @@ export function Game({
     playerGuessTrackId: string | null;
     userId: string;
 }) {
-    const animationPath = "/assets/" + roundTime + "s_raten.gif";
 
     const { socket } = useSocketStore();
 
@@ -113,7 +113,7 @@ export function Game({
         <>
             <div className="game container">
                 <div className="game-animation">
-                    <img src={animationPath} />
+                    <AudioVisualization duration={roundTime} />
                 </div>
                 <h3 className="text-center">Runde {round}</h3>
                 <Scoreboard players={players} userId={userId} />

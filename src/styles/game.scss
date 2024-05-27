@@ -5,9 +5,11 @@
         width: 100%;
         text-align: center;
         margin-top: -4rem;
+        width: 100%;
 
-        img {
-            width: 60%;
+        div {
+            width: 80%;
+            margin: 0 auto;
         }
     }
 
@@ -32,8 +34,6 @@
                 &.clicked {
                     border: 3px solid $primary;
                 }
-
-
 
                 img {
                     position: absolute;
@@ -139,7 +139,7 @@
                 margin-top: 3rem;
                 display: flex;
 
-                @include media-breakpoint-down(md){
+                @include media-breakpoint-down(md) {
                     width: 100%;
                     margin-bottom: 4rem;
                 }
@@ -201,7 +201,5 @@
                 }
             }
         }
-
-        
     }
 }
