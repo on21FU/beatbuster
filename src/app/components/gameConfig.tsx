@@ -1,12 +1,18 @@
 "use client";
 
-
-import { ChangeEvent, useEffect, useState } from "react"
-import SpotifyWebApi from "spotify-web-api-node"
-import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
-import { Config, Player, PlayerAnswer, Playlist, validateMessage } from "~/types"
-import { Game } from "./game"
-import toast from 'react-hot-toast';
+import { ChangeEvent, useEffect, useState } from "react";
+import SpotifyWebApi from "spotify-web-api-node";
+import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup";
+import {
+    Config,
+    Player,
+    PlayerAnswer,
+    Playlist,
+    validateMessage,
+} from "~/types";
+import { Game } from "./game";
+import toast from "react-hot-toast";
+import LoadingSpinner from "./loadingSpinner";
 
 export type Answer = {
     trackId: string;
@@ -76,18 +82,19 @@ export default function GameConfig({
 
     function setActivePlaylist(playlist: Playlist) {
         sendUpdatedConfig({
-            ...config, playlist: { ...playlist }
-        })
+            ...config,
+            playlist: { ...playlist },
+        });
     }
 
     function sendUpdatedConfig(updatedConfig: Config) {
-        if (!socket) return
-        console.log("sending config", updatedConfig)
+        if (!socket) return;
+        console.log("sending config", updatedConfig);
         const message = {
             type: "update-config",
-            body: updatedConfig
-        }
-        socket.send(JSON.stringify(message))
+            body: updatedConfig,
+        };
+        socket.send(JSON.stringify(message));
     }
 
     async function handleMessage(event: MessageEvent) {
@@ -129,11 +136,15 @@ export default function GameConfig({
                     setPlayers(message.body.players);
                     break;
                 case "round-results":
-                    if (!spotify || !activeDeviceId) return
-                    const newPlayerAnswers = message.body.answers.map(answer => {
-                        return {
-                            ...answer,
-                            playerImgUrl: players.find(player => player.userId === answer.userId)?.imageUrl,
+                    if (!spotify || !activeDeviceId) return;
+                    const newPlayerAnswers = message.body.answers.map(
+                        (answer) => {
+                            return {
+                                ...answer,
+                                playerImgUrl: players.find(
+                                    (player) => player.userId === answer.userId
+                                )?.imageUrl,
+                            };
                         }
                     );
                     setPlayerAnswers(newPlayerAnswers);
@@ -145,9 +156,9 @@ export default function GameConfig({
                     setShowResultScreen(false);
                     setShowGameResultScreen(true);
                     setPlayers(message.body.players);
-                    break
+                    break;
                 case "update-config":
-                    setConfig(message.body)
+                    setConfig(message.body);
                     break;
                 default:
                     console.error("Unknown message type", message);
@@ -157,18 +168,17 @@ export default function GameConfig({
         }
     }
     function handleRoundTimeChange(e: ChangeEvent<HTMLInputElement>) {
-        if (!isPlayerHost({ players, userId }))
-            return
+        if (!isPlayerHost({ players, userId })) return;
         const newRoundTime = Number(e.target.value);
         setConfig({ ...config, roundTime: newRoundTime });
     }
 
     function handleWinConditionChange(e: ChangeEvent<HTMLInputElement>) {
-        if (!isPlayerHost({ players, userId }))
-            return
-        const winCondition = e.target.value
+        if (!isPlayerHost({ players, userId })) return;
+        const winCondition = e.target.value;
         sendUpdatedConfig({
-            ...config, winCondition: {
+            ...config,
+            winCondition: {
                 type: winCondition as "rounds" | "score",
                 amount: winCondition === "rounds" ? 10 : 10000,
             },
@@ -176,23 +186,25 @@ export default function GameConfig({
     }
 
     function handleAmountChange(e: ChangeEvent<HTMLInputElement>) {
-        if (!isPlayerHost({ players, userId }))
-            return
-        const amount = Number(e.target.value)
+        if (!isPlayerHost({ players, userId })) return;
+        const amount = Number(e.target.value);
         if (config.winCondition.type === "rounds") {
             sendUpdatedConfig({
-                ...config, winCondition: {
-                    type: "rounds", amount
-                }
-            })
+                ...config,
+                winCondition: {
+                    type: "rounds",
+                    amount,
+                },
+            });
         }
         if (config.winCondition.type === "score") {
             sendUpdatedConfig({
-                ...config, winCondition: {
+                ...config,
+                winCondition: {
                     type: "score",
-                    amount
-                }
-            })
+                    amount,
+                },
+            });
         }
     }
 
@@ -254,20 +266,95 @@ export default function GameConfig({
                                     <h4>Settings</h4>
                                     <div className="setting-section">
                                         <p>Round Time</p>
-                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime5" value="5" onChange={handleRoundTimeChange} checked={config.roundTime === 5} />
-                                        <label className="btn btn-settings" htmlFor="roundTime5">5s</label>
-                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime10" value="10" onChange={handleRoundTimeChange} checked={config.roundTime === 10} />
-                                        <label className="btn btn-settings" htmlFor="roundTime10">10s</label>
-                                        <input className="btn-check" type="radio" name="roundTime" id="roundTime15" value="15" onChange={handleRoundTimeChange} checked={config.roundTime === 15} />
-                                        <label className="btn btn-settings" htmlFor="roundTime15">15s</label>
+                                        <input
+                                            className="btn-check"
+                                            type="radio"
+                                            name="roundTime"
+                                            id="roundTime5"
+                                            value="5"
+                                            onChange={handleRoundTimeChange}
+                                            checked={config.roundTime === 5}
+                                        />
+                                        <label
+                                            className="btn btn-settings"
+                                            htmlFor="roundTime5"
+                                        >
+                                            5s
+                                        </label>
+                                        <input
+                                            className="btn-check"
+                                            type="radio"
+                                            name="roundTime"
+                                            id="roundTime10"
+                                            value="10"
+                                            onChange={handleRoundTimeChange}
+                                            checked={config.roundTime === 10}
+                                        />
+                                        <label
+                                            className="btn btn-settings"
+                                            htmlFor="roundTime10"
+                                        >
+                                            10s
+                                        </label>
+                                        <input
+                                            className="btn-check"
+                                            type="radio"
+                                            name="roundTime"
+                                            id="roundTime15"
+                                            value="15"
+                                            onChange={handleRoundTimeChange}
+                                            checked={config.roundTime === 15}
+                                        />
+                                        <label
+                                            className="btn btn-settings"
+                                            htmlFor="roundTime15"
+                                        >
+                                            15s
+                                        </label>
                                     </div>
                                     <div className="win-section">
                                         <div className="win-section-left">
                                             <p>Win Condition</p>
-                                            <input className="btn-check" type="radio" name="winCondition" id="rounds" value="rounds" onChange={handleWinConditionChange} checked={config.winCondition.type === "rounds"} />
-                                            <label className="btn btn-settings" htmlFor="rounds">Rounds</label>
-                                            <input className="btn-check" type="radio" name="winCondition" id="score" value="score" onChange={handleWinConditionChange} checked={config.winCondition.type === "score"} />
-                                            <label className="btn btn-settings" htmlFor="score">Score</label>
+                                            <input
+                                                className="btn-check"
+                                                type="radio"
+                                                name="winCondition"
+                                                id="rounds"
+                                                value="rounds"
+                                                onChange={
+                                                    handleWinConditionChange
+                                                }
+                                                checked={
+                                                    config.winCondition.type ===
+                                                    "rounds"
+                                                }
+                                            />
+                                            <label
+                                                className="btn btn-settings"
+                                                htmlFor="rounds"
+                                            >
+                                                Rounds
+                                            </label>
+                                            <input
+                                                className="btn-check"
+                                                type="radio"
+                                                name="winCondition"
+                                                id="score"
+                                                value="score"
+                                                onChange={
+                                                    handleWinConditionChange
+                                                }
+                                                checked={
+                                                    config.winCondition.type ===
+                                                    "score"
+                                                }
+                                            />
+                                            <label
+                                                className="btn btn-settings"
+                                                htmlFor="score"
+                                            >
+                                                Score
+                                            </label>
                                         </div>
                                         <div className="win-section-right">
                                             {config.winCondition.type ===
@@ -358,7 +445,11 @@ export default function GameConfig({
                                         className="btn btn-outline-primary"
                                         type="submit"
                                     >
-                                        {!activeDeviceId ? <LoadingSpinner size="sm"/> : "Start Game"}
+                                        {!activeDeviceId ? (
+                                            <LoadingSpinner size="sm" />
+                                        ) : (
+                                            "Start Game"
+                                        )}
                                     </button>
                                 </div>
                             </form>
@@ -544,15 +635,22 @@ function AddPlayer({ gameId }: { gameId: string }) {
     );
 }
 
-
-function isPlayerHost({ players, userId }: { players: Player[], userId: string }) {
+function isPlayerHost({
+    players,
+    userId,
+}: {
+    players: Player[];
+    userId: string;
+}) {
     if (!players[0]) {
-        throw new Error("No Players there...")
+        throw new Error("No Players there...");
     }
-    return players[0].userId === userId
+    return players[0].userId === userId;
 }
 
-function copyLobbyCodeToClipboard(gameId: string){
-    navigator.clipboard.writeText("https://beatbuster.vercel.app/game/" + gameId )
-    toast.success('Successfully copied to clipboard!')
+function copyLobbyCodeToClipboard(gameId: string) {
+    navigator.clipboard.writeText(
+        "https://beatbuster.vercel.app/game/" + gameId
+    );
+    toast.success("Successfully copied to clipboard!");
 }
