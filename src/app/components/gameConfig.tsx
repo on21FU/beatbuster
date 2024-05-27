@@ -6,6 +6,8 @@ import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
 import { Config, Player, PlayerAnswer, Playlist, validateMessage } from "~/types"
 import { Game } from "./game"
 import toast from 'react-hot-toast';
+import { FaCrown } from "react-icons/fa";
+
 
 export type Answer = {
     trackId: string,
@@ -192,18 +194,10 @@ export default function GameConfig({ accessToken, defaultPlayer, userId, gameId 
                             </div>
                             <div className="">
                                 <ul className="player-list row">
-                                    {
-                                        players.map((player, index) => <PlayerDisplay key={index} player={player} />)
-                                    }
-                                    {
-                                        players.length < 11 && new Array(11 - players.length).fill(0).map((_, index) => <EmptyPlayer key={index} />)
-                                    }
-                                    {
-                                        players.length < 12 && <AddPlayer gameId={gameId}/>
-                                    }
+                                    <PlayerList players={players} gameId={gameId} userId={userId} />
                                 </ul>
                             </div>
-                        </div>                        
+                        </div>
                         <div className="col-lg-8">
                             <h2>Your Game</h2>
                             <form action={startGame}>
@@ -322,13 +316,18 @@ function SearchResultDisplay({ playlistItems, searchTerm, setActivePlaylist }: {
 
 }
 
-function PlayerDisplay({ player }: { player: Player }) {
+function PlayerDisplay({ player, userId, index }: { player: Player, userId: string, index: number }) {
     return <li className="col-lg-3">
         <div className="player-list-image">
+            {
+                index === 0 && <div className="player-list-host">
+                    <img className="host-crown-icon" src="/assets/crown.svg" />
+                </div>
+            }
             <img src={player.imageUrl} />
         </div>
         <div className="player-list-name">
-            <p>{player.username}</p>
+            <p className={player.userId === userId ? "host" : ""}>{player.username}</p>
         </div>
     </li>
 }
@@ -381,15 +380,40 @@ function EmptyPlayer() {
     </li>
 }
 
-function AddPlayer({gameId}: {gameId: string}) {
+function AddPlayer({ gameId }: { gameId: string }) {
     return <li className="col-lg-3">
         <div className="player-list-button">
-            <button onClick={ () => copyLobbyCodeToClipboard(gameId) } className="add-player-button">+</button>
+            <button onClick={() => copyLobbyCodeToClipboard(gameId)} className="add-player-button">+</button>
         </div>
         <div className="player-list-name">
             <p>Invite Player</p>
         </div>
     </li>
+}
+
+function PlayerList({ players, gameId, userId }: { players: Player[], gameId: string, userId: string }) {
+    if (players.length === 12) {
+        return <>
+            {
+                players.map((player, index) => <PlayerDisplay key={index} player={player} userId={userId} index={index} />)
+            }
+        </>
+
+    }
+    if (players.length < 12) {
+        return <>
+            {
+                players.map((player, index) => <PlayerDisplay key={player.userId} player={player} userId={userId} index={index} />)
+            }
+            {
+                new Array(11 - players.length).fill(0).map((_, index) => <EmptyPlayer key={index} />)
+            }
+            {
+                players.length < 12 && <AddPlayer gameId={gameId} />
+            }
+        </>
+    }
+
 }
 
 function isPlayerHost({ players, userId }: { players: Player[], userId: string }) {
@@ -399,8 +423,8 @@ function isPlayerHost({ players, userId }: { players: Player[], userId: string }
     return players[0].userId === userId
 }
 
-function copyLobbyCodeToClipboard(gameId: string){
-    navigator.clipboard.writeText("https://beatbuster.vercel.app/game/" + gameId )
+function copyLobbyCodeToClipboard(gameId: string) {
+    navigator.clipboard.writeText("https://beatbuster.vercel.app/game/" + gameId)
     toast.success('Successfully copied to clipboard!')
 }
 

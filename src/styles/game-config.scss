@@ -180,11 +180,22 @@ form {
     li {
         list-style: none;
 
-
+        
         .player-list-image {
             margin-bottom: 0.5rem;
             border: 3px solid $black;
-
+            position: relative;
+            
+            .host-crown-icon {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 1.5rem;
+                height: 1.5rem;
+                fill: $primary;
+            }
+            
             img {
                 object-fit: cover;
                 width: 100%;
@@ -227,3 +238,4 @@ form {
         }
     }
 }
+
