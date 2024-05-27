@@ -5,7 +5,7 @@ import GameConfig from "./gameConfig";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import WebPlayback from "../webplayback";
 
-export default async function GameConfigWrapper() {
+export default async function GameConfigWrapper({ gameId }: { gameId: string}) {
     const { token: accessToken } = await getUserToken();
     console.log("AccessToken: ", accessToken)
 
@@ -24,7 +24,7 @@ export default async function GameConfigWrapper() {
 
     return (
         <>
-            <GameConfig accessToken={accessToken} defaultPlayer={user} userId={userId} />
+            <GameConfig accessToken={accessToken} defaultPlayer={user} userId={userId} gameId={gameId} />
             <WebPlayback token={accessToken} />
         </>
     )
