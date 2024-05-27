@@ -287,6 +287,7 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
             playerGuessTrackId={playerGuessTrackId}
             showGameResultScreen={showGameResultScreen}
             resultScreenTimer={resultScreenTimer}
+            userId={userId}
         />
     }
 

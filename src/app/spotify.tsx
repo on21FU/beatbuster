@@ -4,22 +4,26 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import SpotifyWebApi from "spotify-web-api-node";
 
 export async function getUserToken() {
-    try {
-        const { userId } = auth();
-        if (!userId) {
-            throw new Error("Invalid UserID");
-        }
-        const tokens = await clerkClient.users.getUserOauthAccessToken(
-            userId,
-            "oauth_spotify"
-        );
-    
-        if (!Array.isArray(tokens) || !tokens[0]) {
+    const { userId } = auth();
+    if (!userId) {
+        throw new Error("Invalid UserID");
+    }
+    const response = await clerkClient.users.getUserOauthAccessToken(
+        userId,
+        "oauth_spotify"
+    );
+    console.log("TOKENS: ", response);
+
+    if(process.env.NODE_ENV === "development"){
+        if (!Array.isArray(response) || !response[0] || !response[0].token) {
             throw new Error("No Token");
         }
-        return tokens[0].token;        
-    } catch (error) {
-        console.error(error)
+        return { token: response[0].token };
+    } else {
+        if (!Array.isArray(response.data) || !response.data[0] || !response.data[0].token) {
+            throw new Error("No Token");
+        }
+        return { token: response.data[0].token };
     }
 }
 
@@ -27,26 +31,30 @@ export async function startRoundWithSpotifyApi(formData: FormData) {
     const playlistId = formData.get("playlistId");
     if (!playlistId || typeof playlistId !== "string") return;
 
-    const userToken = await getUserToken();
+    const { token: userToken } = await getUserToken();
     const spotify = new SpotifyWebApi({
         clientId: process.env.SPOTIFY_CLIENT_ID,
         clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-        accessToken: userToken
-    })
+        accessToken: userToken,
+    });
 
     const trackIds = await getTrackIdsFromPlaylist({ spotify, playlistId });
     const shuffledTrackIds = shuffleArray(trackIds);
-
 }
 
-
-async function getTrackIdsFromPlaylist({ spotify, playlistId }: { spotify: SpotifyWebApi, playlistId: string }) {
+async function getTrackIdsFromPlaylist({
+    spotify,
+    playlistId,
+}: {
+    spotify: SpotifyWebApi;
+    playlistId: string;
+}) {
     const playlist = await spotify.getPlaylist(playlistId);
     const trackIds = [];
     for (let i = 0; i < Math.ceil(playlist.body.tracks.total / 100); i++) {
         const trackResponse = await spotify.getPlaylistTracks(playlistId, {
             limit: 100,
-            offset: i * 100
+            offset: i * 100,
         });
         trackIds.push(...getTrackIds(trackResponse.body));
     }
@@ -54,34 +62,11 @@ async function getTrackIdsFromPlaylist({ spotify, playlistId }: { spotify: Spoti
 }
 
 function getTrackIds(trackResponse: SpotifyApi.PlaylistTrackResponse) {
-    return trackResponse.items.filter(item => item.track && item.track.id).map(item => item);
+    return trackResponse.items
+        .filter((item) => item.track && item.track.id)
+        .map((item) => item);
 }
 
 function shuffleArray<Type>(array: Type[]) {
     return array.sort((a, b) => 0.5 - Math.random());
-}
-
-async function getTracksFromPlaylist({ userToken, playlistId }: { userToken: string, playlistId: string }) {
-
-
-
-}
-
-async function addTrackToQueue({ userToken, trackId }: { userToken: string, trackId: string }) {
-    const res = await fetch(
-        `https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%3A` + trackId,
-        {
-            headers: { Authorization: `Bearer ${userToken}` },
-            method: "POST",
-        }
-    );
-    console.log(res)
-}
-
-async function skipToNext() {
-    const userToken = await getUserToken();
-    const res = await fetch(`https://api.spotify.com/v1/me/player/next`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-        method: "POST",
-    });
 }
