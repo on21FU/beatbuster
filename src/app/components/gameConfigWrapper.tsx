@@ -6,7 +6,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import WebPlayback from "../webplayback";
 
 export default async function GameConfigWrapper() {
-    const accessToken = await getUserToken();
+    const { token: accessToken } = await getUserToken();
     console.log("AccessToken: ", accessToken)
 
     const { userId } = auth();
