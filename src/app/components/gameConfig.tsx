@@ -56,6 +56,7 @@ export default function GameConfig({
 
         console.log("Handling Message handler", activeDeviceId);
         socket.addEventListener("message", handleMessage);
+
     }, [activeDeviceId]);
 
     if (!socket)
@@ -537,9 +538,9 @@ function PlayerDisplay({ player, userId, index }: { player: Player, userId: stri
 function getDefaultPlaylist(): Config {
     return {
         playlist: {
-            id: "37i9dQZF1DXcBWIGoYBM5M",
-            imgUrl: "https://i.scdn.co/image/ab67706f000000020ba81215546ef8fd79aa92a7",
-            name: "Today's Top Hits",
+            id: "6UeSakyzhiEt4NB3UAd6NQ",
+            imgUrl: "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000bebb3bd5501a335b265807df34db",
+            name: "Billboard Hot 100",
         },
         roundTime: 10,
         winCondition: {
@@ -602,19 +603,34 @@ function EmptyPlayer() {
 }
 
 function AddPlayer({ gameId }: { gameId: string }) {
+
+    const [buttonContent, setButtonContent] = useState("+");
+
     return <li className="col-md-3 col-sm-3 col-xs-3">
         <div className="player-list-button">
             <button
                 onClick={() => copyLobbyCodeToClipboard(gameId)}
                 className="add-player-button"
             >
-                +
+                {buttonContent}
             </button>
         </div>
         <div className="player-list-name">
             <p>Invite Player</p>
         </div>
     </li>
+
+    function copyLobbyCodeToClipboard(gameId: string) {
+        navigator.clipboard.writeText(
+            "https://beatbuster.vercel.app/game/" + gameId
+        );
+        toast.success("Successfully copied to clipboard!");
+        setButtonContent("✓");
+        setTimeout(() => {
+            setButtonContent("+");
+
+        }, 1500)
+    }
 
 }
 
@@ -651,9 +667,4 @@ function isPlayerHost({ players, userId }: { players: Player[], userId: string }
     return players[0].userId === userId;
 }
 
-function copyLobbyCodeToClipboard(gameId: string) {
-    navigator.clipboard.writeText(
-        "https://beatbuster.vercel.app/game/" + gameId
-    );
-    toast.success("Successfully copied to clipboard!");
-}
+
