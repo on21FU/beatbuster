@@ -5,6 +5,7 @@ import SpotifyWebApi from "spotify-web-api-node"
 import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
 import { Player, PlayerAnswer, validateMessage } from "~/types"
 import { Game } from "./game"
+import toast from 'react-hot-toast';
 
 type Config = {
     playlist: Playlist,
@@ -31,7 +32,7 @@ export type Answer = {
     isCorrect: boolean
 }
 
-export default function GameConfig({ accessToken, defaultPlayer, userId }: { accessToken: string, defaultPlayer: Player, userId: string }) {
+export default function GameConfig({ accessToken, defaultPlayer, userId, gameId }: { accessToken: string, defaultPlayer: Player, userId: string, gameId: string }) {
     const [playlistItems, setPlaylistItems] = useState<SpotifyApi.PlaylistObjectSimplified[] | undefined>()
     const [searchTerm, setSearchTerm] = useState("")
     const [config, setConfig] = useState<Config>(getDefaultPlaylist())
@@ -198,11 +199,11 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
                                         players.length < 11 && new Array(11 - players.length).fill(0).map((_, index) => <EmptyPlayer key={index} />)
                                     }
                                     {
-                                        players.length < 12 && <AddPlayer />
+                                        players.length < 12 && <AddPlayer gameId={gameId}/>
                                     }
                                 </ul>
                             </div>
-                        </div>
+                        </div>                        
                         <div className="col-lg-8">
                             <h2>Your Game</h2>
                             <form action={startGame}>
@@ -380,14 +381,19 @@ function EmptyPlayer() {
     </li>
 }
 
-function AddPlayer() {
+function AddPlayer({gameId}: {gameId: string}) {
     return <li className="col-lg-3">
         <div className="player-list-button">
-            <button className="add-player-button">+</button>
+            <button onClick={ () => copyLobbyCodeToClipboard(gameId) } className="add-player-button">+</button>
         </div>
         <div className="player-list-name">
             <p>Invite Player</p>
         </div>
     </li>
+}
+
+function copyLobbyCodeToClipboard(gameId: string){
+    navigator.clipboard.writeText("https://beatbuster.vercel.app/game/" + gameId )
+    toast.success('Successfully copied to clipboard!')
 }
 
