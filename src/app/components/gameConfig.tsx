@@ -7,6 +7,7 @@ import { Config, Player, PlayerAnswer, Playlist, validateMessage } from "~/types
 import { Game } from "./game"
 import toast from 'react-hot-toast';
 import { FaCrown } from "react-icons/fa";
+import LoadingSpinner from "./loadingSpinner"
 
 
 
@@ -341,41 +342,41 @@ export default function GameConfig({
                                         <div className="win-section-right">
                                             {config.winCondition.type ===
                                                 "rounds" && (
-                                                <div>
-                                                    <p>Amount Songs</p>
-                                                    <input
-                                                        type="number"
-                                                        min="5"
-                                                        max="25"
-                                                        onChange={
-                                                            handleAmountChange
-                                                        }
-                                                        value={
-                                                            config.winCondition
-                                                                .amount
-                                                        }
-                                                    />
-                                                </div>
-                                            )}
+                                                    <div>
+                                                        <p>Amount Songs</p>
+                                                        <input
+                                                            type="number"
+                                                            min="5"
+                                                            max="25"
+                                                            onChange={
+                                                                handleAmountChange
+                                                            }
+                                                            value={
+                                                                config.winCondition
+                                                                    .amount
+                                                            }
+                                                        />
+                                                    </div>
+                                                )}
                                             {config.winCondition.type ===
                                                 "score" && (
-                                                <div>
-                                                    <p>Amount Score</p>
-                                                    <input
-                                                        type="number"
-                                                        step="1000"
-                                                        min="5000"
-                                                        max="25000"
-                                                        onChange={
-                                                            handleAmountChange
-                                                        }
-                                                        value={
-                                                            config.winCondition
-                                                                .amount
-                                                        }
-                                                    />
-                                                </div>
-                                            )}
+                                                    <div>
+                                                        <p>Amount Score</p>
+                                                        <input
+                                                            type="number"
+                                                            step="1000"
+                                                            min="5000"
+                                                            max="25000"
+                                                            onChange={
+                                                                handleAmountChange
+                                                            }
+                                                            value={
+                                                                config.winCondition
+                                                                    .amount
+                                                            }
+                                                        />
+                                                    </div>
+                                                )}
                                         </div>
                                     </div>
                                     <div className="playlist-selection">
