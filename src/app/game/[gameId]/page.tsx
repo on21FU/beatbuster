@@ -10,7 +10,7 @@ export default async function GamePage({ params }: { params: { gameId: string } 
     const { fullName, imageUrl, id } = await clerkClient.users.getUser(userId)
     const { token: accessToken, error } = await getUserToken()
 
-    return <Game error={error} webSocketUrl={process.env.WEBSOCKET_URL ?? ""} accessToken={ accessToken} gameId={params.gameId} user={{
+    return <Game error={JSON.stringify(error)} webSocketUrl={process.env.WEBSOCKET_URL ?? ""} accessToken={ accessToken} gameId={params.gameId} user={{
         userId: id,
         username: fullName || generateGuestName(),
         imageUrl: imageUrl || "",
