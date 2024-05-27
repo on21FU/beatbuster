@@ -8,16 +8,18 @@ export default function Scoreboard({ players, userId }: { players: Player[], use
             <div className="scoreboard">
                 <div className="scoreboard-wrapper">
                     <h4>Scoreboard</h4>
-                    {players.map((player) => {
-                        const isCurrentUser = player.userId === userId ? "own-user" : ""
-                        return (
-                            <div className={`scoreboard-content ${isCurrentUser}`} key={player.userId}>
-                                <img src={player.imageUrl} />
-                                <p>{player.username}</p>
-                                <p>{player.score}</p>
-                            </div>
-                        );
-                    })}
+                    {players
+                        .sort((player1, player2) => player2.score - player1.score)
+                        .map((player) => {
+                            const isCurrentUser = player.userId === userId ? "own-user" : ""
+                            return (
+                                <div className={`scoreboard-content ${isCurrentUser}`} key={player.userId}>
+                                    <img src={player.imageUrl} />
+                                    <p>{player.username}</p>
+                                    <p>{player.score}</p>
+                                </div>
+                            );
+                        })}
                 </div>
             </div>
         </>

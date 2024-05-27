@@ -6,6 +6,7 @@ import { Inter } from "next/font/google";
 import { ClerkProvider } from '@clerk/nextjs'
 import { TRPCReactProvider } from "~/trpc/react";
 import Footer from "./components/footer";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,6 +30,7 @@ export default function RootLayout({
         <head>
         </head>
         <body className={inter.className}>
+        <Toaster />
           <div className="logo-container container">
             <div className="logo">
               <img src="/../assets/logo-beatbuster.png"></img>

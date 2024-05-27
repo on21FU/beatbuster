@@ -3,6 +3,7 @@ import { Answer } from "./gameConfig";
 import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup";
 import { Player, PlayerAnswer } from "~/types";
 import Scoreboard from "./scoreboard";
+import VolumeBar from "./volumeBar";
 
 export function Game({
     round,
@@ -79,7 +80,7 @@ export function Game({
                         </p>
                         <p className="round-result-description-content">Time</p>
                     </div>
-                    {playerAnswers?.map((playerAnswer, index) => {
+                    {playerAnswers?.sort((playerAnswer1, playerAnswer2) => playerAnswer2.gainedScore - playerAnswer1.gainedScore).map((playerAnswer, index) => {
                         const player = players.find(
                             (player) => player.userId === playerAnswer.userId
                         );
@@ -105,7 +106,7 @@ export function Game({
     }
 
     if (showGameResultScreen) {
-        return <GameResultScreen players={players}/>
+        return <GameResultScreen players={players} />
     }
 
     return (
@@ -134,6 +135,9 @@ export function Game({
                             );
                         })}
                     </div>
+                </div>
+                <div>
+                    <VolumeBar />
                 </div>
             </div>
         </>
@@ -185,7 +189,7 @@ function GameResultScreen({ players }: { players: Player[] }) {
             <h2>Game result</h2>
             <ul className="end-result-list">
                 {players
-                    .sort((player1, player2) => player1.score - player2.score)
+                    .sort((player1, player2) => player2.score - player1.score)
                     .map((player, index) => {
                         return (
                             <li className="end-result-list-item" key={index}>
