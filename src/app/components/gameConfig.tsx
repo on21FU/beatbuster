@@ -445,7 +445,7 @@ export default function GameConfig({
                                         className="btn btn-outline-primary"
                                         type="submit"
                                     >
-                                        Start Game
+                                        {!activeDeviceId ? <LoadingSpinner size="sm"/> : "Start Game"}
                                     </button>
                                 </div>
                             </form>

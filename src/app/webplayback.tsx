@@ -48,10 +48,6 @@ export function WebPlayback({ token }: { token: string }) {
         setPlayer(player);
       };      
   }, []);
-
-  if (!player) {
-    return <LoadingSpinner />
-  }
   
   return (
     <>
