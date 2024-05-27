@@ -1,3 +1,72 @@
-.homescreen-left{
+.homescreen-left {
     padding-right: 3rem
+}
+
+.sign-in-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+
+    .sign-in-button {
+        width: 25%;
+        border: 3px solid $black;
+        background-color: $white;
+        height: 2.5rem;
+        margin-right: 3rem;
+
+        &:hover {
+            border-color: $primary;
+            background-color: $black;
+            color: $primary;
+        }
+    }
+
+    .log-out-button {
+        height: 2.5rem;
+        width: 2.5rem;
+        border-radius: none;
+
+        button {
+            height: 2.5rem;
+            width: 2.5rem;
+         
+        }
+    }
+
+}
+
+.start-round-form {
+    width: 100%;
+    position: relative;
+
+    
+
+    input {
+        border: 3px solid $black;
+        width: 75%;
+        height: 2.5rem;
+        padding-left: 0.5rem;
+
+        @include media-breakpoint-down(md){
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    button {
+        width: 25%;
+        border: 3px solid $black;
+        background-color: $white;
+        height: 2.5rem;
+        @include media-breakpoint-down(md){
+            width: auto;
+        }
+
+        &:hover {
+            border-color: $primary;
+            background-color: $black;
+            color: $primary;
+        }
+
+    }
 }

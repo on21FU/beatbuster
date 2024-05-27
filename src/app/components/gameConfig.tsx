@@ -185,11 +185,11 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
             <>
                 <div className="container">
                     <div className="row">
-                        <div className="col-sm-4">
+                        <div className="col-lg-4">
                             <div className="game-config-left">
-                                <h2>Players</h2>
+                                <h2>Players </h2>
                             </div>
-                            <div className="">
+                            <div className="playerlist-wrapper">
                                 <ul className="player-list row">
                                     {
                                         players.map((player, index) => <PlayerDisplay key={index} player={player} />)
@@ -322,7 +322,7 @@ function SearchResultDisplay({ playlistItems, searchTerm, setActivePlaylist }: {
 }
 
 function PlayerDisplay({ player }: { player: Player }) {
-    return <li className="col-lg-3">
+    return <li className="col-md-3 col-sm-3 col-xs-3">
         <div className="player-list-image">
             <img src={player.imageUrl} />
         </div>
@@ -370,7 +370,7 @@ async function playTrack({ trackId, spotify, activeDeviceId }: { trackId: string
 }
 
 function EmptyPlayer() {
-    return <li className="col-lg-3">
+    return <li className="col-md-3 col-sm-3 col-xs-3">
         <div className="player-list-image">
             <img src="/assets/placeholder-image.jpg" />
         </div>
@@ -381,7 +381,7 @@ function EmptyPlayer() {
 }
 
 function AddPlayer() {
-    return <li className="col-lg-3">
+    return <li className="col-md-3 col-sm-3 col-xs-3">
         <div className="player-list-button">
             <button className="add-player-button">+</button>
         </div>
