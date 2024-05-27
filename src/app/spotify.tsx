@@ -8,16 +8,23 @@ export async function getUserToken() {
     if (!userId) {
         throw new Error("Invalid UserID");
     }
-    const { data } = await clerkClient.users.getUserOauthAccessToken(
+    const response = await clerkClient.users.getUserOauthAccessToken(
         userId,
         "oauth_spotify"
     );
-    console.log("TOKENS: ", data);
+    console.log("TOKENS: ", response);
 
-    if (!Array.isArray(data) || !data[0] || !data[0].token) {
-        throw new Error("No Token");
+    if(process.env.NODE_ENV === "development"){
+        if (!Array.isArray(response) || !response[0] || !response[0].token) {
+            throw new Error("No Token");
+        }
+        return { token: response[0].token };
+    } else {
+        if (!Array.isArray(response.data) || !response.data[0] || !response.data[0].token) {
+            throw new Error("No Token");
+        }
+        return { token: response.data[0].token };
     }
-    return { token: data[0].token };
 }
 
 export async function startRoundWithSpotifyApi(formData: FormData) {
