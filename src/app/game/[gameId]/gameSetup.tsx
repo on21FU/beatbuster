@@ -53,7 +53,6 @@ export function Game(
 
     return (
         <main>
-            Joined Game {gameId}
             {children}
         </main>
     )

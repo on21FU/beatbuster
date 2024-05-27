@@ -185,9 +185,9 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
             <>
                 <div className="container">
                     <div className="row">
-                        <div className="col-lg-4">
+                        <div className="col-sm-4">
                             <div className="game-config-left">
-                                <h2>Players </h2>
+                                <h2>Players</h2>
                             </div>
                             <div className="">
                                 <ul className="player-list row">
@@ -263,7 +263,7 @@ export default function GameConfig({ accessToken, defaultPlayer, userId }: { acc
 
                                 </div>
                                 <div className="button-wrapper">
-                                    <button disabled={!activeDeviceId} className="btn btn-settings" type="submit">Start Game</button>
+                                    <button disabled={!activeDeviceId} className="btn btn-outline-primary" type="submit">Start Game</button>
                                 </div>
                             </form>
 

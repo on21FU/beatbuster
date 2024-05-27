@@ -27,6 +27,7 @@
 
 label.btn.btn-settings {
     width: auto;
+    margin-bottom: 0.5rem;
     &:hover {
         background-color: $black ;
         color: $primary ;
@@ -188,6 +189,7 @@ form {
                 object-fit: cover;
                 width: 100%;
                 height: auto;
+                aspect-ratio: 1/1;
             }
 
         }
