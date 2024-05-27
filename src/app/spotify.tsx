@@ -17,9 +17,10 @@ export async function getUserToken() {
         if (!Array.isArray(tokens) || !tokens[0]) {
             throw new Error("No Token");
         }
-        return tokens[0].token;        
+        return { token: tokens[0].token };        
     } catch (error) {
         console.error(error)
+        return { error }
     }
 }
 
@@ -27,7 +28,7 @@ export async function startRoundWithSpotifyApi(formData: FormData) {
     const playlistId = formData.get("playlistId");
     if (!playlistId || typeof playlistId !== "string") return;
 
-    const userToken = await getUserToken();
+    const { token: userToken } = await getUserToken();
     const spotify = new SpotifyWebApi({
         clientId: process.env.SPOTIFY_CLIENT_ID,
         clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
@@ -59,29 +60,4 @@ function getTrackIds(trackResponse: SpotifyApi.PlaylistTrackResponse) {
 
 function shuffleArray<Type>(array: Type[]) {
     return array.sort((a, b) => 0.5 - Math.random());
-}
-
-async function getTracksFromPlaylist({ userToken, playlistId }: { userToken: string, playlistId: string }) {
-
-
-
-}
-
-async function addTrackToQueue({ userToken, trackId }: { userToken: string, trackId: string }) {
-    const res = await fetch(
-        `https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%3A` + trackId,
-        {
-            headers: { Authorization: `Bearer ${userToken}` },
-            method: "POST",
-        }
-    );
-    console.log(res)
-}
-
-async function skipToNext() {
-    const userToken = await getUserToken();
-    const res = await fetch(`https://api.spotify.com/v1/me/player/next`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-        method: "POST",
-    });
 }

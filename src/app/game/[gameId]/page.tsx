@@ -8,9 +8,9 @@ export default async function GamePage({ params }: { params: { gameId: string } 
     const userId = auth().userId
     if (!userId) return <div>Not logged in</div>
     const { fullName, imageUrl, id } = await clerkClient.users.getUser(userId)
-    const accessToken = await getUserToken()
+    const { token: accessToken, error } = await getUserToken()
 
-    return <Game webSocketUrl={process.env.WEBSOCKET_URL ?? ""} accessToken={accessToken} gameId={params.gameId} user={{
+    return <Game error={error} webSocketUrl={process.env.WEBSOCKET_URL ?? ""} accessToken={ accessToken} gameId={params.gameId} user={{
         userId: id,
         username: fullName || generateGuestName(),
         imageUrl: imageUrl || "",
