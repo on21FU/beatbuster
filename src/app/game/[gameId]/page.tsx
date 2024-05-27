@@ -12,7 +12,7 @@ export default async function GamePage({
     const userId = auth().userId;
     if (!userId) return <div>Not logged in</div>;
     const { fullName, imageUrl, id } = await clerkClient.users.getUser(userId);
-    const { token: accessToken, error } = await getUserToken();
+    const { token: accessToken } = await getUserToken();
 
     return (
         <Game
