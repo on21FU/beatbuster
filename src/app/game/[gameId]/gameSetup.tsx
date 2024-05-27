@@ -35,11 +35,10 @@ export const useSpotifyStore = create<SpotifyStore>((set) => ({
 }))
 
 export function Game(
-    { gameId, user, children, webSocketUrl, accessToken, error }:
-        { gameId: string, user: UserInfo, children: React.ReactNode, webSocketUrl: string, accessToken: string, error: string }
+    { gameId, user, children, webSocketUrl, accessToken }:
+        { gameId: string, user: UserInfo, children: React.ReactNode, webSocketUrl: string, accessToken: string }
 ) {
 
-    console.log("TOKEN ERROR: ", error)
     const { socket, setSocket } = useSocketStore()
     const { spotify, setSpotify } = useSpotifyStore()
 

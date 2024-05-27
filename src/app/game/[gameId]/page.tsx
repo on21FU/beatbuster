@@ -16,7 +16,6 @@ export default async function GamePage({
 
     return (
         <Game
-            error={stringifyError(error)!.toString()}
             webSocketUrl={process.env.WEBSOCKET_URL ?? ""}
             accessToken={accessToken}
             gameId={params.gameId}
@@ -35,6 +34,3 @@ function generateGuestName() {
     return "Guest" + Math.floor(Math.random() * 1000);
 }
 
-function stringifyError(error: unknown) {
-    return typeof error === "string" ? error : undefined
-}

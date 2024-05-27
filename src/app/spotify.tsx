@@ -13,6 +13,7 @@ export async function getUserToken() {
             userId,
             "oauth_spotify"
         );
+        console.log("TOKENS: ", tokens)
     
         if (!Array.isArray(tokens) || !tokens[0]) {
             throw new Error("No Token");
