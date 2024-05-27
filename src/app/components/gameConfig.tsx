@@ -1,18 +1,14 @@
-"use client";
+"use client"
 
-import { ChangeEvent, useEffect, useState } from "react";
-import SpotifyWebApi from "spotify-web-api-node";
-import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup";
-import {
-    Config,
-    Player,
-    PlayerAnswer,
-    Playlist,
-    validateMessage,
-} from "~/types";
-import { Game } from "./game";
-import toast from "react-hot-toast";
-import LoadingSpinner from "./loadingSpinner";
+import { ChangeEvent, useEffect, useState } from "react"
+import SpotifyWebApi from "spotify-web-api-node"
+import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
+import { Config, Player, PlayerAnswer, Playlist, validateMessage } from "~/types"
+import { Game } from "./game"
+import toast from 'react-hot-toast';
+import { FaCrown } from "react-icons/fa";
+
+
 
 export type Answer = {
     trackId: string;
@@ -241,21 +237,7 @@ export default function GameConfig({
                             </div>
                             <div className="playerlist-wrapper">
                                 <ul className="player-list row">
-                                    {players.map((player, index) => (
-                                        <PlayerDisplay
-                                            key={index}
-                                            player={player}
-                                        />
-                                    ))}
-                                    {players.length < 11 &&
-                                        new Array(11 - players.length)
-                                            .fill(0)
-                                            .map((_, index) => (
-                                                <EmptyPlayer key={index} />
-                                            ))}
-                                    {players.length < 12 && (
-                                        <AddPlayer gameId={gameId} />
-                                    )}
+                                    <PlayerList players={players} gameId={gameId} userId={userId} />
                                 </ul>
                             </div>
                         </div>
@@ -535,13 +517,18 @@ function SearchResultDisplay({
     );
 }
 
-function PlayerDisplay({ player }: { player: Player }) {
-    return <li className="col-md-3 col-sm-3 col-xs-3">
+function PlayerDisplay({ player, userId, index }: { player: Player, userId: string, index: number }) {
+    return <li className="col-lg-3 col-sm-3 col-xs-3">
         <div className="player-list-image">
+            {
+                index === 0 && <div className="player-list-host">
+                    <img className="host-crown-icon" src="/assets/crown.svg" />
+                </div>
+            }
             <img src={player.imageUrl} />
         </div>
         <div className="player-list-name">
-            <p>{player.username}</p>
+            <p className={player.userId === userId ? "host" : ""}>{player.username}</p>
         </div>
     </li>
 }
@@ -621,7 +608,7 @@ function AddPlayer({ gameId }: { gameId: string }) {
                 className="add-player-button"
             >
                 +
-            </button>        
+            </button>
         </div>
         <div className="player-list-name">
             <p>Invite Player</p>
@@ -630,13 +617,33 @@ function AddPlayer({ gameId }: { gameId: string }) {
 
 }
 
-function isPlayerHost({
-    players,
-    userId,
-}: {
-    players: Player[];
-    userId: string;
-}) {
+
+function PlayerList({ players, gameId, userId }: { players: Player[], gameId: string, userId: string }) {
+    if (players.length === 12) {
+        return <>
+            {
+                players.map((player, index) => <PlayerDisplay key={index} player={player} userId={userId} index={index} />)
+            }
+        </>
+
+    }
+    if (players.length < 12) {
+        return <>
+            {
+                players.map((player, index) => <PlayerDisplay key={player.userId} player={player} userId={userId} index={index} />)
+            }
+            {
+                new Array(11 - players.length).fill(0).map((_, index) => <EmptyPlayer key={index} />)
+            }
+            {
+                players.length < 12 && <AddPlayer gameId={gameId} />
+            }
+        </>
+    }
+
+}
+
+function isPlayerHost({ players, userId }: { players: Player[], userId: string }) {
     if (!players[0]) {
         throw new Error("No Players there...");
     }
