@@ -3,6 +3,7 @@ import { Answer } from "./gameConfig";
 import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup";
 import { Player, PlayerAnswer } from "~/types";
 import Scoreboard from "./scoreboard";
+import VolumeBar from "./volumeBar";
 
 export function Game({
     round,
@@ -134,6 +135,9 @@ export function Game({
                             );
                         })}
                     </div>
+                </div>
+                <div>
+                    <VolumeBar />
                 </div>
             </div>
         </>
