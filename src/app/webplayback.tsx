@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { useSpotifyStore } from "./game/[gameId]/gameSetup";
 import { useSession, useUser } from "@clerk/nextjs";
-import LoadingSpinner from "./components/loadingSpinner";
 
 export function WebPlayback({ token }: { token: string }) {
   const [player, setPlayer] = useState<Spotify.Player | undefined>(undefined);

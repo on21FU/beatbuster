@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Answer } from "./gameConfig";
 import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup";
 import { Player, PlayerAnswer } from "~/types";
@@ -49,7 +49,6 @@ export function Game({
             return;
         }
         setPlayerGuessTrackId(answer.trackId);
-
         socket.send(
             JSON.stringify({
                 type: "answer",
@@ -62,6 +61,22 @@ export function Game({
         );
     }
 
+    useEffect(() => {
+        if(!roundStart || playerGuessTrackId) return;
+        const timer = setTimeout(() => {
+            if(!playerGuessTrackId  && answers.length > 0){
+                const wrongAnswer = {
+                    trackId: "",
+                    trackName: "",
+                    trackArtists: [],
+                    isCorrect: false
+                }
+                handleAnswer(wrongAnswer)
+            }
+        }, roundTime * 1000)
+        return () => clearTimeout(timer);
+    })
+    
     if (showResultsScreen) {
         return (
             <div className="round-result container">
