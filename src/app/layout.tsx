@@ -13,7 +13,7 @@ const inter = Inter({
 export const metadata = {
   title: "Beatbuster",
   description: "Beatbuster!!!!",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  icons: [{ rel: "icon", url: "/../assets/favicon.png" }],
 };
 
 

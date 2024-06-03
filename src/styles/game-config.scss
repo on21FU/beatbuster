@@ -209,9 +209,10 @@ form {
             
             .host-crown-icon {
                 position: absolute;
-                top: 50%;
-                left: 50%;
+                top: -0.5rem;
+                left: 0.25rem;
                 transform: translate(-50%, -50%);
+                rotate: -25deg;
                 width: 1.5rem;
                 height: 1.5rem;
                 fill: $primary;
