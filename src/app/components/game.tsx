@@ -95,7 +95,7 @@ export function Game({
                                 </div>
 
                                 <div className="round-result-item-content">
-                                    {playerAnswer.timeToAnswer}s
+                                    {playerAnswer.timeToAnswer.toFixed(2)}s
                                 </div>
                             </li>
                         );
