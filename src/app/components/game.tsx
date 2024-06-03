@@ -184,6 +184,19 @@ export function Game({
 }
 
 function GameResultScreen({ players }: { players: Player[] }) {
+    const { socket } = useSocketStore();
+
+
+    function restartGame() {
+        if (!socket)
+            return null;
+        socket.send(
+            JSON.stringify({
+                type: "restart-game",
+            })
+        );
+    }
+
     return (
         <div className="container round-result ">
             <h2>Game result</h2>
@@ -214,6 +227,7 @@ function GameResultScreen({ players }: { players: Player[] }) {
                         );
                     })}
             </ul>
+            <button onClick={() => restartGame()}>Restart Game</button>
         </div>
     );
 }

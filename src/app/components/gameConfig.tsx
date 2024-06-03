@@ -1,15 +1,20 @@
-"use client"
+"use client";
 
-import { ChangeEvent, useEffect, useState } from "react"
-import SpotifyWebApi from "spotify-web-api-node"
-import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
-import { Config, Player, PlayerAnswer, Playlist, validateMessage } from "~/types"
-import { Game } from "./game"
-import toast from 'react-hot-toast';
+import { ChangeEvent, useEffect, useState } from "react";
+import SpotifyWebApi from "spotify-web-api-node";
+import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup";
+import {
+    Config,
+    Player,
+    PlayerAnswer,
+    Playlist,
+    messageSchema,
+    validateMessage,
+} from "~/types";
+import { Game } from "./game";
+import toast from "react-hot-toast";
 import { FaCrown } from "react-icons/fa";
-import LoadingSpinner from "./loadingSpinner"
-
-
+import LoadingSpinner from "./loadingSpinner";
 
 export type Answer = {
     trackId: string;
@@ -41,10 +46,10 @@ export default function GameConfig({
     const [playerAnswers, setPlayerAnswers] = useState<PlayerAnswer[]>([]);
     const [showResultScreen, setShowResultScreen] = useState(false);
     const [resultScreenTimer, setResultScreenTimer] = useState<Date | null>(
-        null
+        null,
     );
     const [playerGuessTrackId, setPlayerGuessTrackId] = useState<string | null>(
-        null
+        null,
     );
     const [showGameResultScreen, setShowGameResultScreen] = useState(false);
 
@@ -56,7 +61,6 @@ export default function GameConfig({
 
         console.log("Handling Message handler", activeDeviceId);
         socket.addEventListener("message", handleMessage);
-
     }, [activeDeviceId]);
 
     if (!socket)
@@ -87,7 +91,6 @@ export default function GameConfig({
 
     function sendUpdatedConfig(updatedConfig: Config) {
         if (!socket) return;
-        console.log("sending config", updatedConfig);
         const message = {
             type: "update-config",
             body: updatedConfig,
@@ -98,14 +101,16 @@ export default function GameConfig({
     async function handleMessage(event: MessageEvent) {
         try {
             const message = JSON.parse(event.data);
-            console.log(message.type);
+            console.log(message.type)
             if (!validateMessage(message)) {
                 console.error("Invalid message", message);
+                messageSchema.parse(message)
                 return;
             }
 
             switch (message.type) {
                 case "start-round":
+                    console.log(message.body)
                     console.log("Neue Rundeeeee");
                     setPlayerGuessTrackId(null);
                     setPlayerAnswers([]);
@@ -140,10 +145,10 @@ export default function GameConfig({
                             return {
                                 ...answer,
                                 playerImgUrl: players.find(
-                                    (player) => player.userId === answer.userId
+                                    (player) => player.userId === answer.userId,
                                 )?.imageUrl,
                             };
-                        }
+                        },
                     );
                     setPlayerAnswers(newPlayerAnswers);
                     await spotify.pause({ device_id: activeDeviceId });
@@ -157,6 +162,14 @@ export default function GameConfig({
                     break;
                 case "update-config":
                     setConfig(message.body);
+                    break;
+                case "restart-game":
+                    setRound(0);
+                    setShowGameResultScreen(false);
+                    setShowResultScreen(false);
+                    setPlayerAnswers([]);
+                    setAnswers([]);
+                    setPlayers(players.map((player) => ({ ...player, score: 0 })));
                     break;
                 default:
                     console.error("Unknown message type", message);
@@ -239,7 +252,11 @@ export default function GameConfig({
                             </div>
                             <div className="playerlist-wrapper">
                                 <ul className="player-list row">
-                                    <PlayerList players={players} gameId={gameId} userId={userId} />
+                                    <PlayerList
+                                        players={players}
+                                        gameId={gameId}
+                                        userId={userId}
+                                    />
                                 </ul>
                             </div>
                         </div>
@@ -347,7 +364,7 @@ export default function GameConfig({
                                                         <p>Amount Songs</p>
                                                         <input
                                                             type="number"
-                                                            min="5"
+                                                            min="0"
                                                             max="25"
                                                             onChange={
                                                                 handleAmountChange
@@ -519,20 +536,35 @@ function SearchResultDisplay({
     );
 }
 
-function PlayerDisplay({ player, userId, index }: { player: Player, userId: string, index: number }) {
-    return <li className="col-lg-3 col-sm-3 col-xs-3">
-        <div className="player-list-image">
-            {
-                index === 0 && <div className="player-list-host">
-                    <img className="host-crown-icon" src="/assets/crown.svg" />
-                </div>
-            }
-            <img src={player.imageUrl} />
-        </div>
-        <div className="player-list-name">
-            <p className={player.userId === userId ? "host" : ""}>{player.username}</p>
-        </div>
-    </li>
+function PlayerDisplay({
+    player,
+    userId,
+    index,
+}: {
+    player: Player;
+    userId: string;
+    index: number;
+}) {
+    return (
+        <li className="col-lg-3 col-sm-3 col-xs-3">
+            <div className="player-list-image">
+                {index === 0 && (
+                    <div className="player-list-host">
+                        <img
+                            className="host-crown-icon"
+                            src="/assets/crown.svg"
+                        />
+                    </div>
+                )}
+                <img src={player.imageUrl} />
+            </div>
+            <div className="player-list-name">
+                <p className={player.userId === userId ? "host" : ""}>
+                    {player.username}
+                </p>
+            </div>
+        </li>
+    );
 }
 
 function getDefaultPlaylist(): Config {
@@ -592,79 +624,101 @@ async function playTrack({
 }
 
 function EmptyPlayer() {
-    return <li className="col-md-3 col-sm-3 col-xs-3">
-        <div className="player-list-image">
-            <img src="/assets/placeholder-image.jpg" />
-        </div>
-        <div className="player-list-name">
-            <p>Empty slot</p>
-        </div>
-    </li>
+    return (
+        <li className="col-md-3 col-sm-3 col-xs-3">
+            <div className="player-list-image">
+                <img src="/assets/placeholder-image.jpg" />
+            </div>
+            <div className="player-list-name">
+                <p>Empty slot</p>
+            </div>
+        </li>
+    );
 }
 
 function AddPlayer({ gameId }: { gameId: string }) {
-
     const [buttonContent, setButtonContent] = useState("+");
 
-    return <li className="col-md-3 col-sm-3 col-xs-3">
-        <div className="player-list-button">
-            <button
-                onClick={() => copyLobbyCodeToClipboard(gameId)}
-                className="add-player-button"
-            >
-                {buttonContent}
-            </button>
-        </div>
-        <div className="player-list-name">
-            <p>Invite Player</p>
-        </div>
-    </li>
+    return (
+        <li className="col-md-3 col-sm-3 col-xs-3">
+            <div className="player-list-button">
+                <button
+                    onClick={() => copyLobbyCodeToClipboard(gameId)}
+                    className="add-player-button"
+                >
+                    {buttonContent}
+                </button>
+            </div>
+            <div className="player-list-name">
+                <p>Invite Player</p>
+            </div>
+        </li>
+    );
 
     function copyLobbyCodeToClipboard(gameId: string) {
         navigator.clipboard.writeText(
-            "https://beatbuster.vercel.app/game/" + gameId
+            "https://beatbuster.vercel.app/game/" + gameId,
         );
         toast.success("Successfully copied to clipboard!");
         setButtonContent("✓");
         setTimeout(() => {
             setButtonContent("+");
-
-        }, 1500)
+        }, 1500);
     }
-
 }
 
-
-function PlayerList({ players, gameId, userId }: { players: Player[], gameId: string, userId: string }) {
+function PlayerList({
+    players,
+    gameId,
+    userId,
+}: {
+    players: Player[];
+    gameId: string;
+    userId: string;
+}) {
     if (players.length === 12) {
-        return <>
-            {
-                players.map((player, index) => <PlayerDisplay key={index} player={player} userId={userId} index={index} />)
-            }
-        </>
-
+        return (
+            <>
+                {players.map((player, index) => (
+                    <PlayerDisplay
+                        key={index}
+                        player={player}
+                        userId={userId}
+                        index={index}
+                    />
+                ))}
+            </>
+        );
     }
     if (players.length < 12) {
-        return <>
-            {
-                players.map((player, index) => <PlayerDisplay key={player.userId} player={player} userId={userId} index={index} />)
-            }
-            {
-                new Array(11 - players.length).fill(0).map((_, index) => <EmptyPlayer key={index} />)
-            }
-            {
-                players.length < 12 && <AddPlayer gameId={gameId} />
-            }
-        </>
+        return (
+            <>
+                {players.map((player, index) => (
+                    <PlayerDisplay
+                        key={player.userId}
+                        player={player}
+                        userId={userId}
+                        index={index}
+                    />
+                ))}
+                {new Array(11 - players.length).fill(0).map((_, index) => (
+                    <EmptyPlayer key={index} />
+                ))}
+                {players.length < 12 && <AddPlayer gameId={gameId} />}
+            </>
+        );
     }
-
 }
 
-function isPlayerHost({ players, userId }: { players: Player[], userId: string }) {
+function isPlayerHost({
+    players,
+    userId,
+}: {
+    players: Player[];
+    userId: string;
+}) {
     if (!players[0]) {
         throw new Error("No Players there...");
     }
     return players[0].userId === userId;
 }
-
-
