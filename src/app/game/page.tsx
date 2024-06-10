@@ -1,3 +1,4 @@
+"use server"
 import { redirect } from "next/navigation";
 
 export default async function GamePage({ params }: { params: { gameId: string } }) {
@@ -13,17 +14,19 @@ export default async function GamePage({ params }: { params: { gameId: string } 
                     </div>
                     <div className="col-lg-4">
                         <div className="creat-section">
-                        <h2>Let's start</h2>
+                            <h2>Let's start</h2>
                             {/* <div className="bg-primary">GameId: {params.gameId}</div> */}
-                            <form action={joinGame}>
-
+                            <form action={newGame}>
                                 <button className="btn btn-outline-primary" type="submit">Create New Lobby</button>
+                            </form>
+                            <form action={enterLobby}>
                                 <div className="creat-section-input">
-                                    <input className="enter-lobby-code" type="text" name="gameId" />
+                                    <div className="input-group">
+                                        <input className="enter-lobby-code form-control" type="text" name="gameId" />
+                                        <button type="submit" className="btn">Send</button>
+                                    </div>
                                     <label htmlFor="gameId">Enter Lobby Code</label>
                                 </div>
-                                <button className="btn btn-outline-primary" type="submit">Your Friends</button>
-
                             </form>
                         </div>
                     </div>
@@ -33,15 +36,27 @@ export default async function GamePage({ params }: { params: { gameId: string } 
     )
 }
 
-async function joinGame(formData: FormData) {
+async function enterLobby(formData: FormData) {
+    "use server"
+    console.log(formData.get("gameId"))
+
+    redirect("/game/12345678");
+}
+
+async function newGame(formData: FormData) {
     "use server"
 
     const gameId = formData.get("gameId") as string;
     const params = new URLSearchParams({
-        gameId: gameId,
+        gameId: ""
     });
 
     const response = await fetch(process.env.WEBSOCKET_URL_HTTP + "/join?" + params)
+    console.log("test", response)
+    if (!response.ok) {
+        // toast("Lobby not found")
+        return
+    }
     const id = await response.text();
     console.log("gameId", id)
     redirect(`/game/${id}`);
