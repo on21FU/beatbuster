@@ -88,6 +88,7 @@
             justify-content: space-between;
             padding: 0.5rem 1rem;
 
+
             p {
                 font-weight: 700;
                 text-transform: uppercase;
@@ -102,9 +103,26 @@
             margin-bottom: 1rem;
             justify-content: space-between;
 
+
             &:first-child {
                 border: 3px solid $primary;
             }
+
+            .round-result-item-content{
+                display: flex;
+                justify-content: center;
+                width: 150px;
+
+                &:first-child {
+                    justify-content: start;
+                }
+
+                &:last-child {
+                    justify-content: end;
+                }
+
+            }
+
         }
     }
     .end-result-list {
@@ -128,6 +146,14 @@
             .end-result-description {
                 display: none;
             }
+
+            &:nth-child(1){
+                top: -1.5rem;
+            }
+            &:nth-child(3){
+                top: 1.5rem;
+            }
+
             &:nth-child(-n + 2) {
                 margin-right: 5%;
             }
@@ -187,6 +213,7 @@
             .image-wrapper {
                 display: none;
                 img {
+                    object-fit: cover;
                     width: 3rem;
                     height: 3rem;
                     border: 3px solid $primary;

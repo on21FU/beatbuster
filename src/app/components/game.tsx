@@ -62,9 +62,9 @@ export function Game({
     }
 
     useEffect(() => {
-        if(!roundStart || playerGuessTrackId) return;
+        if (!roundStart || playerGuessTrackId) return;
         const timer = setTimeout(() => {
-            if(!playerGuessTrackId  && answers.length > 0){
+            if (!playerGuessTrackId && answers.length > 0) {
                 const wrongAnswer = {
                     trackId: "",
                     trackName: "",
@@ -76,7 +76,7 @@ export function Game({
         }, roundTime * 1000)
         return () => clearTimeout(timer);
     })
-    
+
     if (showResultsScreen) {
         return (
             <div className="round-result container">
@@ -214,7 +214,6 @@ function GameResultScreen({ players }: { players: Player[] }) {
 
     return (
         <>
-
             <div className="container round-result">
                 <h2>Game result</h2>
                 <ul className="end-result-list">
