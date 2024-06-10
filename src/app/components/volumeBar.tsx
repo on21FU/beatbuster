@@ -13,16 +13,20 @@ export default function VolumeBar() {
 
     return (
         <>
-            <input
-                type="range"
-                id="volume"
-                name="volume"
-                min="0"
-                max="100"
-                step="0.5"
-                value={volume}
-                onChange={(e) => handleVolumeChange(parseInt(e.target.value))}
-            />
+            <div className="volume-bar">
+                <p>Volume</p>
+                <input className="form-range"
+                    type="range"
+                    id="volume"
+                    name="volume"
+                    min="0"
+                    max="100"
+                    step="0.5"
+                    value={volume}
+                    onChange={(e) => handleVolumeChange(parseInt(e.target.value))}
+                />
+
+            </div>
         </>
     );
 }
