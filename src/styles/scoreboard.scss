@@ -1,9 +1,9 @@
 .scoreboard{
     border: 3px solid $black;
-    width: 15rem;
+    width: 12rem;
     padding: 2rem 1rem;
     position: absolute;
-    left: -15rem;
+    left: -10rem;
     top: 0;
 
     @include media-breakpoint-down(lg){

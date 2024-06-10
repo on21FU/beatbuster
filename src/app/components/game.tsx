@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Answer } from "./gameConfig";
 import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup";
 import { Player, PlayerAnswer } from "~/types";
@@ -49,7 +49,6 @@ export function Game({
             return;
         }
         setPlayerGuessTrackId(answer.trackId);
-
         socket.send(
             JSON.stringify({
                 type: "answer",
@@ -61,6 +60,22 @@ export function Game({
             })
         );
     }
+
+    useEffect(() => {
+        if (!roundStart || playerGuessTrackId) return;
+        const timer = setTimeout(() => {
+            if (!playerGuessTrackId && answers.length > 0) {
+                const wrongAnswer = {
+                    trackId: "",
+                    trackName: "",
+                    trackArtists: [],
+                    isCorrect: false
+                }
+                handleAnswer(wrongAnswer)
+            }
+        }, roundTime * 1000)
+        return () => clearTimeout(timer);
+    })
 
     if (showResultsScreen) {
         return (
@@ -95,7 +110,7 @@ export function Game({
                                 </div>
 
                                 <div className="round-result-item-content">
-                                    {playerAnswer.timeToAnswer}s
+                                    {playerAnswer.timeToAnswer.toFixed(2)}s
                                 </div>
                             </li>
                         );
@@ -184,36 +199,58 @@ export function Game({
 }
 
 function GameResultScreen({ players }: { players: Player[] }) {
+    const { socket } = useSocketStore();
+
+
+    function restartGame() {
+        if (!socket)
+            return null;
+        socket.send(
+            JSON.stringify({
+                type: "restart-game",
+            })
+        );
+    }
+
     return (
-        <div className="container round-result ">
-            <h2>Game result</h2>
-            <ul className="end-result-list">
-                {players
-                    .sort((player1, player2) => player2.score - player1.score)
-                    .map((player, index) => {
-                        return (
-                            <li className="end-result-list-item" key={index}>
-                                <div className="image-wrapper">
-                                    <img src={player.imageUrl} alt="" />
-                                </div>
-                                <div className="end-result-content">
-                                    <p className="end-result-index">
-                                        {index + 1}
-                                    </p>
-                                    <p className="end-result-name">
-                                        {player.username}{" "}
-                                    </p>
-                                    <p className="end-result-score">
-                                        {player.score}
-                                    </p>
-                                    <p className="end-result-description">
-                                        Points
-                                    </p>
-                                </div>
-                            </li>
-                        );
-                    })}
-            </ul>
-        </div>
+        <>
+            <div className="container round-result">
+                <h2>Game result</h2>
+                <ul className="end-result-list">
+                    {
+                        players
+                            .sort((player1, player2) => player2.score - player1.score)
+                            .map((player, index) => {
+                                return (
+                                    <li className="end-result-list-item" key={index}>
+                                        <div className="image-wrapper">
+                                            <img src={player.imageUrl} alt="" />
+                                        </div>
+                                        <div className="end-result-content">
+                                            <p className="end-result-index">
+                                                {index + 1}
+                                            </p>
+                                            <p className="end-result-name">
+                                                {player.username}{" "}
+                                            </p>
+                                            <p className="end-result-score">
+                                                {player.score}
+                                            </p>
+                                            <p className="end-result-description">
+                                                Points
+                                            </p>
+                                        </div>
+                                    </li>
+                                );
+                            })
+                    }
+                </ul>
+
+                <div className="restart-button">
+                    <button className="btn btn-primary" onClick={restartGame}>Restart Game</button>
+                </div>
+
+            </div>
+        </>
     );
 }
