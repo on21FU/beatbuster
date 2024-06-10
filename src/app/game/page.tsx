@@ -1,7 +1,12 @@
-"use server"
+"use client"
 import { redirect } from "next/navigation";
+import { enterLobbyByCode, enterNewLobby } from "./join-lobby-actions";
+import { useFormState, useFormStatus } from "react-dom";
+import LoadingSpinner from "../components/loadingSpinner";
+import { useTransition } from "react";
 
-export default async function GamePage({ params }: { params: { gameId: string } }) {
+export default function GamePage() {
+
     return (
         <main>
             <div className="container">
@@ -15,19 +20,8 @@ export default async function GamePage({ params }: { params: { gameId: string } 
                     <div className="col-lg-4">
                         <div className="creat-section">
                             <h2>Let's start</h2>
-                            {/* <div className="bg-primary">GameId: {params.gameId}</div> */}
-                            <form action={newGame}>
-                                <button className="btn btn-outline-primary" type="submit">Create New Lobby</button>
-                            </form>
-                            <form action={enterLobby}>
-                                <div className="creat-section-input">
-                                    <div className="input-group">
-                                        <input className="enter-lobby-code form-control" type="text" name="gameId" />
-                                        <button type="submit" className="btn">Send</button>
-                                    </div>
-                                    <label htmlFor="gameId">Enter Lobby Code</label>
-                                </div>
-                            </form>
+                            <CreateNewGame />
+                            <EnterByCode />
                         </div>
                     </div>
                 </div>
@@ -36,28 +30,34 @@ export default async function GamePage({ params }: { params: { gameId: string } 
     )
 }
 
-async function enterLobby(formData: FormData) {
-    "use server"
-    console.log(formData.get("gameId"))
+function CreateNewGame() {
+    const [pending, startTransition] = useTransition()
+    const [state, enterNewLobbyAction] = useFormState(enterNewLobby, null)
 
-    redirect("/game/12345678");
+    return <form action={(formData) => startTransition(() => enterNewLobbyAction(formData))} key={Math.random()}>
+        <button className="btn btn-outline-primary" type="submit">
+            {pending ? <LoadingSpinner size="sm" /> : "Create New Lobby"}
+        </button>
+    </form>
 }
 
-async function newGame(formData: FormData) {
-    "use server"
+function EnterByCode() {
 
-    const gameId = formData.get("gameId") as string;
-    const params = new URLSearchParams({
-        gameId: ""
-    });
+    const [pending, startTransition] = useTransition()
+    const [codeState, enterLobbyByCodeAction] = useFormState(enterLobbyByCode, null)
 
-    const response = await fetch(process.env.WEBSOCKET_URL_HTTP + "/join?" + params)
-    console.log("test", response)
-    if (!response.ok) {
-        // toast("Lobby not found")
-        return
-    }
-    const id = await response.text();
-    console.log("gameId", id)
-    redirect(`/game/${id}`);
+    return <form action={(formData) => startTransition(() => enterLobbyByCodeAction(formData))} key={Math.random()}>
+        <div className="creat-section-input">
+            <label htmlFor="gameId">Enter Lobby Code</label>
+            <div className="input-group">
+                <input className="enter-lobby-code form-control" type="text" name="gameId" />
+                <button type="submit" className="btn btn-primary">
+                    {pending ? <LoadingSpinner size="sm" /> : "Join"}
+                </button>
+            </div>
+        </div>
+        {codeState?.message && <p style={{
+            color: "red"
+        }}>{codeState.message}</p>}
+    </form>
 }

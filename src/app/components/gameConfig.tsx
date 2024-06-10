@@ -6,7 +6,6 @@ import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
 import { Config, Player, PlayerAnswer, Playlist, validateMessage } from "~/types"
 import { Game } from "./game"
 import toast from 'react-hot-toast';
-import { FaCrown } from "react-icons/fa";
 import LoadingSpinner from "./loadingSpinner"
 
 
