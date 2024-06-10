@@ -221,18 +221,19 @@ function GameResultScreen({ players }: { players: Player[] }) {
             <div className="container round-result">
                 <h2>Game result</h2>
                 <ul className="end-result-list">
-                    <div>
+                    <div className="normal-list">
                         {
                             topThreePlayers.length < 3 && <PlayerList players={sortedPlayers} />
                         }
                     </div>
+                    <div className="top-three-list">
                     {
                         topThreePlayers.length === 3 && <>
                             <Pedestal players={topThreePlayers} />
                             <PlayerList players={otherPlayers} />
                         </>
                     }
-
+            </div>
                 </ul>
 
                 <div className="restart-button">
