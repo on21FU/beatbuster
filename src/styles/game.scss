@@ -132,7 +132,7 @@
                 margin-right: 5%;
             }
             &:nth-child(-n + 3) {
-                float: left;
+                // float: left;
                 width: 30%;
                 flex-direction: column;
                 text-align: center;
@@ -202,5 +202,11 @@
                 }
             }
         }
+    }
+    .restart-button {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-top: 2rem;
     }
 }
