@@ -5,8 +5,7 @@ import SpotifyWebApi from "spotify-web-api-node"
 import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
 import { Config, Player, PlayerAnswer, Playlist, messageSchema, validateMessage } from "~/types"
 import { Game } from "./game"
-import toast from "react-hot-toast"
-import { FaCrown } from "react-icons/fa"
+import toast from 'react-hot-toast';
 import LoadingSpinner from "./loadingSpinner"
 
 export type Answer = {
