@@ -199,36 +199,59 @@ export function Game({
 }
 
 function GameResultScreen({ players }: { players: Player[] }) {
+    const { socket } = useSocketStore();
+
+
+    function restartGame() {
+        if (!socket)
+            return null;
+        socket.send(
+            JSON.stringify({
+                type: "restart-game",
+            })
+        );
+    }
+
     return (
-        <div className="container round-result ">
-            <h2>Game result</h2>
-            <ul className="end-result-list">
-                {players
-                    .sort((player1, player2) => player2.score - player1.score)
-                    .map((player, index) => {
-                        return (
-                            <li className="end-result-list-item" key={index}>
-                                <div className="image-wrapper">
-                                    <img src={player.imageUrl} alt="" />
-                                </div>
-                                <div className="end-result-content">
-                                    <p className="end-result-index">
-                                        {index + 1}
-                                    </p>
-                                    <p className="end-result-name">
-                                        {player.username}{" "}
-                                    </p>
-                                    <p className="end-result-score">
-                                        {player.score}
-                                    </p>
-                                    <p className="end-result-description">
-                                        Points
-                                    </p>
-                                </div>
-                            </li>
-                        );
-                    })}
-            </ul>
-        </div>
+        <>
+
+            <div className="container round-result">
+                <h2>Game result</h2>
+                <ul className="end-result-list">
+                    {
+                        players
+                            .sort((player1, player2) => player2.score - player1.score)
+                            .map((player, index) => {
+                                return (
+                                    <li className="end-result-list-item" key={index}>
+                                        <div className="image-wrapper">
+                                            <img src={player.imageUrl} alt="" />
+                                        </div>
+                                        <div className="end-result-content">
+                                            <p className="end-result-index">
+                                                {index + 1}
+                                            </p>
+                                            <p className="end-result-name">
+                                                {player.username}{" "}
+                                            </p>
+                                            <p className="end-result-score">
+                                                {player.score}
+                                            </p>
+                                            <p className="end-result-description">
+                                                Points
+                                            </p>
+                                        </div>
+                                    </li>
+                                );
+                            })
+                    }
+                </ul>
+
+                <div className="restart-button">
+                    <button className="btn btn-primary" onClick={restartGame}>Restart Game</button>
+                </div>
+
+            </div>
+        </>
     );
 }
