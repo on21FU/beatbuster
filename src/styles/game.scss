@@ -66,6 +66,7 @@
         .progress-bar {
             animation-duration: 5s;
             animation-name: progressbar-animation;
+            animation-timing-function: linear;
         }
 
         @keyframes progressbar-animation {
