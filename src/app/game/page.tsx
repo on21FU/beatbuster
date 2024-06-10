@@ -1,8 +1,13 @@
+"use client"
 import { SignInButton, UserButton } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+import { enterLobbyByCode, enterNewLobby } from "./join-lobby-actions";
+import { useFormState, useFormStatus } from "react-dom";
+import LoadingSpinner from "../components/loadingSpinner";
+import { useTransition } from "react";
 import { startRoundWithSpotifyApi } from "../spotify";
 
-export default async function GamePage({ params }: { params: { gameId: string } }) {
+export default function GamePage() {
+
     return (
         <main>
             <div className="container">
@@ -10,7 +15,7 @@ export default async function GamePage({ params }: { params: { gameId: string } 
                     <div className="col-lg-8">
                         <h2>Beat Buster</h2>
                         <p>Welcome to BeatBuster - the ultimate song quiz game to challenge your music knowledge! Gather your friends and dive into a world of music trivia excitement. With BeatBuster, you'll listen to snippets of songs and race against the clock to guess the title and artist. Compete for the top spot on the leaderboard and show off your music expertise!
-                        <br />  To start your experience, log in with your Spotify account and play with your own playlists. Immerse yourself in the music you love and put your skills to the test. Get ready to groove, guess, and conquer the BeatBuster challenge. Sign up now and let the music quiz fun begin! </p>
+                            <br />  To start your experience, log in with your Spotify account and play with your own playlists. Immerse yourself in the music you love and put your skills to the test. Get ready to groove, guess, and conquer the BeatBuster challenge. Sign up now and let the music quiz fun begin! </p>
                         <h2>Login</h2>
                         <div className="sign-in-wrapper">
                             <SignInButton>
@@ -31,18 +36,9 @@ export default async function GamePage({ params }: { params: { gameId: string } 
                     </div>
                     <div className="col-lg-4">
                         <div className="creat-section">
-                        <h2>Let's start</h2>
-                            {/* <div className="bg-primary">GameId: {params.gameId}</div> */}
-                            <form action={joinGame}>
-
-                                <button className="btn btn-outline-primary" type="submit">Create New Lobby</button>
-                                <div className="creat-section-input">
-                                    <input className="enter-lobby-code" type="text" name="gameId" />
-                                    <label htmlFor="gameId">Enter Lobby Code</label>
-                                </div>
-                                <button className="btn btn-outline-primary" type="submit">Your Friends</button>
-
-                            </form>
+                            <h2>Let's start</h2>
+                            <CreateNewGame />
+                            <EnterByCode />
                         </div>
                     </div>
                 </div>
@@ -51,16 +47,34 @@ export default async function GamePage({ params }: { params: { gameId: string } 
     )
 }
 
-async function joinGame(formData: FormData) {
-    "use server"
+function CreateNewGame() {
+    const [pending, startTransition] = useTransition()
+    const [state, enterNewLobbyAction] = useFormState(enterNewLobby, null)
 
-    const gameId = formData.get("gameId") as string;
-    const params = new URLSearchParams({
-        gameId: gameId,
-    });
+    return <form action={(formData) => startTransition(() => enterNewLobbyAction(formData))} key={Math.random()}>
+        <button className="btn btn-outline-primary" type="submit">
+            {pending ? <LoadingSpinner size="sm" /> : "Create New Lobby"}
+        </button>
+    </form>
+}
 
-    const response = await fetch(process.env.WEBSOCKET_URL_HTTP + "/join?" + params)
-    const id = await response.text();
-    console.log("gameId", id)
-    redirect(`/game/${id}`);
+function EnterByCode() {
+
+    const [pending, startTransition] = useTransition()
+    const [codeState, enterLobbyByCodeAction] = useFormState(enterLobbyByCode, null)
+
+    return <form action={(formData) => startTransition(() => enterLobbyByCodeAction(formData))} key={Math.random()}>
+        <div className="creat-section-input">
+            <label htmlFor="gameId">Enter Lobby Code</label>
+            <div className="input-group">
+                <input className="enter-lobby-code form-control" type="text" name="gameId" />
+                <button type="submit" className="btn btn-primary">
+                    {pending ? <LoadingSpinner size="sm" /> : "Join"}
+                </button>
+            </div>
+        </div>
+        {codeState?.message && <p style={{
+            color: "red"
+        }}>{codeState.message}</p>}
+    </form>
 }
