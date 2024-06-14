@@ -1,12 +1,13 @@
 "use client"
 
-import { ChangeEvent, useEffect, useState } from "react"
+import { ChangeEvent, useEffect, useState, useTransition } from "react"
 import SpotifyWebApi from "spotify-web-api-node"
 import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
 import { Config, Player, PlayerAnswer, Playlist, messageSchema, validateMessage } from "~/types"
 import { Game } from "./game"
 import toast from 'react-hot-toast';
 import LoadingSpinner from "./loadingSpinner"
+import { useFormState } from "react-dom"
 
 export type Answer = {
     trackId: string
@@ -41,6 +42,8 @@ export default function GameConfig({
 
     const { socket } = useSocketStore()
     const { spotify, activeDeviceId } = useSpotifyStore()
+
+    const [pending, startTransition] = useTransition()
 
     useEffect(() => {
         if (!socket) return
@@ -211,9 +214,14 @@ export default function GameConfig({
             setPlaylistItems(data.body.playlists?.items)
         })
     }
-    function startGame() {
-        if (!socket) throw new Error("No socket")
+    async function startGame() {
+        if (!socket) throw new Error("No socket")        
         if (!isPlayerHost({ players, userId })) return
+        const enoughSongs = await checkAmountSongs()
+        if(!enoughSongs) {
+            toast.error("The selected playlist is too short")
+            return
+        }
         const message = {
             type: "start-game",
             body: {
@@ -222,6 +230,12 @@ export default function GameConfig({
             },
         }
         socket.send(JSON.stringify(message))
+    }
+    async function checkAmountSongs() {
+        if(!spotify) return false
+        if(config.winCondition.type !== "rounds") return true        
+        const playlistSongs = await spotify.getPlaylist(config.playlist.id)
+        return playlistSongs.body.tracks.items.length > config.winCondition.amount
     }
     if (round === 0) {
         return (
@@ -240,7 +254,7 @@ export default function GameConfig({
                         </div>
                         <div className="col-lg-8">
                             <h2>Your Game</h2>
-                            <form action={startGame}>
+                            <form action={() => startTransition(() => startGame())}>
                                 <div className="settings">
                                     <h4>Settings</h4>
                                     <div className="setting-section">
@@ -364,11 +378,14 @@ export default function GameConfig({
                                     </div>
                                 </div>
                                 <div className="button-wrapper">
+                                    {
+                                        pending
+                                    }
                                     <button
                                         disabled={!activeDeviceId}
-                                        className="btn btn-outline-primary"
+                                        className="btn btn-primary"
                                         type="submit">
-                                        {!activeDeviceId ? <LoadingSpinner size="sm" /> : "Start Game"}
+                                        {!activeDeviceId || pending ? <LoadingSpinner size="sm" /> : "Start Game"}
                                     </button>
                                 </div>
                             </form>

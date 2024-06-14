@@ -44,7 +44,7 @@ function CreateNewGame() {
     const [state, enterNewLobbyAction] = useFormState(enterNewLobby, null)
 
     return <form action={(formData) => startTransition(() => enterNewLobbyAction(formData))} key={Math.random()}>
-        <button className="btn btn-outline-primary" type="submit">
+        <button className="btn btn-primary" type="submit">
             {pending ? <LoadingSpinner size="sm" /> : "Create New Lobby"}
         </button>
     </form>
