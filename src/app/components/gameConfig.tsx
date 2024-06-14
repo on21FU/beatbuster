@@ -383,7 +383,7 @@ export default function GameConfig({
                                     }
                                     <button
                                         disabled={!activeDeviceId}
-                                        className="btn btn-outline-primary"
+                                        className="btn btn-primary"
                                         type="submit">
                                         {!activeDeviceId || pending ? <LoadingSpinner size="sm" /> : "Start Game"}
                                     </button>
