@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { useEffect } from "react";
 import SpotifyWebApi from "spotify-web-api-node";
 import LoadingSpinner from "~/app/components/loadingSpinner";
+import { useQuery } from "@tanstack/react-query";
 
 type UserInfo = {
     username: string;
@@ -96,6 +97,8 @@ async function establishWebSocketConnection({
 
             newSocket.send(JSON.stringify({ type: "join-game" }));
         });
+
+        newSocket.addEventListener("error", () => window.location.href = "/game-not-found")
 
         newSocket.addEventListener("close", () => console.log("Closing..."));
     } catch (error) {
