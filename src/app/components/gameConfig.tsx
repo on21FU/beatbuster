@@ -366,7 +366,7 @@ export default function GameConfig({
                                 <div className="button-wrapper">
                                     <button
                                         disabled={!activeDeviceId}
-                                        className="btn btn-outline-primary"
+                                        className="btn btn-primary"
                                         type="submit">
                                         {!activeDeviceId ? <LoadingSpinner size="sm" /> : "Start Game"}
                                     </button>
