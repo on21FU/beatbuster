@@ -5,7 +5,8 @@
 .sign-in-wrapper {
     display: flex;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: -2.25rem;
+    justify-content: end;
 
     .sign-in-button {
         width: 25%;
