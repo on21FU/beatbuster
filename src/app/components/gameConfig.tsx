@@ -47,10 +47,24 @@ export default function GameConfig({
 
     useEffect(() => {
         if (!socket) return
-
+        getFeaturedPlaylist()
         console.log("Handling Message handler", activeDeviceId)
         socket.addEventListener("message", handleMessage)
     }, [activeDeviceId])
+
+    async function getFeaturedPlaylist(){
+        if(!spotify) return
+        const allFeaturedPlaylists = await spotify.getFeaturedPlaylists()
+        const featuredPlaylist = allFeaturedPlaylists.body.playlists.items[0]
+        if(!featuredPlaylist) return
+        console.log(featuredPlaylist)
+        setConfig({ ...config, playlist: {
+            id: featuredPlaylist.id,
+            name: featuredPlaylist.name,
+            imgUrl: featuredPlaylist.images[0]?.url
+            }
+        })
+    }
 
     if (!socket)
         return (
