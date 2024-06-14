@@ -212,38 +212,28 @@ function GameResultScreen({ players }: { players: Player[] }) {
         );
     }
 
+    const sortedPlayers = players.sort((player1, player2) => player2.score - player1.score)
+    const topThreePlayers = [...sortedPlayers].splice(0, 3)
+    const otherPlayers = [...sortedPlayers].splice(3, sortedPlayers.length)
+
     return (
         <>
             <div className="container round-result">
                 <h2>Game result</h2>
                 <ul className="end-result-list">
+                    <div className="normal-list">
+                        {
+                            topThreePlayers.length < 3 && <PlayerList players={sortedPlayers} />
+                        }
+                    </div>
+                    <div className="top-three-list">
                     {
-                        players
-                            .sort((player1, player2) => player2.score - player1.score)
-                            .map((player, index) => {
-                                return (
-                                    <li className="end-result-list-item" key={index}>
-                                        <div className="image-wrapper">
-                                            <img src={player.imageUrl} alt="" />
-                                        </div>
-                                        <div className="end-result-content">
-                                            <p className="end-result-index">
-                                                {index + 1}
-                                            </p>
-                                            <p className="end-result-name">
-                                                {player.username}{" "}
-                                            </p>
-                                            <p className="end-result-score">
-                                                {player.score}
-                                            </p>
-                                            <p className="end-result-description">
-                                                Points
-                                            </p>
-                                        </div>
-                                    </li>
-                                );
-                            })
+                        topThreePlayers.length === 3 && <>
+                            <Pedestal players={topThreePlayers} />
+                            <PlayerList players={otherPlayers} />
+                        </>
                     }
+            </div>
                 </ul>
 
                 <div className="restart-button">
@@ -253,4 +243,61 @@ function GameResultScreen({ players }: { players: Player[] }) {
             </div>
         </>
     );
+}
+
+function Pedestal({ players }: { players: Player[] }) {
+    if (!players[0] || !players[1] || !players[2]) {
+        return
+    }
+    return [players[1], players[0], players[2]]
+        .map((player, index) => {
+            return (
+                <li className="end-result-list-item" key={index}>
+                    <div className="image-wrapper">
+                        <img src={player.imageUrl} alt="" />
+                    </div>
+                    <div className="end-result-content">
+                        <p className="end-result-index">
+                            {index + 1}
+                        </p>
+                        <p className="end-result-name">
+                            {player.username}{" "}
+                        </p>
+                        <p className="end-result-score">
+                            {player.score}
+                        </p>
+                        <p className="end-result-description">
+                            Points
+                        </p>
+                    </div>
+                </li>
+            );
+        })
+}
+
+function PlayerList({ players }: { players: Player[] }) {
+    return players
+        .map((player, index) => {
+            return (
+                <li className="end-result-list-item" key={index}>
+                    <div className="image-wrapper">
+                        <img src={player.imageUrl} alt="" />
+                    </div>
+                    <div className="end-result-content">
+                        <p className="end-result-index">
+                            {index + 1}
+                        </p>
+                        <p className="end-result-name">
+                            {player.username}{" "}
+                        </p>
+                        <p className="end-result-score">
+                            {player.score}
+                        </p>
+                        <p className="end-result-description">
+                            Points
+                        </p>
+                    </div>
+                </li>
+            );
+        })
 }
