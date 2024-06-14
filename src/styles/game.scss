@@ -188,13 +188,38 @@
         .top-three-list {
             .end-result-list-item {
                 display: flex;
+                position: relative;
                 flex-direction: row;
                 border: 3px solid $black;
                 padding: 0.5rem 1rem;
                 margin-bottom: 1rem;
                 justify-content: space-between;
-                width: 100%;
+                width: 30%;
                 align-items: center;
+                float: left;
+                text-align: center;
+
+                &:nth-child(n+4){
+                    width: 100%;
+                    margin-top: 0.75rem;
+                    .image-wrapper {
+                        display: none;
+                    }
+    
+                    .end-result-content {
+                        display: flex;
+                        justify-content: space-between;
+                        width: 100%;
+                        align-items: center;
+                        margin: 0px;
+    
+                        p {
+                            margin: 0px;
+                            font-size: 1rem;
+                            color: $black;
+                        }
+                    }
+                }
 
                 .end-result-content {
                     margin-top: 7rem;
@@ -226,30 +251,32 @@
                         display: none;
                     }
 
-                &:nth-child(1) {
-                    top: 0.5rem;
+                    &:nth-child(1) {
+                        top: 0.5rem;
+                    }
+
+                    &:nth-child(2) {
+                        top: -1.5rem;
+                    }
+
+                    &:nth-child(3) {
+                        top: 1.5rem;
+                    }
+
+
                 }
 
-                &:nth-child(2) {
-                    top: -1.5rem;
-                }
+                .image-wrapper {
+                    display: flex;
+                    position: absolute;
+                    top: -2rem;
+                    align-self: center;
 
-                &:nth-child(3) {
-                    top: 1.5rem;
-                }
-
-                    .image-wrapper {
-                        display: flex;
-                        position: absolute;
-                        top: -2rem;
-                        align-self: center;
-
-                        img {
-                            width: 8rem;
-                            height: 8rem;
-                            border: 3px solid $primary;
-                            aspect-ratio: 1/1;
-                        }
+                    img {
+                        width: 8rem;
+                        height: 8rem;
+                        border: 3px solid $primary;
+                        aspect-ratio: 1/1;
                     }
                 }
 
