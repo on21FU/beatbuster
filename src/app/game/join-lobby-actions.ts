@@ -28,7 +28,7 @@ export async function enterNewLobby(initialState: any, formData: FormData) {
 }
 
 
-async function handleJoinGame(gameId: string) {
+export async function handleJoinGame(gameId: string) {
     const params = new URLSearchParams({
         gameId
     });
