@@ -46,9 +46,11 @@
                     &:nth-child(1) {
                         right: 15px;
                     }
+
                     &:nth-child(2) {
                         right: 30px;
                     }
+
                     &:nth-child(3) {
                         right: 45px;
                     }
@@ -73,15 +75,18 @@
             from {
                 width: 0%;
             }
+
             to {
                 width: 100%;
             }
         }
     }
+
     .round-result-list {
         width: 100%;
         list-style: none;
         padding-left: 0px;
+
         .round-result-description {
             display: flex;
             flex-direction: row;
@@ -108,7 +113,7 @@
                 border: 3px solid $primary;
             }
 
-            .round-result-item-content{
+            .round-result-item-content {
                 display: flex;
                 justify-content: center;
                 width: 150px;
@@ -125,6 +130,7 @@
 
         }
     }
+
     .end-result-list {
         width: 100%;
         list-style: none;
@@ -133,52 +139,73 @@
         // flex-direction: row;
         justify-content: space-between;
 
-        .end-result-list-item {
-            display: flex;
-            flex-direction: row;
-            border: 3px solid $black;
-            padding: 0.5rem 1rem;
-            margin-bottom: 1rem;
-            justify-content: space-between;
-            width: 100%;
-            align-items: center;
+        .normal-list {
 
-            .end-result-description {
-                display: none;
-            }
-
-            &:nth-child(1) {
-                top: -1.5rem;
-            }
-
-            &:nth-child(3) {
-                top: 1.5rem;
-            }
-
-            &:nth-child(-n + 2) {
-                margin-right: 5%;
-            }
-            &:nth-child(-n + 3) {
-                // float: left;
-                width: 30%;
-                flex-direction: column;
-                text-align: center;
-                position: relative;
-                margin-top: 3rem;
+            .end-result-list-item {
                 display: flex;
+                flex-direction: row;
+                border: 3px solid $black;
+                padding: 0.5rem 1rem;
+                margin-bottom: 1rem;
+                justify-content: space-between;
+                width: 100%;
+                align-items: center;
 
-                @include media-breakpoint-down(md) {
-                    width: 100%;
-                    margin-bottom: 4rem;
+
+
+
+                .image-wrapper {
+                    display: none;
+
+                    img {
+                        object-fit: cover;
+                        width: 3rem;
+                        height: 3rem;
+                        border: 3px solid $primary;
+                    }
                 }
+
+                .end-result-content {
+                    display: flex;
+                    justify-content: space-between;
+                    width: 100%;
+                    align-items: center;
+
+                    p {
+                        margin: 0px;
+                    }
+                }
+
+            }
+
+
+
+
+
+
+        }
+
+        .top-three-list {
+            .end-result-list-item {
+                display: flex;
+                flex-direction: row;
+                border: 3px solid $black;
+                padding: 0.5rem 1rem;
+                margin-bottom: 1rem;
+                justify-content: space-between;
+                width: 100%;
+                align-items: center;
+
                 .end-result-content {
                     margin-top: 7rem;
                     flex-grow: 1;
                     display: block;
+
                     .end-result-name {
                         font-weight: 700;
                         font-size: 1.7rem;
                     }
+
                     .end-result-score {
                         font-size: 3rem;
                         font-weight: 700;
@@ -186,6 +213,7 @@
                         margin-bottom: 0px;
                         line-height: 0.9;
                     }
+
                     .end-result-description {
                         font-size: 0.8rem;
                         font-weight: 300;
@@ -193,48 +221,47 @@
                         display: flex;
                         justify-content: center;
                     }
+
                     .end-result-index {
                         display: none;
                     }
-                }
-                .image-wrapper {
-                    display: flex;
-                    position: absolute;
-                    top: -2rem;
-                    align-self: center;
 
-                    img {
-                        width: 8rem;
-                        height: 8rem;
-                        border: 3px solid $primary;
-                        aspect-ratio: 1/1;
+                &:nth-child(1) {
+                    top: 0.5rem;
+                }
+
+                &:nth-child(2) {
+                    top: -1.5rem;
+                }
+
+                &:nth-child(3) {
+                    top: 1.5rem;
+                }
+
+                    .image-wrapper {
+                        display: flex;
+                        position: absolute;
+                        top: -2rem;
+                        align-self: center;
+
+                        img {
+                            width: 8rem;
+                            height: 8rem;
+                            border: 3px solid $primary;
+                            aspect-ratio: 1/1;
+                        }
                     }
                 }
-            }
-            .image-wrapper {
-                display: none;
-                img {
-                    object-fit: cover;
-                    width: 3rem;
-                    height: 3rem;
-                    border: 3px solid $primary;
-                }
-            }
-            .end-result-content {
-                display: flex;
-                justify-content: space-between;
-                width: 100%;
-                align-items: center;
-                p {
-                    margin: 0px;
-                }
+
             }
         }
     }
-    .restart-button {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        margin-top: 2rem;
-    }
+
+}
+
+.restart-button {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 2rem;
 }
