@@ -1,9 +1,10 @@
+"use client"
 import { useEffect, useState } from "react";
 import { useSpotifyStore } from "../game/[gameId]/gameSetup";
 
 export default function VolumeBar() {
+    const { spotify, player } = useSpotifyStore()
     const [volume, setVolume] = useState(50)
-    const { spotify } = useSpotifyStore()
 
     function handleVolumeChange(newVolume: number) {
         setVolume(newVolume)
@@ -11,6 +12,9 @@ export default function VolumeBar() {
 
     useEffect(() => {
         const handler = setTimeout(() => {
+            player?.getVolume().then((volume) => {
+                setVolume(Math.floor(volume * 100))
+            })
             spotify?.setVolume(volume)
             console.log("testerino")
         }, 300)
