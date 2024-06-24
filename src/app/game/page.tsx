@@ -9,6 +9,7 @@ export default async function GamePage() {
     async function pingWebsocketServer(){
         try {
             const response = await fetch(process.env.WEBSOCKET_URL_HTTP + "/health")
+            console.log("Ping Vercel Response: ", response)
             return response.ok
         } catch {
             return false
