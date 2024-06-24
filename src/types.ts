@@ -89,13 +89,21 @@ const restartGameSchema = z.object({
     type: z.literal("restart-game")
 })
 
+const readySchema = z.object({
+    type: z.literal("ready"),
+    body: z.object({
+        userId: z.string()
+    })
+})
+
 export const messageSchema = z.union([
     startRoundSchema,
     updatePlayersSchema,
     roundResultsSchema,
     gameResultSchema,
     updateConfigSchema,
-    restartGameSchema
+    restartGameSchema,
+    readySchema
 ])
 
 export function validateMessage(message: unknown): message is z.infer<typeof messageSchema> {
