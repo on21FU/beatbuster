@@ -5,6 +5,8 @@ import { Player, PlayerAnswer } from "~/types";
 import Scoreboard from "./scoreboard";
 import VolumeBar from "./volumeBar";
 import { AudioVisualization } from "./audioVisualization";
+import useSWR from 'swr'
+
 
 export function Game({
     round,
@@ -18,8 +20,8 @@ export function Game({
     setPlayerGuessTrackId,
     playerGuessTrackId,
     showGameResultScreen,
-    resultScreenTimer,
     userId,
+    correctTrackId
 }: {
     round: number;
     answers: Answer[];
@@ -30,10 +32,10 @@ export function Game({
     players: Player[];
     showResultsScreen: boolean;
     showGameResultScreen: boolean;
-    resultScreenTimer: Date | null;
     setPlayerGuessTrackId: (trackId: string | null) => void;
     playerGuessTrackId: string | null;
     userId: string;
+    correctTrackId: string | null;
 }) {
 
     const { socket } = useSocketStore();
@@ -78,46 +80,7 @@ export function Game({
     })
 
     if (showResultsScreen) {
-        return (
-            <div className="round-result container">
-                <div className="progress">
-                    <div className="progress-bar bg-primary"></div>
-                </div>
-                <h2>Results</h2>
-
-                <ul className="round-result-list">
-                    <div className="round-result-description">
-                        <p className="round-result-description-content">
-                            Player
-                        </p>
-                        <p className="round-result-description-content">
-                            Points
-                        </p>
-                        <p className="round-result-description-content">Time</p>
-                    </div>
-                    {playerAnswers?.sort((playerAnswer1, playerAnswer2) => playerAnswer2.gainedScore - playerAnswer1.gainedScore).map((playerAnswer, index) => {
-                        const player = players.find(
-                            (player) => player.userId === playerAnswer.userId
-                        );
-
-                        return (
-                            <li className="round-result-list-item" key={index}>
-                                <div className="round-result-item-content">
-                                    {player?.username}
-                                </div>
-                                <div className="round-result-item-content">
-                                    {playerAnswer.gainedScore}
-                                </div>
-
-                                <div className="round-result-item-content">
-                                    {playerAnswer.timeToAnswer.toFixed(2)}s
-                                </div>
-                            </li>
-                        );
-                    })}
-                </ul>
-            </div>
-        );
+        return <RoundResultScreen playerAnswers={playerAnswers!} players={players} correctTrackId={correctTrackId} />
     }
 
     if (showGameResultScreen) {
@@ -198,6 +161,48 @@ export function Game({
     }
 }
 
+
+function RoundResultScreen({ playerAnswers, players, correctTrackId }: { playerAnswers: PlayerAnswer[]; players: Player[]; correctTrackId: string | null }) {
+    return (
+        <div className="round-result container">
+            <SongDisplay trackId={correctTrackId!} />
+            <div className="progress">
+                <div className="progress-bar bg-primary"></div>
+            </div>
+            <ul className="round-result-list">
+                <div className="round-result-description">
+                    <p className="round-result-description-content">
+                        Player
+                    </p>
+                    <p className="round-result-description-content">
+                        Points
+                    </p>
+                    <p className="round-result-description-content">Time</p>
+                </div>
+                {playerAnswers?.sort((playerAnswer1, playerAnswer2) => playerAnswer2.gainedScore - playerAnswer1.gainedScore).map((playerAnswer, index) => {
+                    const player = players.find(
+                        (player) => player.userId === playerAnswer.userId
+                    );
+                    return (
+                        <li className="round-result-list-item" key={index}>
+                            <div className="round-result-item-content">
+                                {player?.username}
+                            </div>
+                            <div className="round-result-item-content">
+                                {playerAnswer.gainedScore}
+                            </div>
+
+                            <div className="round-result-item-content">
+                                {playerAnswer.timeToAnswer.toFixed(2)}s
+                            </div>
+                        </li>
+                    );
+                })}
+            </ul>
+        </div>
+    );
+}
+
 function GameResultScreen({ players }: { players: Player[] }) {
     const { socket } = useSocketStore();
 
@@ -227,13 +232,13 @@ function GameResultScreen({ players }: { players: Player[] }) {
                         }
                     </div>
                     <div className="top-three-list">
-                    {
-                        topThreePlayers.length === 3 && <>
-                            <Pedestal players={topThreePlayers} />
-                            <PlayerList players={otherPlayers} />
-                        </>
-                    }
-            </div>
+                        {
+                            topThreePlayers.length === 3 && <>
+                                <Pedestal players={topThreePlayers} />
+                                <PlayerList players={otherPlayers} />
+                            </>
+                        }
+                    </div>
                 </ul>
 
                 <div className="restart-button">
@@ -273,6 +278,39 @@ function Pedestal({ players }: { players: Player[] }) {
                 </li>
             );
         })
+}
+
+
+function SongDisplay({ trackId }: { trackId: string }) {
+    const { spotify } = useSpotifyStore();
+
+    const { data: track, isLoading } = useSWR(trackId, async (trackId) => {
+        console.log("Getting track")
+        if (!spotify) return;
+        const track = await spotify.getTrack(trackId);
+        console.log(track)
+        return track.body;
+    })
+
+    if (isLoading) {
+        return <div className="song-display">
+            <div className="img-placeholder"></div>
+            <p className="song-display-track">...</p>
+            <p className="song-display-artists">...</p>
+        </div>
+    }
+
+
+    if (!track) {
+        return <p>Track not found</p>
+    }
+
+    return <div className="song-display">
+        <img src={track.album.images[0]?.url} alt={track.name} />
+        <p className="song-display-track">{track.name}</p>
+        <p className="song-display-artists">{track.artists.map((artist) => artist.name).join(", ")}</p>
+    </div>
+
 }
 
 function PlayerList({ players }: { players: Player[] }) {
