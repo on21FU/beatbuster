@@ -12,9 +12,8 @@ export async function getUserToken() {
         userId,
         "oauth_spotify"
     );
-    console.log("TOKENS: ", response);
 
-    if(process.env.NODE_ENV === "development"){
+    if (process.env.NODE_ENV === "development") {
         if (!Array.isArray(response) || !response[0] || !response[0].token) {
             throw new Error("No Token");
         }

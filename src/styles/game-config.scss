@@ -155,6 +155,9 @@ form {
 }
 
 .search-result {
+    ::-webkit-scrollbar {
+        display: none;
+    }
     .search-result-list {
         height: 200px;
         width: 100%;
@@ -184,7 +187,6 @@ form {
             .card-content {
                 width: auto;
                 color: $white;
-
                 p {
                     margin-bottom: 0;
                 }

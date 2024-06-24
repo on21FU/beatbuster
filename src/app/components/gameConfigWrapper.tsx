@@ -7,7 +7,6 @@ import WebPlayback from "../webplayback";
 
 export default async function GameConfigWrapper({ gameId }: { gameId: string }) {
     const { token: accessToken } = await getUserToken();
-    console.log("AccessToken: ", accessToken)
 
     const { userId } = auth();
     const profile = await clerkClient.users.getUser(userId || "")

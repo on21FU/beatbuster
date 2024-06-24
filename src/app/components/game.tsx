@@ -80,7 +80,12 @@ export function Game({
     })
 
     if (showResultsScreen) {
-        return <RoundResultScreen playerAnswers={playerAnswers!} players={players} correctTrackId={correctTrackId} />
+        return <RoundResultScreen
+            playerAnswers={playerAnswers!}
+            players={players}
+            correctTrackId={correctTrackId}
+            ownPlayer={user}
+        />
     }
 
     if (showGameResultScreen) {
@@ -162,7 +167,7 @@ export function Game({
 }
 
 
-function RoundResultScreen({ playerAnswers, players, correctTrackId }: { playerAnswers: PlayerAnswer[]; players: Player[]; correctTrackId: string | null }) {
+function RoundResultScreen({ playerAnswers, players, correctTrackId, ownPlayer }: { playerAnswers: PlayerAnswer[]; players: Player[]; correctTrackId: string | null, ownPlayer: Player }) {
     return (
         <div className="round-result container">
             <div className="row">
@@ -171,8 +176,10 @@ function RoundResultScreen({ playerAnswers, players, correctTrackId }: { playerA
                 </div>
             </div>
             <div className="row">
-                <div className="col-2"><SongDisplay trackId={correctTrackId!} /></div>
-                <div className="col-10">
+                <div className="col-4">
+                    <SongDisplay trackId={correctTrackId!} />
+                </div>
+                <div className="col-8">
                     <ul className="round-result-list">
                         <div className="round-result-description">
                             <p className="round-result-description-content">
@@ -187,8 +194,10 @@ function RoundResultScreen({ playerAnswers, players, correctTrackId }: { playerA
                             const player = players.find(
                                 (player) => player.userId === playerAnswer.userId
                             );
+
+                            const isOwnPlayer = player?.userId === ownPlayer.userId
                             return (
-                                <li className="round-result-list-item" key={index}>
+                                <li className={`round-result-list-item ${isOwnPlayer ? "own" : ""}`} key={index}>
                                     <div className="round-result-item-content">
                                         {player?.username}
                                     </div>
@@ -304,8 +313,10 @@ function SongDisplay({ trackId }: { trackId: string }) {
     if (isLoading) {
         return <div className="song-display">
             <div className="img-placeholder"></div>
-            <p className="song-display-track">...</p>
-            <p className="song-display-artists">...</p>
+            <div className="song-display-info">
+                <p className="song-display-track">...</p>
+                <p className="song-display-artists">...</p>
+            </div>
         </div>
     }
 
@@ -316,8 +327,10 @@ function SongDisplay({ trackId }: { trackId: string }) {
 
     return <div className="song-display">
         <img src={track.album.images[0]?.url} alt={track.name} />
-        <p className="song-display-track">{track.name}</p>
-        <p className="song-display-artists">{track.artists.map((artist) => artist.name).join(", ")}</p>
+        <div className="song-display-info">
+            <p className="song-display-track">{track.name}</p>
+            <p className="song-display-artists">{track.artists.map((artist) => artist.name).join(", ")}</p>
+        </div>
     </div>
 
 }

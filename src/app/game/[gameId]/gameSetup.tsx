@@ -66,7 +66,7 @@ export function Game({
         return (
             <>
                 <div className="d-flex flex-column align-items-center">
-                    <LoadingSpinner color="dark"/>
+                    <LoadingSpinner color="dark" />
                     <p>Connecting...</p>
                 </div>
             </>
@@ -96,7 +96,6 @@ async function establishWebSocketConnection({
         );
 
         newSocket.addEventListener("open", () => {
-            console.log("Connected to server");
             setSocket({ socket: newSocket });
 
             newSocket.send(JSON.stringify({ type: "join-game" }));
