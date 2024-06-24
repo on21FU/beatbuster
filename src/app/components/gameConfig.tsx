@@ -7,7 +7,6 @@ import { Config, Player, PlayerAnswer, Playlist, messageSchema, validateMessage 
 import { Game } from "./game"
 import toast from 'react-hot-toast';
 import LoadingSpinner from "./loadingSpinner"
-import { useFormState } from "react-dom"
 
 export type Answer = {
     trackId: string
@@ -216,6 +215,7 @@ export default function GameConfig({
             })
         }
     }
+
 
     async function handleSearchInputChange(e: ChangeEvent<HTMLInputElement>) {
         const currentSearchTerm = e.target.value
