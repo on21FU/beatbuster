@@ -165,40 +165,45 @@ export function Game({
 function RoundResultScreen({ playerAnswers, players, correctTrackId }: { playerAnswers: PlayerAnswer[]; players: Player[]; correctTrackId: string | null }) {
     return (
         <div className="round-result container">
-            <SongDisplay trackId={correctTrackId!} />
-            <div className="progress">
-                <div className="progress-bar bg-primary"></div>
-            </div>
-            <ul className="round-result-list">
-                <div className="round-result-description">
-                    <p className="round-result-description-content">
-                        Player
-                    </p>
-                    <p className="round-result-description-content">
-                        Points
-                    </p>
-                    <p className="round-result-description-content">Time</p>
+            <div className="row">
+                <div className="progress">
+                    <div className="progress-bar bg-primary"></div>
                 </div>
-                {playerAnswers?.sort((playerAnswer1, playerAnswer2) => playerAnswer2.gainedScore - playerAnswer1.gainedScore).map((playerAnswer, index) => {
-                    const player = players.find(
-                        (player) => player.userId === playerAnswer.userId
-                    );
-                    return (
-                        <li className="round-result-list-item" key={index}>
-                            <div className="round-result-item-content">
-                                {player?.username}
-                            </div>
-                            <div className="round-result-item-content">
-                                {playerAnswer.gainedScore}
-                            </div>
-
-                            <div className="round-result-item-content">
-                                {playerAnswer.timeToAnswer.toFixed(2)}s
-                            </div>
-                        </li>
-                    );
-                })}
-            </ul>
+            </div>
+            <div className="row">
+                <div className="col-2"><SongDisplay trackId={correctTrackId!} /></div>
+                <div className="col-10">
+                    <ul className="round-result-list">
+                        <div className="round-result-description">
+                            <p className="round-result-description-content">
+                                Player
+                            </p>
+                            <p className="round-result-description-content">
+                                Points
+                            </p>
+                            <p className="round-result-description-content">Time</p>
+                        </div>
+                        {playerAnswers?.sort((playerAnswer1, playerAnswer2) => playerAnswer2.gainedScore - playerAnswer1.gainedScore).map((playerAnswer, index) => {
+                            const player = players.find(
+                                (player) => player.userId === playerAnswer.userId
+                            );
+                            return (
+                                <li className="round-result-list-item" key={index}>
+                                    <div className="round-result-item-content">
+                                        {player?.username}
+                                    </div>
+                                    <div className="round-result-item-content">
+                                        {playerAnswer.gainedScore}
+                                    </div>
+                                    <div className="round-result-item-content">
+                                        {playerAnswer.timeToAnswer.toFixed(2)}s
+                                    </div>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>
+            </div>
         </div>
     );
 }
@@ -235,7 +240,7 @@ function GameResultScreen({ players }: { players: Player[] }) {
                         {
                             topThreePlayers.length === 3 && <>
                                 <Pedestal players={topThreePlayers} />
-                                <PlayerList players={otherPlayers} offset={3} />
+                                <PlayerList players={otherPlayers} offset={4} />
                             </>
                         }
                     </div>
