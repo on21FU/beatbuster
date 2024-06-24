@@ -15,6 +15,7 @@ export default function VolumeBar() {
             player?.getVolume().then((volume) => {
                 setVolume(Math.floor(volume * 100))
             })
+            player?.setVolume(volume)
             spotify?.setVolume(volume)
             console.log("testerino")
         }, 300)
