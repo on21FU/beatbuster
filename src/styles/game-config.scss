@@ -11,14 +11,11 @@
         &:hover {
             color: $primary !important;
             background-color: $black;
-
         }
     }
-
 }
 
 .btn {
-
     &.btn-settings {
         background-color: $grey;
         color: $white;
@@ -30,11 +27,6 @@
         //     background-color: $black !important;
         //     color: $primary !important;
         // }
-
-
-
-
-
     }
 }
 
@@ -43,9 +35,8 @@ label.btn.btn-settings {
     margin-bottom: 0.5rem;
 
     &:hover {
-        background-color: $black ;
-        color: $primary ;
-
+        background-color: $black;
+        color: $primary;
     }
 }
 
@@ -65,8 +56,6 @@ label.btn.btn-settings {
     .setting-section {
         margin-bottom: 2rem;
     }
-
-
 }
 
 form {
@@ -113,7 +102,6 @@ form {
                             aspect-ratio: 1 / 1;
                             object-fit: cover;
                         }
-
                     }
 
                     .selected-card-content {
@@ -123,12 +111,10 @@ form {
                         p {
                             margin-bottom: 0;
                         }
-
                     }
                 }
             }
         }
-
 
         input,
         select,
@@ -138,7 +124,6 @@ form {
             width: 100%;
             padding-left: 1rem;
         }
-
 
         //  .playlist-selection-left{
         //     width: 60%;
@@ -158,7 +143,7 @@ form {
     width: 100%;
     display: flex;
 
-    // flex-direction: row;    
+    // flex-direction: row;
     @include media-breakpoint-down(md) {
         display: block;
     }
@@ -203,7 +188,6 @@ form {
                 p {
                     margin-bottom: 0;
                 }
-
             }
         }
     }
@@ -217,7 +201,6 @@ form {
 
     li {
         list-style: none;
-
 
         .player-list-image {
             margin-bottom: 0.5rem;
@@ -241,11 +224,17 @@ form {
                 height: auto;
                 aspect-ratio: 1/1;
             }
-
         }
 
         .player-list-name {
             font-size: 0.7rem;
+        }
+
+        .spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
     }
 }
@@ -253,9 +242,6 @@ form {
 .game-config-left {
     display: flex;
     justify-content: space-between;
-
-
-
 }
 
 .player-list-button {
@@ -268,7 +254,6 @@ form {
         width: 100%;
         height: 100%;
         font-size: 1.6rem;
-
 
         background-color: $white;
 

@@ -16,6 +16,8 @@ export type Answer = {
     isCorrect: boolean
 }
 
+type PlayerReady = Player & { isReady: boolean }
+
 export default function GameConfig({
     accessToken,
     defaultPlayer,
@@ -30,7 +32,7 @@ export default function GameConfig({
     const [playlistItems, setPlaylistItems] = useState<SpotifyApi.PlaylistObjectSimplified[] | undefined>()
     const [searchTerm, setSearchTerm] = useState("")
     const [config, setConfig] = useState<Config>(getDefaultPlaylist())
-    const [players, setPlayers] = useState<Player[]>([defaultPlayer])
+    const [players, setPlayers] = useState<PlayerReady[]>([{ ...defaultPlayer, isReady: false }])
     const [round, setRound] = useState(0)
     const [answers, setAnswers] = useState<Answer[]>([])
     const [roundStart, setRoundStart] = useState<Date | null>(null)
@@ -48,20 +50,27 @@ export default function GameConfig({
     useEffect(() => {
         if (!socket) return
         getFeaturedPlaylist()
+        if (activeDeviceId) {
+            console.log("Were ready!")
+            socket.send(JSON.stringify({
+                type: "ready",
+            }))
+        }
         console.log("Handling Message handler", activeDeviceId)
         socket.addEventListener("message", handleMessage)
     }, [activeDeviceId])
 
-    async function getFeaturedPlaylist(){
-        if(!spotify) return
+    async function getFeaturedPlaylist() {
+        if (!spotify) return
         const allFeaturedPlaylists = await spotify.getFeaturedPlaylists()
         const featuredPlaylist = allFeaturedPlaylists.body.playlists.items[0]
-        if(!featuredPlaylist) return
+        if (!featuredPlaylist) return
         console.log(featuredPlaylist)
-        setConfig({ ...config, playlist: {
-            id: featuredPlaylist.id,
-            name: featuredPlaylist.name,
-            imgUrl: featuredPlaylist.images[0]?.url
+        setConfig({
+            ...config, playlist: {
+                id: featuredPlaylist.id,
+                name: featuredPlaylist.name,
+                imgUrl: featuredPlaylist.images[0]?.url
             }
         })
     }
@@ -117,7 +126,7 @@ export default function GameConfig({
                     setPlayerGuessTrackId(null)
                     setPlayerAnswers([])
                     setShowResultScreen(false)
-                    setPlayers(message.body.players)
+                    setPlayers(message.body.players.map(player => ({ ...player, isReady: false })))
                     setRound(message.body.round)
                     if (!spotify) return
                     const newAnswers = await getTrackInfos({
@@ -138,7 +147,7 @@ export default function GameConfig({
                     setRoundStart(new Date())
                     break
                 case "update-players":
-                    setPlayers(message.body.players)
+                    setPlayers(message.body.players.map(player => ({ ...player, isReady: false })))
                     break
                 case "round-results":
                     if (!spotify || !activeDeviceId) return
@@ -156,7 +165,7 @@ export default function GameConfig({
                 case "game-results":
                     setShowResultScreen(false)
                     setShowGameResultScreen(true)
-                    setPlayers(message.body.players)
+                    setPlayers(message.body.players.map(player => ({ ...player, isReady: false })))
                     break
                 case "update-config":
                     setConfig(message.body)
@@ -169,6 +178,19 @@ export default function GameConfig({
                     setAnswers([])
                     setPlayers(players.map(player => ({ ...player, score: 0 })))
                     break
+                case "ready":
+                    const playerIndex = players.findIndex(player => player.userId === message.body.userId)
+                    if (playerIndex === -1) return
+                    setPlayers(players.map((player, index) => {
+                        if (index === playerIndex) {
+                            return {
+                                ...player,
+                                isReady: true
+                            }
+                        }
+                        return player
+                    }))
+                    break;
                 default:
                     console.error("Unknown message type", message)
             }
@@ -229,10 +251,10 @@ export default function GameConfig({
         })
     }
     async function startGame() {
-        if (!socket) throw new Error("No socket")        
+        if (!socket) throw new Error("No socket")
         if (!isPlayerHost({ players, userId })) return
         const enoughSongs = await checkAmountSongs()
-        if(!enoughSongs) {
+        if (!enoughSongs) {
             toast.error("The selected playlist is too short")
             return
         }
@@ -246,8 +268,8 @@ export default function GameConfig({
         socket.send(JSON.stringify(message))
     }
     async function checkAmountSongs() {
-        if(!spotify) return false
-        if(config.winCondition.type !== "rounds") return true        
+        if (!spotify) return false
+        if (config.winCondition.type !== "rounds") return true
         const playlistSongs = await spotify.getPlaylist(config.playlist.id)
         return playlistSongs.body.tracks.items.length > config.winCondition.amount
     }
@@ -391,15 +413,18 @@ export default function GameConfig({
                                         </div>
                                     </div>
                                 </div>
+                                {
+                                    players.some(player => !player.isReady) && <p style={{
+                                        textAlign: "right",
+                                    }}>Please wait for Players to ready up.</p>
+                                }
                                 <div className="button-wrapper">
-                                    {
-                                        pending
-                                    }
+
                                     <button
                                         disabled={!activeDeviceId}
                                         className="btn btn-primary"
                                         type="submit">
-                                        {!activeDeviceId || pending ? <LoadingSpinner size="sm" /> : "Start Game"}
+                                        {!activeDeviceId || pending ? <LoadingSpinner size="sm" color="light" /> : "Start Game"}
                                     </button>
                                 </div>
                             </form>
@@ -481,7 +506,7 @@ function SearchResultDisplay({
     )
 }
 
-function PlayerDisplay({ player, userId, index }: { player: Player; userId: string; index: number }) {
+function PlayerDisplay({ player, userId, index }: { player: PlayerReady; userId: string; index: number }) {
     return (
         <li className="col-lg-3 col-sm-3 col-xs-3">
             <div className="player-list-image">
@@ -490,6 +515,13 @@ function PlayerDisplay({ player, userId, index }: { player: Player; userId: stri
                         <img className="host-crown-icon" src="/assets/crown.svg" />
                     </div>
                 )}
+                {
+                    !player.isReady && (
+                        <div className="spinner">
+                            <LoadingSpinner size="sm" />
+                        </div>
+                    )
+                }
                 <img src={player.imageUrl} />
             </div>
             <div className="player-list-name">
@@ -591,7 +623,7 @@ function AddPlayer({ gameId }: { gameId: string }) {
     }
 }
 
-function PlayerList({ players, gameId, userId }: { players: Player[]; gameId: string; userId: string }) {
+function PlayerList({ players, gameId, userId }: { players: PlayerReady[]; gameId: string; userId: string }) {
     if (players.length === 12) {
         return (
             <>
