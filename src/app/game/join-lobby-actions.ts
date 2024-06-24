@@ -34,7 +34,6 @@ export async function handleJoinGame(gameId: string) {
     });
 
     const response = await fetch(process.env.WEBSOCKET_URL_HTTP + "/join?" + params)
-    console.log(response)
     if (!response.ok) {
         return {
             error: "Couldn't find the game you were looking for..."

@@ -53,7 +53,6 @@ export default function GameConfig({
         if (!socket) return
         setFeaturedPlaylist()
         if (activeDeviceId) {
-            console.log("Sending ready!")
             socket.send(JSON.stringify({
                 type: "ready",
             }))
@@ -66,7 +65,6 @@ export default function GameConfig({
         const allFeaturedPlaylists = await spotify.getFeaturedPlaylists()
         const featuredPlaylist = allFeaturedPlaylists.body.playlists.items[0]
         if (!featuredPlaylist) return
-        console.log(featuredPlaylist)
         setConfig({
             ...config, playlist: {
                 id: featuredPlaylist.id,
@@ -81,7 +79,7 @@ export default function GameConfig({
         return (
             <>
                 <div className="d-flex flex-column align-items-center">
-                    <LoadingSpinner color="dark"/>
+                    <LoadingSpinner color="dark" />
                     <p>Connecting...</p>
                 </div>
             </>
@@ -90,7 +88,7 @@ export default function GameConfig({
         return (
             <>
                 <div className="d-flex flex-column align-items-center">
-                    <LoadingSpinner color="dark"/>
+                    <LoadingSpinner color="dark" />
                     <p>Establishing Spotify Connection...</p>
                 </div>
             </>
@@ -115,7 +113,6 @@ export default function GameConfig({
     async function handleMessage(event: MessageEvent) {
         try {
             const message = JSON.parse(event.data)
-            console.log(message.type)
             if (!validateMessage(message)) {
                 console.error("Invalid message", message)
                 messageSchema.parse(message)
@@ -124,7 +121,6 @@ export default function GameConfig({
 
             switch (message.type) {
                 case "start-round":
-                    console.log("starting round", message.body.round)
                     setPlayerGuessTrackId(null)
                     setPlayerAnswers([])
                     setShowResultScreen(false)
@@ -382,7 +378,7 @@ export default function GameConfig({
                                     <div className="playlist-selection">
                                         <div className="playlist-section-left">
                                             <p>Select your playlist</p>
-                                            <input className="searchbar" onChange={handleSearchInputChange} onSelect={()=>{setIsNewPlaylistSelected(false)}}/>
+                                            <input className="searchbar" onChange={handleSearchInputChange} onSelect={() => { setIsNewPlaylistSelected(false) }} />
                                             <SearchResultDisplay
                                                 playlistItems={playlistItems}
                                                 searchTerm={searchTerm}
@@ -489,15 +485,15 @@ function SearchResultDisplay({
                                     id: playlist.id,
                                     imgUrl: playlist.images[0]?.url,
                                     name: playlist.name,
-                                    owner: playlist.owner.display_name                                 
+                                    owner: playlist.owner.display_name
                                 }, setIsNewPlaylistSelected, setActivePlaylist)
                             }>
                             <div className="card-image">
                                 <img width="80px" src={playlist.images[0]?.url} />
                             </div>
                             <div className="card-content">
-                                <p className="fw-bold">{playlist.name}</p>
-                                <p>{playlist.owner.display_name}</p>
+                                <p className="fw-bold text-start">{playlist.name}</p>
+                                <p className="text-start">{playlist.owner.display_name}</p>
                             </div>
                         </button>
                     )
@@ -524,7 +520,7 @@ function PlayerDisplay({ player, userId, index }: { player: PlayerWithReady; use
                 {
                     !player.isReady && (
                         <div className="spinner">
-                            <LoadingSpinner size="sm"  color="dark"/>
+                            <LoadingSpinner size="sm" color="dark" />
                         </div>
                     )
                 }
