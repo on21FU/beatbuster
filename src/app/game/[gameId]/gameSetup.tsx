@@ -66,7 +66,7 @@ export function Game({
         return (
             <>
                 <div className="d-flex flex-column align-items-center">
-                    <LoadingSpinner />
+                    <LoadingSpinner color="dark"/>
                     <p>Connecting...</p>
                 </div>
             </>

@@ -11,7 +11,7 @@ export function CreateNewGame() {
 
     return <form action={(formData) => startTransition(() => enterNewLobbyAction(formData))} key={Math.random()}>
         <button className="btn btn-primary" type="submit">
-            {pending ? <LoadingSpinner size="sm" /> : "Create New Lobby"}
+            {pending ? <LoadingSpinner size="sm" color="dark"/> : "Create New Lobby"}
         </button>
     </form>
 }
@@ -27,7 +27,7 @@ export function EnterByCode() {
             <div className="input-group">
                 <input className="enter-lobby-code form-control" type="text" name="gameId" />
                 <button type="submit" className="btn btn-primary">
-                    {pending ? <LoadingSpinner size="sm" /> : "Join"}
+                    {pending ? <LoadingSpinner color="dark" size="sm" /> : "Join"}
                 </button>
             </div>
         </div>
