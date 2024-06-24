@@ -3,7 +3,6 @@ import { useSpotifyStore } from "../game/[gameId]/gameSetup";
 
 export default function VolumeBar() {
     const [volume, setVolume] = useState(50)
-
     const { spotify } = useSpotifyStore()
 
     function handleVolumeChange(newVolume: number) {
@@ -14,7 +13,7 @@ export default function VolumeBar() {
         const handler = setTimeout(() => {
             spotify?.setVolume(volume)
             console.log("testerino")
-        }, 1000)
+        }, 300)
 
         return () => {
             clearTimeout(handler)
@@ -35,7 +34,6 @@ export default function VolumeBar() {
                     value={volume}
                     onChange={(e) => handleVolumeChange(parseInt(e.target.value))}
                 />
-
             </div>
         </>
     );
