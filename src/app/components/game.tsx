@@ -228,14 +228,14 @@ function GameResultScreen({ players }: { players: Player[] }) {
                 <ul className="end-result-list">
                     <div className="normal-list">
                         {
-                            topThreePlayers.length < 3 && <PlayerList players={sortedPlayers} />
+                            topThreePlayers.length < 3 && <PlayerList players={sortedPlayers} offset={0} />
                         }
                     </div>
                     <div className="top-three-list">
                         {
                             topThreePlayers.length === 3 && <>
                                 <Pedestal players={topThreePlayers} />
-                                <PlayerList players={otherPlayers} />
+                                <PlayerList players={otherPlayers} offset={3} />
                             </>
                         }
                     </div>
@@ -254,22 +254,26 @@ function Pedestal({ players }: { players: Player[] }) {
     if (!players[0] || !players[1] || !players[2]) {
         return
     }
-    return [players[1], players[0], players[2]]
-        .map((player, index) => {
+    return [
+        { player: players[1], position: 2 },
+        { player: players[0], position: 1 },
+        { player: players[2], position: 3 }
+    ]
+        .map((entry, index) => {
             return (
                 <li className="end-result-list-item" key={index}>
                     <div className="image-wrapper">
-                        <img src={player.imageUrl} alt="" />
+                        <img src={entry.player.imageUrl} alt="" />
                     </div>
                     <div className="end-result-content">
                         <p className="end-result-index">
-                            {index + 1}
+                            {entry.position}
                         </p>
                         <p className="end-result-name">
-                            {player.username}{" "}
+                            {entry.player.username}{" "}
                         </p>
                         <p className="end-result-score">
-                            {player.score}
+                            {entry.player.score}
                         </p>
                         <p className="end-result-description">
                             Points
@@ -313,7 +317,7 @@ function SongDisplay({ trackId }: { trackId: string }) {
 
 }
 
-function PlayerList({ players }: { players: Player[] }) {
+function PlayerList({ players, offset = 0 }: { players: Player[], offset?: number }) {
     return players
         .map((player, index) => {
             return (
@@ -323,7 +327,7 @@ function PlayerList({ players }: { players: Player[] }) {
                     </div>
                     <div className="end-result-content">
                         <p className="end-result-index">
-                            {index + 1}
+                            {index + offset}
                         </p>
                         <p className="end-result-name">
                             {player.username}{" "}
