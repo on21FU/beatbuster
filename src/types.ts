@@ -12,6 +12,7 @@ const playlistSchema = z.object({
     id: z.string(),
     imgUrl: z.string().optional(),
     name: z.string(),
+    owner: z.string().optional()
 })
 
 const roundWinConditionSchema = z.object({

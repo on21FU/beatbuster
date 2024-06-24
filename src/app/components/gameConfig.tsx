@@ -1,6 +1,6 @@
 "use client"
 
-import { ChangeEvent, useEffect, useState, useTransition } from "react"
+import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState, useTransition } from "react"
 import SpotifyWebApi from "spotify-web-api-node"
 import { useSocketStore, useSpotifyStore } from "../game/[gameId]/gameSetup"
 import { Config, Player, PlayerAnswer, Playlist, messageSchema, validateMessage } from "~/types"
@@ -41,6 +41,7 @@ export default function GameConfig({
     const [resultScreenTimer, setResultScreenTimer] = useState<Date | null>(null)
     const [playerGuessTrackId, setPlayerGuessTrackId] = useState<string | null>(null)
     const [showGameResultScreen, setShowGameResultScreen] = useState(false)
+    const [isNewPlaylistSelected, setIsNewPlaylistSelected] = useState(false)
     const [correctTrackId, setCorrectTrackId] = useState<string | null>(null)
 
     const { socket } = useSocketStore()
@@ -70,7 +71,8 @@ export default function GameConfig({
             ...config, playlist: {
                 id: featuredPlaylist.id,
                 name: featuredPlaylist.name,
-                imgUrl: featuredPlaylist.images[0]?.url
+                imgUrl: featuredPlaylist.images[0]?.url,
+                owner: featuredPlaylist.owner.display_name
             }
         })
     }
@@ -79,7 +81,7 @@ export default function GameConfig({
         return (
             <>
                 <div className="d-flex flex-column align-items-center">
-                    <LoadingSpinner />
+                    <LoadingSpinner color="dark"/>
                     <p>Connecting...</p>
                 </div>
             </>
@@ -88,7 +90,7 @@ export default function GameConfig({
         return (
             <>
                 <div className="d-flex flex-column align-items-center">
-                    <LoadingSpinner />
+                    <LoadingSpinner color="dark"/>
                     <p>Establishing Spotify Connection...</p>
                 </div>
             </>
@@ -238,6 +240,7 @@ export default function GameConfig({
             setPlaylistItems(data.body.playlists?.items)
         })
     }
+
     async function startGame() {
         if (!socket) throw new Error("No socket")
         if (!isPlayerHost({ players, userId })) return
@@ -379,11 +382,13 @@ export default function GameConfig({
                                     <div className="playlist-selection">
                                         <div className="playlist-section-left">
                                             <p>Select your playlist</p>
-                                            <input className="searchbar" onChange={handleSearchInputChange} />
+                                            <input className="searchbar" onChange={handleSearchInputChange} onSelect={()=>{setIsNewPlaylistSelected(false)}}/>
                                             <SearchResultDisplay
                                                 playlistItems={playlistItems}
                                                 searchTerm={searchTerm}
                                                 setActivePlaylist={setActivePlaylist}
+                                                isNewPlaylistSelected={isNewPlaylistSelected}
+                                                setIsNewPlaylistSelected={setIsNewPlaylistSelected}
                                             />
                                         </div>
                                         <div className="playlist-section-right">
@@ -394,7 +399,8 @@ export default function GameConfig({
                                                         <img width="80px" src={config.playlist.imgUrl} />
                                                     </div>
                                                     <div className="selected-card-content">
-                                                        <p>{config.playlist.name}</p>
+                                                        <p className="fw-bold">{config.playlist.name}</p>
+                                                        <p>{config.playlist.owner}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -412,7 +418,7 @@ export default function GameConfig({
                                         disabled={!activeDeviceId || pending || players.some(p => !p.isReady)}
                                         className="btn btn-primary"
                                         type="submit">
-                                        {!activeDeviceId || pending || players.some(p => !p.isReady) ? <LoadingSpinner size="sm" color="light" /> : "Start Game"}
+                                        {!activeDeviceId || pending || players.some(p => !p.isReady) ? <LoadingSpinner size="sm" color="dark" /> : "Start Game"}
                                     </button>
                                 </div>
                             </form>
@@ -454,10 +460,14 @@ function SearchResultDisplay({
     playlistItems,
     searchTerm,
     setActivePlaylist,
+    isNewPlaylistSelected,
+    setIsNewPlaylistSelected
 }: {
     playlistItems: SpotifyApi.PlaylistObjectSimplified[] | undefined
     searchTerm: string
     setActivePlaylist: (playlist: Playlist) => void
+    isNewPlaylistSelected: boolean
+    setIsNewPlaylistSelected: Dispatch<SetStateAction<boolean>>
 }) {
     if (searchTerm.length < 3) {
         return
@@ -466,7 +476,7 @@ function SearchResultDisplay({
         return <p>No playlists found</p>
     }
     return (
-        <div className="search-result grid hw-50">
+        <div className={isNewPlaylistSelected ? "search-result grid hw-50 d-none" : "search-result grid hw-50"}>
             <div className="search-result-list column flex-nowrap overflow-auto">
                 {playlistItems.map(playlist => {
                     return (
@@ -475,17 +485,19 @@ function SearchResultDisplay({
                             className="w-100 card"
                             key={playlist.id}
                             onClick={() =>
-                                setActivePlaylist({
+                                handlePlaylistSelection({
                                     id: playlist.id,
                                     imgUrl: playlist.images[0]?.url,
                                     name: playlist.name,
-                                })
+                                    owner: playlist.owner.display_name                                 
+                                }, setIsNewPlaylistSelected, setActivePlaylist)
                             }>
                             <div className="card-image">
                                 <img width="80px" src={playlist.images[0]?.url} />
                             </div>
                             <div className="card-content">
-                                <p>{playlist.name}</p>
+                                <p className="fw-bold">{playlist.name}</p>
+                                <p>{playlist.owner.display_name}</p>
                             </div>
                         </button>
                     )
@@ -493,6 +505,11 @@ function SearchResultDisplay({
             </div>
         </div>
     )
+}
+
+function handlePlaylistSelection(playlist: Playlist, setIsNewPlaylistSelected: Dispatch<SetStateAction<boolean>>, setActivePlaylist: (playlist: Playlist) => void) {
+    setActivePlaylist(playlist)
+    setIsNewPlaylistSelected(true)
 }
 
 function PlayerDisplay({ player, userId, index }: { player: PlayerWithReady; userId: string; index: number }) {
@@ -507,7 +524,7 @@ function PlayerDisplay({ player, userId, index }: { player: PlayerWithReady; use
                 {
                     !player.isReady && (
                         <div className="spinner">
-                            <LoadingSpinner size="sm" />
+                            <LoadingSpinner size="sm"  color="dark"/>
                         </div>
                     )
                 }
