@@ -21,6 +21,8 @@ type SpotifyStore = {
     activeDeviceId: string | null;
     setSpotify: ({ spotify }: { spotify: SpotifyWebApi }) => void;
     setActiveDeviceId: ({ activeDeviceId }: { activeDeviceId: string }) => void;
+    player: Spotify.Player | null;
+    setPlayer: ({ player }: { player: Spotify.Player }) => void;
 };
 
 export const useSocketStore = create<SocketStore>((set) => ({
@@ -33,6 +35,8 @@ export const useSpotifyStore = create<SpotifyStore>((set) => ({
     activeDeviceId: null,
     setSpotify: (newSpotify) => set((state) => newSpotify),
     setActiveDeviceId: (newDeviceId) => set((state) => newDeviceId),
+    player: null,
+    setPlayer: (player) => set((state) => player),
 }));
 
 export function Game({
