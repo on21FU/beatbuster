@@ -5,17 +5,19 @@ import { useSpotifyStore } from "../game/[gameId]/gameSetup";
 export default function VolumeBar() {
     const { spotify, player } = useSpotifyStore()
     const [volume, setVolume] = useState(50)
-    let isStart = true
+    const[isStart, setIsStart] = useState(true)
+    
 
     function handleVolumeChange(newVolume: number) {
         setVolume(newVolume)
     }
 
     function getStartVolume() {
+        setIsStart(false)
         player?.getVolume().then((volume) => {
             setVolume(Math.floor(volume * 100))
         })
-        isStart = false;
+        
     }
 
     useEffect(() => {
@@ -24,7 +26,6 @@ export default function VolumeBar() {
                 getStartVolume()
             } else {
                 spotify?.setVolume(volume)
-                console.log("testerino")
             }
         }, 300)
 
