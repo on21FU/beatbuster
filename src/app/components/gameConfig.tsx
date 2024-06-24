@@ -70,7 +70,8 @@ export default function GameConfig({
             ...config, playlist: {
                 id: featuredPlaylist.id,
                 name: featuredPlaylist.name,
-                imgUrl: featuredPlaylist.images[0]?.url
+                imgUrl: featuredPlaylist.images[0]?.url,
+                owner: featuredPlaylist.owner.display_name
             }
         })
     }
@@ -79,7 +80,7 @@ export default function GameConfig({
         return (
             <>
                 <div className="d-flex flex-column align-items-center">
-                    <LoadingSpinner />
+                    <LoadingSpinner color="dark"/>
                     <p>Connecting...</p>
                 </div>
             </>
@@ -88,7 +89,7 @@ export default function GameConfig({
         return (
             <>
                 <div className="d-flex flex-column align-items-center">
-                    <LoadingSpinner />
+                    <LoadingSpinner color="dark"/>
                     <p>Establishing Spotify Connection...</p>
                 </div>
             </>
@@ -410,7 +411,8 @@ export default function GameConfig({
                                                         <img width="80px" src={config.playlist.imgUrl} />
                                                     </div>
                                                     <div className="selected-card-content">
-                                                        <p>{config.playlist.name}</p>
+                                                        <p className="fw-bold">{config.playlist.name}</p>
+                                                        <p>{config.playlist.owner}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -428,7 +430,7 @@ export default function GameConfig({
                                         disabled={!activeDeviceId}
                                         className="btn btn-primary"
                                         type="submit">
-                                        {!activeDeviceId || pending ? <LoadingSpinner size="sm" color="light" /> : "Start Game"}
+                                        {!activeDeviceId || pending ? <LoadingSpinner size="sm" color="dark" /> : "Start Game"}
                                     </button>
                                 </div>
                             </form>
@@ -498,14 +500,15 @@ function SearchResultDisplay({
                                     id: playlist.id,
                                     imgUrl: playlist.images[0]?.url,
                                     name: playlist.name,
-                                    
+                                    owner: playlist.owner.display_name                                 
                                 }, setIsNewPlaylistSelected, setActivePlaylist)
                             }>
                             <div className="card-image">
                                 <img width="80px" src={playlist.images[0]?.url} />
                             </div>
                             <div className="card-content">
-                                <p>{playlist.name}</p>
+                                <p className="fw-bold">{playlist.name}</p>
+                                <p>{playlist.owner.display_name}</p>
                             </div>
                         </button>
                     )
@@ -532,7 +535,7 @@ function PlayerDisplay({ player, userId, index }: { player: PlayerReady; userId:
                 {
                     !player.isReady && (
                         <div className="spinner">
-                            <LoadingSpinner size="sm" />
+                            <LoadingSpinner size="sm"  color="dark"/>
                         </div>
                     )
                 }
