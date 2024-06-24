@@ -1,12 +1,19 @@
-"use client"
-import { SignInButton, UserButton } from "@clerk/nextjs";
-import { enterLobbyByCode, enterNewLobby } from "./join-lobby-actions";
-import { useFormState, useFormStatus } from "react-dom";
-import LoadingSpinner from "../components/loadingSpinner";
-import { useTransition } from "react";
-import { startRoundWithSpotifyApi } from "../spotify";
 
-export default function GamePage() {
+import { UserButton } from "@clerk/nextjs";
+import { EnterByCode, CreateNewGame } from "./createNewGame";
+
+export default async function GamePage() {
+
+    await pingWebsocketServer();
+
+    async function pingWebsocketServer(){
+        try {
+            const response = await fetch(process.env.WEBSOCKET_URL_HTTP + "/health")
+            return response.ok
+        } catch {
+            return false
+        }       
+    }
 
     return (
         <main>
@@ -37,36 +44,4 @@ export default function GamePage() {
             </div>
         </main>
     )
-}
-
-function CreateNewGame() {
-    const [pending, startTransition] = useTransition()
-    const [state, enterNewLobbyAction] = useFormState(enterNewLobby, null)
-
-    return <form action={(formData) => startTransition(() => enterNewLobbyAction(formData))} key={Math.random()}>
-        <button className="btn btn-primary" type="submit">
-            {pending ? <LoadingSpinner size="sm" /> : "Create New Lobby"}
-        </button>
-    </form>
-}
-
-function EnterByCode() {
-
-    const [pending, startTransition] = useTransition()
-    const [codeState, enterLobbyByCodeAction] = useFormState(enterLobbyByCode, null)
-
-    return <form action={(formData) => startTransition(() => enterLobbyByCodeAction(formData))} key={Math.random()}>
-        <div className="creat-section-input">
-            <label htmlFor="gameId">Enter Lobby Code</label>
-            <div className="input-group">
-                <input className="enter-lobby-code form-control" type="text" name="gameId" />
-                <button type="submit" className="btn btn-primary">
-                    {pending ? <LoadingSpinner size="sm" /> : "Join"}
-                </button>
-            </div>
-        </div>
-        {codeState?.message && <p style={{
-            color: "red"
-        }}>{codeState.message}</p>}
-    </form>
 }
