@@ -16,7 +16,7 @@ export type Answer = {
     isCorrect: boolean
 }
 
-type PlayerReady = Player & { isReady: boolean }
+type PlayerWithReady = Player & { isReady: boolean }
 
 export default function GameConfig({
     accessToken,
@@ -32,7 +32,7 @@ export default function GameConfig({
     const [playlistItems, setPlaylistItems] = useState<SpotifyApi.PlaylistObjectSimplified[] | undefined>()
     const [searchTerm, setSearchTerm] = useState("")
     const [config, setConfig] = useState<Config>(getDefaultPlaylist())
-    const [players, setPlayers] = useState<PlayerReady[]>([{ ...defaultPlayer, isReady: false }])
+    const [players, setPlayers] = useState<PlayerWithReady[]>([{ ...defaultPlayer, isReady: false }])
     const [round, setRound] = useState(0)
     const [answers, setAnswers] = useState<Answer[]>([])
     const [roundStart, setRoundStart] = useState<Date | null>(null)
@@ -50,18 +50,17 @@ export default function GameConfig({
 
     useEffect(() => {
         if (!socket) return
-        getFeaturedPlaylist()
+        setFeaturedPlaylist()
         if (activeDeviceId) {
-            console.log("Were ready!")
+            console.log("Sending ready!")
             socket.send(JSON.stringify({
                 type: "ready",
             }))
         }
-        console.log("Handling Message handler", activeDeviceId)
         socket.addEventListener("message", handleMessage)
     }, [activeDeviceId])
 
-    async function getFeaturedPlaylist() {
+    async function setFeaturedPlaylist() {
         if (!spotify) return
         const allFeaturedPlaylists = await spotify.getFeaturedPlaylists()
         const featuredPlaylist = allFeaturedPlaylists.body.playlists.items[0]
@@ -149,7 +148,7 @@ export default function GameConfig({
                     setRoundStart(new Date())
                     break
                 case "update-players":
-                    setPlayers(message.body.players.map(player => ({ ...player, isReady: false })))
+                    setPlayers(message.body.players)
                     break
                 case "round-results":
                     if (!spotify || !activeDeviceId) return
@@ -180,19 +179,6 @@ export default function GameConfig({
                     setAnswers([])
                     setPlayers(players.map(player => ({ ...player, score: 0 })))
                     break
-                case "ready":
-                    const playerIndex = players.findIndex(player => player.userId === message.body.userId)
-                    if (playerIndex === -1) return
-                    setPlayers(players.map((player, index) => {
-                        if (index === playerIndex) {
-                            return {
-                                ...player,
-                                isReady: true
-                            }
-                        }
-                        return player
-                    }))
-                    break;
                 default:
                     console.error("Unknown message type", message)
             }
@@ -418,15 +404,15 @@ export default function GameConfig({
                                 {
                                     players.some(player => !player.isReady) && <p style={{
                                         textAlign: "right",
-                                    }}>Please wait for Players to ready up.</p>
+                                    }}>Please wait for all players to ready up.</p>
                                 }
                                 <div className="button-wrapper">
 
                                     <button
-                                        disabled={!activeDeviceId}
+                                        disabled={!activeDeviceId || pending || players.some(p => !p.isReady)}
                                         className="btn btn-primary"
                                         type="submit">
-                                        {!activeDeviceId || pending ? <LoadingSpinner size="sm" color="light" /> : "Start Game"}
+                                        {!activeDeviceId || pending || players.some(p => !p.isReady) ? <LoadingSpinner size="sm" color="light" /> : "Start Game"}
                                     </button>
                                 </div>
                             </form>
@@ -509,7 +495,7 @@ function SearchResultDisplay({
     )
 }
 
-function PlayerDisplay({ player, userId, index }: { player: PlayerReady; userId: string; index: number }) {
+function PlayerDisplay({ player, userId, index }: { player: PlayerWithReady; userId: string; index: number }) {
     return (
         <li className="col-lg-3 col-sm-3 col-xs-3">
             <div className="player-list-image">
@@ -626,7 +612,7 @@ function AddPlayer({ gameId }: { gameId: string }) {
     }
 }
 
-function PlayerList({ players, gameId, userId }: { players: PlayerReady[]; gameId: string; userId: string }) {
+function PlayerList({ players, gameId, userId }: { players: PlayerWithReady[]; gameId: string; userId: string }) {
     if (players.length === 12) {
         return (
             <>

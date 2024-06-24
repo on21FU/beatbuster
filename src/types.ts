@@ -5,6 +5,7 @@ const playerSchema = z.object({
     username: z.string(),
     imageUrl: z.string(),
     score: z.number(),
+    isReady: z.boolean(),
 })
 
 const playlistSchema = z.object({
@@ -89,12 +90,6 @@ const restartGameSchema = z.object({
     type: z.literal("restart-game")
 })
 
-const readySchema = z.object({
-    type: z.literal("ready"),
-    body: z.object({
-        userId: z.string()
-    })
-})
 
 export const messageSchema = z.union([
     startRoundSchema,
@@ -103,7 +98,6 @@ export const messageSchema = z.union([
     gameResultSchema,
     updateConfigSchema,
     restartGameSchema,
-    readySchema
 ])
 
 export function validateMessage(message: unknown): message is z.infer<typeof messageSchema> {

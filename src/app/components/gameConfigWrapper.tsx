@@ -5,7 +5,7 @@ import GameConfig from "./gameConfig";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import WebPlayback from "../webplayback";
 
-export default async function GameConfigWrapper({ gameId }: { gameId: string}) {
+export default async function GameConfigWrapper({ gameId }: { gameId: string }) {
     const { token: accessToken } = await getUserToken();
     console.log("AccessToken: ", accessToken)
 
@@ -19,7 +19,8 @@ export default async function GameConfigWrapper({ gameId }: { gameId: string}) {
         userId: profile.id,
         username: profile.fullName || "Guest" + Math.floor(Math.random() * 1000),
         imageUrl: profile.imageUrl || "",
-        score: 0
+        score: 0,
+        isReady: false
     }
 
     return (
