@@ -7,6 +7,7 @@ import { Config, Player, PlayerAnswer, Playlist, messageSchema, validateMessage 
 import { Game } from "./game"
 import toast from 'react-hot-toast';
 import LoadingSpinner from "./loadingSpinner"
+import { useFormState } from "react-dom"
 
 export type Answer = {
     trackId: string
@@ -40,6 +41,7 @@ export default function GameConfig({
     const [resultScreenTimer, setResultScreenTimer] = useState<Date | null>(null)
     const [playerGuessTrackId, setPlayerGuessTrackId] = useState<string | null>(null)
     const [showGameResultScreen, setShowGameResultScreen] = useState(false)
+    const [correctTrackId, setCorrectTrackId] = useState<string | null>(null)
 
     const { socket } = useSocketStore()
     const { spotify, activeDeviceId } = useSpotifyStore()
@@ -143,6 +145,7 @@ export default function GameConfig({
                         spotify,
                         activeDeviceId,
                     })
+                    setCorrectTrackId(message.body.tracks.correctTrackId)
                     setRoundStart(new Date())
                     break
                 case "update-players":
@@ -237,7 +240,6 @@ export default function GameConfig({
             })
         }
     }
-
 
     async function handleSearchInputChange(e: ChangeEvent<HTMLInputElement>) {
         const currentSearchTerm = e.target.value
@@ -434,6 +436,7 @@ export default function GameConfig({
             </>
         )
     }
+
     if (round > 0) {
         return (
             <Game
@@ -448,8 +451,8 @@ export default function GameConfig({
                 setPlayerGuessTrackId={setPlayerGuessTrackId}
                 playerGuessTrackId={playerGuessTrackId}
                 showGameResultScreen={showGameResultScreen}
-                resultScreenTimer={resultScreenTimer}
                 userId={userId}
+                correctTrackId={correctTrackId}
             />
         )
     }
