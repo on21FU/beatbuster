@@ -242,7 +242,7 @@ function GameResultScreen({ players }: { players: Player[] }) {
                 <ul className="end-result-list">
                     <div className="normal-list">
                         {
-                            topThreePlayers.length < 3 && <PlayerList players={sortedPlayers} offset={0} />
+                            topThreePlayers.length < 3 && <PlayerList players={sortedPlayers} offset={1} />
                         }
                     </div>
                     <div className="top-three-list">
