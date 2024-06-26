@@ -7,8 +7,6 @@ export function WebPlayback({ token }: { token: string }) {
   const { setActiveDeviceId, activeDeviceId, player, setPlayer } = useSpotifyStore();
   const { session } = useSession()
 
-  console.log("Session: ", session)
-
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://sdk.scdn.co/spotify-player.js";
@@ -42,7 +40,6 @@ export function WebPlayback({ token }: { token: string }) {
         .connect()
         .then((success) => console.log("connect"))
         .catch((err) => console.log(err));
-      console.log("Player: ", player)
       setPlayer({ player });
     };
   }, []);

@@ -3,7 +3,6 @@ import "~/styles/globals.scss";
 import { Inter } from "next/font/google";
 import { ClerkProvider } from '@clerk/nextjs'
 import { TRPCReactProvider } from "~/trpc/react";
-import Footer from "./components/footer";
 import { Toaster } from "react-hot-toast";
 
 const inter = Inter({
@@ -31,7 +30,9 @@ export default function RootLayout({
           <Toaster />
           <div className="logo-container container">
             <div className="logo">
-              <img src="/../assets/logo-beatbuster.png"></img>
+              <a href="/game">
+                <img src="/../assets/logo-beatbuster.png"/>
+              </a>              
             </div>
           </div>
           <TRPCReactProvider>{children}</TRPCReactProvider>

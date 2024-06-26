@@ -302,10 +302,8 @@ function SongDisplay({ trackId }: { trackId: string }) {
     const { spotify } = useSpotifyStore();
 
     const { data: track, isLoading } = useSWR(trackId, async (trackId) => {
-        console.log("Getting track")
         if (!spotify) return;
         const track = await spotify.getTrack(trackId);
-        console.log(track)
         return track.body;
     })
 
