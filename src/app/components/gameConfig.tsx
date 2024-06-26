@@ -276,10 +276,9 @@ export default function GameConfig({
                             </div>
                         </div>
                         <div className="col-lg-8">
-                            <h2>Your Game</h2>
+                            <h2>Settings</h2>
                             <form action={() => startTransition(() => startGame())}>
                                 <div className="settings">
-                                    <h4>Settings</h4>
                                     <div className="setting-section">
                                         <p>Round Time</p>
                                         <input
@@ -290,6 +289,7 @@ export default function GameConfig({
                                             value="5"
                                             onChange={handleRoundTimeChange}
                                             checked={config.roundTime === 5}
+                                            disabled={!isPlayerHost({ players, userId })}
                                         />
                                         <label className="btn btn-settings" htmlFor="roundTime5">
                                             5s
@@ -302,6 +302,7 @@ export default function GameConfig({
                                             value="10"
                                             onChange={handleRoundTimeChange}
                                             checked={config.roundTime === 10}
+                                            disabled={!isPlayerHost({ players, userId })}
                                         />
                                         <label className="btn btn-settings" htmlFor="roundTime10">
                                             10s
@@ -314,6 +315,7 @@ export default function GameConfig({
                                             value="15"
                                             onChange={handleRoundTimeChange}
                                             checked={config.roundTime === 15}
+                                            disabled={!isPlayerHost({ players, userId })}
                                         />
                                         <label className="btn btn-settings" htmlFor="roundTime15">
                                             15s
@@ -330,6 +332,7 @@ export default function GameConfig({
                                                 value="rounds"
                                                 onChange={handleWinConditionChange}
                                                 checked={config.winCondition.type === "rounds"}
+                                                disabled={!isPlayerHost({ players, userId })}
                                             />
                                             <label className="btn btn-settings" htmlFor="rounds">
                                                 Rounds
@@ -342,6 +345,7 @@ export default function GameConfig({
                                                 value="score"
                                                 onChange={handleWinConditionChange}
                                                 checked={config.winCondition.type === "score"}
+                                                disabled={!isPlayerHost({ players, userId })}
                                             />
                                             <label className="btn btn-settings" htmlFor="score">
                                                 Score
@@ -357,6 +361,7 @@ export default function GameConfig({
                                                         max="25"
                                                         onChange={handleAmountChange}
                                                         value={config.winCondition.amount}
+                                                        disabled={!isPlayerHost({ players, userId })}
                                                     />
                                                 </div>
                                             )}
@@ -370,6 +375,7 @@ export default function GameConfig({
                                                         max="25000"
                                                         onChange={handleAmountChange}
                                                         value={config.winCondition.amount}
+                                                        disabled={!isPlayerHost({ players, userId })}
                                                     />
                                                 </div>
                                             )}
@@ -378,7 +384,12 @@ export default function GameConfig({
                                     <div className="playlist-selection">
                                         <div className="playlist-section-left">
                                             <p>Select your playlist</p>
-                                            <input className="searchbar" onChange={handleSearchInputChange} onSelect={() => { setIsNewPlaylistSelected(false) }} />
+                                            <input
+                                                className="searchbar"
+                                                onChange={handleSearchInputChange}
+                                                onSelect={() => { setIsNewPlaylistSelected(false) }}
+                                                disabled={!isPlayerHost({ players, userId })}
+                                            />
                                             <SearchResultDisplay
                                                 playlistItems={playlistItems}
                                                 searchTerm={searchTerm}

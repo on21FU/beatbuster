@@ -171,7 +171,7 @@ function RoundResultScreen({ playerAnswers, players, correctTrackId, ownPlayer }
     return (
         <div className="round-result container">
             <div className="row">
-                <div className="progress">
+                <div className="progress p-0">
                     <div className="progress-bar bg-primary"></div>
                 </div>
             </div>
@@ -238,11 +238,10 @@ function GameResultScreen({ players }: { players: Player[] }) {
     return (
         <>
             <div className="container round-result">
-                <h2>Game result</h2>
                 <ul className="end-result-list">
                     <div className="normal-list">
                         {
-                            topThreePlayers.length < 3 && <PlayerList players={sortedPlayers} offset={0} />
+                            topThreePlayers.length < 3 && <PlayerList players={sortedPlayers} offset={1} />
                         }
                     </div>
                     <div className="top-three-list">
@@ -303,10 +302,8 @@ function SongDisplay({ trackId }: { trackId: string }) {
     const { spotify } = useSpotifyStore();
 
     const { data: track, isLoading } = useSWR(trackId, async (trackId) => {
-        console.log("Getting track")
         if (!spotify) return;
         const track = await spotify.getTrack(trackId);
-        console.log(track)
         return track.body;
     })
 
