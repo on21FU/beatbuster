@@ -171,7 +171,7 @@ function RoundResultScreen({ playerAnswers, players, correctTrackId, ownPlayer }
     return (
         <div className="round-result container">
             <div className="row">
-                <div className="progress">
+                <div className="progress p-0">
                     <div className="progress-bar bg-primary"></div>
                 </div>
             </div>
@@ -238,7 +238,6 @@ function GameResultScreen({ players }: { players: Player[] }) {
     return (
         <>
             <div className="container round-result">
-                <h2>Game result</h2>
                 <ul className="end-result-list">
                     <div className="normal-list">
                         {
