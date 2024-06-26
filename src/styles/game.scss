@@ -302,7 +302,9 @@
                         display: flex;
                         justify-content: center;
                         font-weight: 800;
+                        font-size: 1.5rem;
                         &:nth-child(n + 4) {
+                            font-size: 1rem;
                             display: flex;
                             align-items: end;
                             width: 30%;
