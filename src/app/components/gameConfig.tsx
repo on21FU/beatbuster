@@ -422,9 +422,10 @@ export default function GameConfig({
                                 <div className="button-wrapper">
 
                                     <button
-                                        disabled={!activeDeviceId || pending || players.some(p => !p.isReady)}
+                                        disabled={!activeDeviceId || pending || players.some(p => !p.isReady) || !isPlayerHost({ players, userId })}
                                         className="btn btn-primary"
-                                        type="submit">
+                                        type="submit"
+                                        >
                                         {!activeDeviceId || pending || players.some(p => !p.isReady) ? <LoadingSpinner size="sm" color="dark" /> : "Start Game"}
                                     </button>
                                 </div>
