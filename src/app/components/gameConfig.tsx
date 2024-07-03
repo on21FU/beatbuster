@@ -58,6 +58,9 @@ export default function GameConfig({
             }))
         }
         socket.addEventListener("message", handleMessage)
+        return () => {
+            socket.removeEventListener("message", handleMessage)
+        }
     }, [activeDeviceId])
 
     async function setFeaturedPlaylist() {
