@@ -56,8 +56,11 @@ export default function GameConfig({
             socket.send(JSON.stringify({
                 type: "ready",
             }))
+            spotify?.transferMyPlayback([activeDeviceId]).then().catch(console.error)
         }
+
         socket.addEventListener("message", handleMessage)
+
         return () => {
             socket.removeEventListener("message", handleMessage)
         }
@@ -135,6 +138,7 @@ export default function GameConfig({
                         tracks: message.body.tracks,
                     })
                     setAnswers(newAnswers)
+                    console.log("Active Device Id: ", activeDeviceId)
                     if (!activeDeviceId) {
                         console.log("no device id")
                         return
@@ -428,7 +432,7 @@ export default function GameConfig({
                                         disabled={!activeDeviceId || pending || players.some(p => !p.isReady) || !isPlayerHost({ players, userId })}
                                         className="btn btn-primary"
                                         type="submit"
-                                        >
+                                    >
                                         {!activeDeviceId || pending || players.some(p => !p.isReady) ? <LoadingSpinner size="sm" color="dark" /> : "Start Game"}
                                     </button>
                                 </div>
@@ -595,10 +599,15 @@ async function playTrack({
     spotify: SpotifyWebApi
     activeDeviceId: string
 }) {
-    await spotify.play({
-        uris: ["spotify:track:" + trackId],
-        device_id: activeDeviceId,
-    })
+    try {
+
+        await spotify.play({
+            uris: ["spotify:track:" + trackId],
+            device_id: activeDeviceId,
+        })
+    } catch (error) {
+        console.error("Coulnt play track", error)
+    }
 }
 
 function EmptyPlayer() {
